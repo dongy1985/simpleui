@@ -73,3 +73,5 @@ class Employee(models.Model):
 
 class tete(150):
     pass
+class tete160(150):
+    pass
