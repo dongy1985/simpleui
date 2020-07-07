@@ -7,7 +7,7 @@ from common import const
 class CodeConst(models.Model):
     big_code = models.CharField(verbose_name='大分類コード', max_length=20)
     big_name = models.CharField(verbose_name='大分類名', max_length=20)
-    small_code = models.IntegerField(verbose_name='小分類コード')
+    small_code = models.CharField(verbose_name='小分類コード', max_length=20)
     small_name = models.CharField(verbose_name='小分類名', max_length=20)
 
     class Meta:
