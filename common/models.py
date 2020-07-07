@@ -40,9 +40,9 @@ class CodeMst(models.Model):
 # 座標マスタ
 class CrdMst(models.Model):
     # 座標分類
-    crdDiv_choices = CodeMst.objects.filter(cd=const.CRD_DIV_CD, del_flg=const.DEL_FLG_0). \
+    crdDiv_choices = CodeMst.objects.filter(cd=const.CRD_DIV_CD, delFlg=const.DEL_FLG_0).\
         values_list('subCd', 'subNm').order_by('subCd')
-    crdDiv = models.CharField(verbose_name="座標分類", choices=crdDiv_choices, max_length=3,
+    crdDiv = models.CharField(verbose_name="座標分類", max_length=3, choices=crdDiv_choices,
                               null=False, blank=False, db_index=True, default=const.CRD_DIV_H)
     # 項目名
     itemNm = models.CharField(verbose_name="項目名", max_length=60, null=False, blank=False)
@@ -62,7 +62,7 @@ class CrdMst(models.Model):
     cmnt2 = models.TextField(verbose_name="備考2", max_length=60, help_text='60文字まで入力してください.',
                              null=True, blank=True)
     # 適用状態
-    delFlg_choices = CodeMst.objects.filter(cd=const.DEL_FLG_CD, del_flg=const.DEL_FLG_0).\
+    delFlg_choices = CodeMst.objects.filter(cd=const.DEL_FLG_CD, delFlg=const.DEL_FLG_0).\
         values_list('subCd', 'subNm').order_by('subCd')
     delFlg = models.CharField(verbose_name="適用状態", choices=delFlg_choices, max_length=1, default=const.DEF_DEL_FLG)
     # 登録日付

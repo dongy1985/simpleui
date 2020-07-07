@@ -39,3 +39,9 @@ const.EMPLOYEE_CD = '5'
 #   (1, '明細部'),
 #   (2, 'フッター部')
 
+const.DEL_FLG_CD = '001'
+const.DEL_FLG_0 = '0'
+const.DEL_FLG_1 = '1'
+const.DEF_DEL_FLG = '0'
+const.CRD_DIV_H = '0'
+const.CRD_DIV_CD = '006'
