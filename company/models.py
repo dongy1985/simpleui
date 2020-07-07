@@ -5,7 +5,7 @@ from django.utils import timezone
 
 # Create your models here
 from common.const import const
-from common.models import CodeConst
+from common.models import CodeMst
 
 
 class Apply(models.Model):
@@ -35,13 +35,14 @@ class Detail(models.Model):
         verbose_name = "通勤手当明細"
 
 
+
 class Employee(models.Model):
 
     name = models.CharField(max_length=30, verbose_name='社員名前', null=False, blank=False, db_index=True)
 
     empNo = models.CharField(verbose_name='社員番号', max_length=3, null=False, blank=False)
 
-    gender_choices = CodeConst.objects.filter(big_code=const.GENDER_CD).values_list('subCd', 'subNm').order_by('subCd')
+    gender_choices = CodeMst.objects.filter(big_code=const.GENDER_CD).values_list('subCd', 'subNm').order_by('subCd')
     gender = models.CharField(max_length=3, choices=gender_choices, verbose_name='性别', default=const.GENDER_DEF)
 
     birthday = models.DateField(verbose_name='生年月日')
@@ -58,7 +59,7 @@ class Employee(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='UserId', db_index=True)
 
-    status_choices = CodeConst.objects.filter(big_code=const.EMPLOYEE_CD).values_list('subCd', 'subNm').order_by('subCd')
+    status_choices = CodeMst.objects.filter(big_code=const.EMPLOYEE_CD).values_list('subCd', 'subNm').order_by('subCd')
     empSts = models.CharField(max_length=3, choices=status_choices, verbose_name='社員状態', default=const.EMPLOYEE_DEF)
 
     # 登録日付

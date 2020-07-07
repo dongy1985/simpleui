@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import get_permission_codename
 from django.core.checks import messages
 
-from company.models import Apply, Detail
+from company.models import Apply, Detail, Employee
 from employee.models import Employe
 
 
@@ -102,3 +102,14 @@ class ApplyAdmin(admin.ModelAdmin):
         for line in detail_inlines:
             obj.totalMoney = obj.totalMoney + line.trafficExpense
         super().save_model(request, obj, form, change)
+
+@admin.register(Employee)
+class Employee(admin.ModelAdmin):
+    fieldsets = [(None, {'fields': ['name', 'empNo', ' gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'user', 'empSts']})]
+    list_display = ('name', 'empNo', ' gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'empSts')
+    search_fields = ('name', 'empNo')
+    list_per_page = 20
+    raw_id_fields = ('user',)
+    list_filter = ('name', 'empNo', 'empSts')
+
+    list_display_links = ('name',)
