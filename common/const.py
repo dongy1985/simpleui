@@ -24,12 +24,15 @@ const.SHEET = '勤務表'
 const.HEAD = '01'
 const.DATA = '02'
 const.ADMIN_ID = 1
-const.ADMIN_MAIL = 'csdxp0917@gmail.com'
-const.ADMIN_MAIL_PAS = 'csdxp0917'
+const.ADMIN_MAIL = 'testid0917@gmail.com'
+const.ADMIN_MAIL_PAS = 'testTest0917'
 const.MAIL_KBN_COMMIT = 1
 const.MAIL_KBN_CANCEL = 2
 const.MAIL_KBN_CONFIRM = 3
-
+const.GENDER_DEF = '1'
+const.EMPLOYEE_DEF = '1'
+const.GENDER_CD = '4'
+const.EMPLOYEE_CD = '5'
 
 #   Excel座標管理
 #   (0, 'ヘッダー部'),
