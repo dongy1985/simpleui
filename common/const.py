@@ -33,9 +33,17 @@ const.GENDER_DEF = '1'
 const.EMPLOYEE_DEF = '1'
 const.GENDER_CD = '4'
 const.EMPLOYEE_CD = '5'
+#作業状態区分:004,未提出、提出済、承認済
+const.DUTY_TYPE = '004'
 
 #   Excel座標管理
 #   (0, 'ヘッダー部'),
 #   (1, '明細部'),
 #   (2, 'フッター部')
 
+const.DEL_FLG_0 = '0'
+const.DEL_FLG_1 = '1'
+const.CRD_DIV_CD = ''
+const.CRD_DIV_H = ''
+const.DEF_DEL_FLG = ''
+const.DEL_FLG_CD = ''
