@@ -2,12 +2,12 @@ from django.contrib import admin
 
 # Register your models here.
 
-from common.models import Coordinate, CodeConst
+from common.models import CrdMst, CodeMst
 
 
 # Register your models here.
-@admin.register(CodeConst)
-class CodeConstAdmin(admin.ModelAdmin):
+@admin.register(CodeMst)
+class CodeMstAdmin(admin.ModelAdmin):
 
     list_display = ('cd', 'cdNm', 'subCd', 'subNm')
     list_per_page = 15
@@ -16,8 +16,8 @@ class CodeConstAdmin(admin.ModelAdmin):
 
 
 # Register your models here.
-@admin.register(Coordinate)
-class CoordinateAdmin(admin.ModelAdmin):
+@admin.register(CrdMst)
+class CrdMstAdmin(admin.ModelAdmin):
 
     list_display = ('crdDiv', 'itemNm', 'itemSort', 'crdX', 'crdY', 'defVal', 'cmnt1')
     list_per_page = 15
