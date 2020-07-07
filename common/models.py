@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-from common import const
+from common.const import const
 
 
 # コードマスタ
@@ -11,19 +11,19 @@ class CodeMst(models.Model):
                           null=False, blank=False, db_index=True)
     # 大分類名
     cdNm = models.CharField(max_length=20, verbose_name="大分類名", help_text='20文字まで入力してください.',
-                               null=False, blank=False)
+                            null=False, blank=False)
     # 小分類コード
     subCd = models.CharField(max_length=3, verbose_name="小分類コード", help_text='数字で３桁まで入力してください.',
-                              null=False, blank=False)
+                             null=False, blank=False)
     # 小分類名
     subNm = models.CharField(max_length=20, verbose_name="小分類名", help_text='20文字まで入力してください.',
-                                   null=False, blank=False)
+                             null=False, blank=False)
     # 適用状態
     delFlg_choices = (
-        (Const.DEL_FLG_0, '有効'),
-        (Const.DEL_FLG_1, '無効'),
+        (const.DEL_FLG_0, '有効'),
+        (const.DEL_FLG_1, '無効'),
     )
-    delFlg = models.CharField(verbose_name="適用状態", choices=delFlg_choices, max_length=1, default=Const.DEF_DEL_FLG)
+    delFlg = models.CharField(verbose_name="適用状態", choices=delFlg_choices, max_length=1, default=const.DEF_DEL_FLG)
     # 登録日付
     createTime = models.DateTimeField(verbose_name='登録日付', auto_now=True)
     # 更新日付
@@ -40,10 +40,10 @@ class CodeMst(models.Model):
 # 座標マスタ
 class CrdMst(models.Model):
     # 座標分類
-    crdDiv_choices = CodeMst.objects.filter(cd=Const.CRD_DIV_CD, del_flg=Const.DEL_FLG_0). \
+    crdDiv_choices = CodeMst.objects.filter(cd=const.CRD_DIV_CD, del_flg=const.DEL_FLG_0). \
         values_list('subCd', 'subNm').order_by('subCd')
     crdDiv = models.CharField(verbose_name="座標分類", choices=crdDiv_choices, max_length=3,
-                              null=False, blank=False, db_index=True, default=Const.CRD_DIV_H)
+                              null=False, blank=False, db_index=True, default=const.CRD_DIV_H)
     # 項目名
     itemNm = models.CharField(verbose_name="項目名", max_length=60, null=False, blank=False)
     # 項目順
@@ -62,9 +62,9 @@ class CrdMst(models.Model):
     cmnt2 = models.TextField(verbose_name="備考2", max_length=60, help_text='60文字まで入力してください.',
                              null=True, blank=True)
     # 適用状態
-    delFlg_choices = CodeMst.objects.filter(cd=Const.DEL_FLG_CD, del_flg=Const.DEL_FLG_0).\
+    delFlg_choices = CodeMst.objects.filter(cd=const.DEL_FLG_CD, del_flg=const.DEL_FLG_0).\
         values_list('subCd', 'subNm').order_by('subCd')
-    delFlg = models.CharField(verbose_name="適用状態", choices=delFlg_choices, max_length=1, default=Const.DEF_DEL_FLG)
+    delFlg = models.CharField(verbose_name="適用状態", choices=delFlg_choices, max_length=1, default=const.DEF_DEL_FLG)
     # 登録日付
     createTime = models.DateTimeField(verbose_name='登録日付', auto_now=True)
     # 更新日付
