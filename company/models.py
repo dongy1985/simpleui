@@ -69,7 +69,3 @@ class Employee(models.Model):
 
     def __str__(self):
         return self.name
-
-class tets():
-    print("222")
-    pass
