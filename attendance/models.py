@@ -17,10 +17,8 @@ class Duty(models.Model):
     rest = models.DecimalField(verbose_name='休憩時間', max_digits=3, decimal_places=1, default=1.0)
     working_time = models.DecimalField(verbose_name='実働時間', max_digits=3, decimal_places=1, default=1.5)
     contents = models.TextField(max_length=48, verbose_name='作業概要', default='開発作業')
-
     status_c = CodeTools.objects.filter(bigCode='005').values_list('smallCode','smallCodename').order_by('smallCodename')
     status = models.CharField(max_length=5, choices=status_c, verbose_name='報告区分', default='00')
-
     employe_id = models.CharField(max_length=3, default=0)
 
 
