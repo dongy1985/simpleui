@@ -71,4 +71,5 @@ class Employee(models.Model):
         return self.name
 
 class tets():
+    print("222")
     pass
