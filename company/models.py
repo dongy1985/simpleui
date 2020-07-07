@@ -8,7 +8,7 @@ class Apply(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='apply_user', )
     applyName = models.CharField(verbose_name='申請者', max_length=128)
     applyDate = models.DateField(verbose_name='申請日', default=timezone.now)
-    totalMoney = models.CharField(verbose_name='定期券運賃(1ヶ月)', max_length=12, default='')
+    totalMoney = models.IntegerField(verbose_name='定期券運賃(1ヶ月)', default='')
 
     class Meta:
         verbose_name = "通勤手当"
@@ -21,11 +21,11 @@ class Apply(models.Model):
 
 
 class Detail(models.Model):
-    name = models.ForeignKey(Apply, on_delete=models.CASCADE, verbose_name='申請者', max_length=128, default='')
+    apply = models.ForeignKey(Apply, on_delete=models.CASCADE, verbose_name='申請者', max_length=128, default='')
     trafficMethod = models.CharField(verbose_name='交通機関', max_length=125, default='')
     trafficSectionStart = models.CharField(verbose_name='開始区間', max_length=12, default='')
     trafficSectionEnd = models.CharField(verbose_name='終了区間', max_length=12, default='')
-    trafficExpense = models.CharField(verbose_name='金額', max_length=12, default='')
+    trafficExpense = models.IntegerField(verbose_name='金額', default='')
 
     class Meta:
         verbose_name = "通勤手当明細"

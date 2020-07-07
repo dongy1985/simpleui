@@ -96,4 +96,9 @@ class ApplyAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.user_id = request.user.id
         obj.applyName = Employe.objects.get(user_id=request.user.id).name
+        # # 総金額
+        detail_inlines = Detail.objects.filter(apply_id=obj.id)
+        obj.totalMoney = 0
+        for line in detail_inlines:
+            obj.totalMoney = obj.totalMoney + line.trafficExpense
         super().save_model(request, obj, form, change)
