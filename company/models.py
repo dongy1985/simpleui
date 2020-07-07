@@ -71,5 +71,5 @@ class Employee(models.Model):
         return self.name
 
 
-class tete():
+class tete(111):
     pass
