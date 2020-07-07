@@ -37,7 +37,7 @@ class Coordinate(models.Model):
         return self.coorName
 
 
-    class test():
+    class te():
         pass
 
 
