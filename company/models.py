@@ -58,7 +58,7 @@ class Employee(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='UserId', db_index=True)
 
-    status_choices = Code.objects.filter(big_code=Const.EMPLOYEE_CD).values_list('small_code', 'small_name').order_by('small_code')
+    status_choices = CodeConst.objects.filter(big_code=Const.EMPLOYEE_CD).values_list('small_code', 'small_name').order_by('small_code')
     empSts = models.CharField(max_length=3, choices=status_choices, verbose_name='社員状態', default=Const.EMPLOYEE_DEF)
 
     # 登録日付
