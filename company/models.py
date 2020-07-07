@@ -4,6 +4,9 @@ from django.utils import timezone
 
 
 # Create your models here
+from common.models import CodeConst
+
+
 class Apply(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='apply_user', )
     applyName = models.CharField(verbose_name='申請者', max_length=128)
@@ -37,7 +40,7 @@ class Employee(models.Model):
 
     empNo = models.CharField(verbose_name='社員番号', max_length=3, null=False, blank=False)
 
-    gender_choices = Code.objects.filter(big_code=Const.GENDER_CD).values_list('small_code', 'small_name').order_by('small_code')
+    gender_choices = CodeConst.objects.filter(big_code=Const.GENDER_CD).values_list('small_code', 'small_name').order_by('small_code')
 
     gender = models.CharField(max_length=3, choices=gender_choices, verbose_name='性别', default=Const.GENDER_DEF)
 
