@@ -6,8 +6,6 @@ from django.utils import timezone
 from common.const import const
 from common.models import CodeConst
 
-# Create your models here.
-
 class Duty(models.Model):
     name = models.CharField('社員名前', max_length=20, default=0) 
     date = models.DateField('出勤日付', default=timezone.now)
