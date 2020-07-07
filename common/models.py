@@ -38,6 +38,7 @@ class Coordinate(models.Model):
 
 
     class test():
+        print()
         pass
 
 
