@@ -69,11 +69,3 @@ class Employee(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class tete():
-    pass
-
-
-class test():
-    pass
