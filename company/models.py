@@ -29,3 +29,6 @@ class Detail(models.Model):
 
     class Meta:
         verbose_name = "通勤手当明細"
+
+class test():
+    pass
