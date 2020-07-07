@@ -14,7 +14,7 @@ class _const:
 
 const = _const()
 const.DUTY_TYPE = '003'
-EXCEL_COORDINATE = "005"
+const.EXCEL_COORDINATE = "005"
 const.DIR = 'export/'
 const.TEMPLATEPATH = 'export/template/勤務表model.xlsx'
 const.UNDERLINE = '_'
