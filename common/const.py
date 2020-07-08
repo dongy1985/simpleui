@@ -13,8 +13,11 @@ class _const:
         self.__dict__[name] = value
 
 const = _const()
+# 出勤区分
 const.DUTY_TYPE = '003'
-const.EXCEL_COORDINATE = "005"
+# 作業状態大分類の値004　
+const.WORK_TYPE = '004'
+# excel dir
 const.DIR = 'export/'
 const.TEMPLATEPATH = 'export/template/勤務表model.xlsx'
 const.UNDERLINE = '_'
@@ -23,21 +26,29 @@ const.FILESTART = '/'
 const.SHEET = '勤務表'
 const.HEAD = '01'
 const.DATA = '02'
+# adminのＩＤ
 const.ADMIN_ID = 1
+# system email
 const.ADMIN_MAIL = 'testid0917@gmail.com'
 const.ADMIN_MAIL_PAS = 'testTest0917'
+# メール区分
 const.MAIL_KBN_COMMIT = 1
 const.MAIL_KBN_CANCEL = 2
 const.MAIL_KBN_CONFIRM = 3
+
 const.GENDER_DEF = '1'
 const.EMPLOYEE_DEF = '1'
 const.GENDER_CD = '4'
 const.EMPLOYEE_CD = '5'
-# 作業状態区分004　未提出、提出済、承認済
+# 作業状態 未提出、提出済、承認済
 const.STATUS_UNCOMMIT = '000'
 const.STATUS_COMMIT = '001'
 const.STATUS_CONFIRM = '002'
-const.WORK_TYPE = '004'
+
+# 作業状態小分類：0 未提出; 1 提出済; 2 承認済
+const.WORK_TYPE_SMALL_0 = '0'
+const.WORK_TYPE_SMALL_1 = '1'
+const.WORK_TYPE_SMALL_2 = '2'
 
 
 #   Excel座標管理
