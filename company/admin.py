@@ -3,7 +3,7 @@ from django.contrib.auth import get_permission_codename
 from django.core.checks import messages
 
 from company.models import Apply, Detail, Employee
-from employee.models import Employe
+
 
 
 class DetailInline(admin.TabularInline):
