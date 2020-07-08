@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import get_permission_codename
 from django.contrib import admin, messages
-from django_filters import DateFilter
+
 
 from common.const import const
 from common.custom_filter import DateFieldFilter
