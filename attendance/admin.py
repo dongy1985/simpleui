@@ -1,10 +1,6 @@
 import time, datetime
-import xlrd
-import xlwt 
-import xlutils.copy
 import calendar
 import os
-import tempfile
 import zipfile
 
 from django.contrib import admin, messages
@@ -17,7 +13,6 @@ from django.contrib.auth import get_user
 from django.http.response import HttpResponse
 from django.http import HttpResponse
 from django.contrib.auth import get_permission_codename
-from django.utils.encoding import escape_uri_path
 from django.db.models import Q
 from wsgiref.util import FileWrapper
 
