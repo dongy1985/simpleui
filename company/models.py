@@ -10,7 +10,7 @@ import time
 
 class Apply(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='apply_user', )
-    applyName = models.CharField(verbose_name='申請者', max_length=128)
+    applyName = models.CharField(verbose_name='申請者', max_length=30)
     applyDate = models.DateField(verbose_name='申請日', default=timezone.now)
     totalMoney = models.IntegerField(verbose_name='定期券運賃(1ヶ月)', default='')
     # 状態
