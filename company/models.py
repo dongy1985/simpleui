@@ -16,7 +16,7 @@ class Apply(models.Model):
     # 状態
     status_list = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
     traffic_status = models.CharField(choices=status_list, verbose_name='状態', max_length=3,
-                                      default=const.WORK_TYPE_small0)
+                                      default=const.WORK_TYPE_small_0)
 
     class Meta:
         verbose_name = "通勤手当"
