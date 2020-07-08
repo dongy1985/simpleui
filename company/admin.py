@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.contrib.auth import get_permission_codename
 from django.contrib import admin, messages
 
-
 from common.const import const
 from common.custom_filter import DateFieldFilter
 from company.models import Detail, Paysub, Paymain, Apply, Employee
@@ -97,7 +96,7 @@ class ApplyAdmin(admin.ModelAdmin):
     # 保存の場合、該当ユーザーIDをセット
     def save_model(self, request, obj, form, change):
         obj.user_id = request.user.id
-        obj.applyName = Employee.objects.filter(user_id=request.user.id)
+        obj.applyName = Employee.objects.get(user_id=request.user.id).name
         # # 総金額
         detail_inlines = Detail.objects.filter(apply_id=obj.id)
         obj.totalMoney = 0
@@ -108,7 +107,8 @@ class ApplyAdmin(admin.ModelAdmin):
 
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
-    fieldsets = [(None, {'fields': ['name', 'empNo', 'gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'user', 'empSts']})]
+    fieldsets = [(None, {
+        'fields': ['name', 'empNo', 'gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'user', 'empSts']})]
     list_display = ('name', 'empNo', 'gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'empSts')
     search_fields = ('name', 'empNo')
     list_per_page = 20
@@ -117,11 +117,13 @@ class EmployeeAdmin(admin.ModelAdmin):
 
     list_display_links = ('name',)
 
+
 # 立替金admin
 class PaysubInline(admin.TabularInline):
     model = Paysub
     extra = 1  # 默认显示条目的数量
-    fieldsets = [(None, {'fields': ['usedate',  'komoku', 'detail_text', 'price']})]
+    fieldsets = [(None, {'fields': ['usedate', 'komoku', 'detail_text', 'price']})]
+
 
 @admin.register(Paymain)
 class PaymainAdmin(admin.ModelAdmin):
@@ -132,6 +134,7 @@ class PaymainAdmin(admin.ModelAdmin):
     list_per_page = 10
 
     actions = ['commit_button', 'confirm_button', 'cancel_button']
+
     def save_model(self, request, obj, form, change):
         obj.user_id = request.user.id
         obj.applyer = Employee.objects.get(user_id=request.user.id).name
@@ -160,7 +163,8 @@ class PaymainAdmin(admin.ModelAdmin):
     commit_button.icon = 'fas fa-check-circle'
     # 指定element-ui的按钮类型，参考https://element.eleme.cn/#/zh-CN/component/button
     commit_button.type = 'success'
-     # 承認
+
+    # 承認
     def confirm_button(self, request, queryset):
         for obj in queryset:
             if obj.status != const.WORK_TYPE_SMALL_1:
@@ -176,16 +180,18 @@ class PaymainAdmin(admin.ModelAdmin):
     confirm_button.type = 'success'
     confirm_button.allowed_permissions = ('confirm_button',)
 
-    #承認権限チェック
+    # 承認権限チェック
     def has_confirm_button_permission(self, request):
         if not request.user.is_superuser:
             return False
         opts = self.opts
         codename = get_permission_codename('confirm_button', opts)
         return request.user.has_perm("%s.%s" % (opts.app_label, codename))
-    #取消
+
+    # 取消
     def cancel_button(self, request, queryset):
         queryset.update(status=const.WORK_TYPE_SMALL_0)
+
     # 显示的文本，与django admin一致
     cancel_button.short_description = ' 取消'
     # icon，参考element-ui icon与https://fontawesome.com
