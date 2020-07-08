@@ -6,3 +6,7 @@ docutils
 django-mdeditor
 markdown
 Pygments
+smtplib
+zipfile
+openpyxl
+shutil
