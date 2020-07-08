@@ -14,7 +14,7 @@ class Apply(models.Model):
     applyDate = models.DateField(verbose_name='申請日', default=timezone.now)
     totalMoney = models.IntegerField(verbose_name='定期券運賃(1ヶ月)', default='')
     # 状態
-    status_list = Kubun.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
+    status_list = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
     traffic_status = models.CharField(choices=status_list, verbose_name='状態', max_length=3,
                                       default=const.WORK_TYPE_small0)
 
