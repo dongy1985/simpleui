@@ -25,7 +25,7 @@ class Attendance(models.Model):
     # 作業概要
     contents = models.TextField(max_length=48, verbose_name='作業概要', default='開発作業')
     # 報告区分
-    status_c = CodeMst.objects.filter(cd=const.EXCEL_COORDINATE, delFlg=const.DEL_FLG_0).values_list('subCd','subNm').order_by('subCd')
+    status_c = CodeMst.objects.filter(cd=const.WORK_TYPE, delFlg=const.DEL_FLG_0).values_list('subCd','subNm').order_by('subCd')
     status = models.CharField(max_length=5, choices=status_c, verbose_name='報告区分', default='000')
     # user id
     user_id = models.CharField(max_length=3, default=0)
