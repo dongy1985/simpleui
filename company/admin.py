@@ -4,7 +4,7 @@ from django.contrib import admin, messages
 from django_filters import DateFilter
 
 from common.const import const
-from company.models import Apply, Detail, Employee, Paysub, Paymain
+from company.models import Detail, Employee, Paysub, Paymain, Apply
 
 
 class DetailInline(admin.TabularInline):
