@@ -48,3 +48,43 @@ const.DEL_FLG_1 = '1'
 const.DEF_DEL_FLG = '0'
 const.CRD_DIV_H = '0'
 const.CRD_DIV_CD = '006'
+
+# 資産管理用
+# CharField 名前の長さ
+const.NAME_LENGTH = 20
+
+# CharField Textfield長文の長さ
+const.TEXT_LENGTH = 128
+
+# 申請借出状態default
+const.LEND_STATUS = '001'
+
+# 申請借出状態 大区分
+const.BIG_STATUS = '007'
+
+# 資産合計明細extra
+const.EXTRA = 1
+
+# 一ページ表示の数
+const.PAGES = 8
+
+# 資産状態 借出可否 可
+const.LEND_OK = 1
+
+# 資産状態 借出可否 否
+const.LEND_NG = 0
+
+# 資産借出申請 状態 申請提出済
+const.LEND_REQUEST = '001'
+
+# 資産借出申請 状態 申請承認済
+const.LEND_APPLY = '002'
+
+# 資産借出申請 状態 借出済
+const.LEND_OUT = '003'
+
+# 資産借出申請 状態 返却済
+const.LEND_BACK = '004'
+
+# 資産借出申請 状態 返却済
+const.LEND_DENY = '005'

@@ -6,7 +6,7 @@ from django.utils import timezone
 # Create your models here
 from common.const import const
 from common.models import CodeMst
-
+import time
 
 class Apply(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='apply_user', )
@@ -73,3 +73,101 @@ class Employee(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
+class Expenditure(models.Model):
+    name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='資産名')
+
+    buy_date = models.DateField(verbose_name='購入日付', default=time.strftime("%Y-%m-%d"))
+
+    unit_price = models.IntegerField(verbose_name='単価')
+
+    number = models.IntegerField(verbose_name='数量', default=1)
+
+    total_price = models.IntegerField(verbose_name='合計金額')
+
+    note = models.TextField(max_length=const.TEXT_LENGTH, verbose_name='備考', default='なし')
+
+    class Meta:
+        verbose_name = "資産合計"
+        verbose_name_plural = "資産合計"
+
+    def __int__(self):
+        return self.name
+
+
+class Statement(models.Model):
+    name = models.ForeignKey(Expenditure, on_delete=models.CASCADE, verbose_name='資産名', max_length=const.NAME_LENGTH,
+                             default='')
+    name_code = models.CharField(verbose_name='資産番号', max_length=const.NAME_LENGTH, default='')
+    configure = models.CharField(verbose_name='明細', max_length=const.TEXT_LENGTH, default='')
+
+    class Meta:
+        verbose_name = "資産合計明細"
+
+
+class Manage(models.Model):
+    name_code = models.CharField(max_length=const.NAME_LENGTH, verbose_name='資産番号')
+
+    kind = models.CharField(max_length=const.NAME_LENGTH, verbose_name='分類')
+
+    name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='名称')
+
+    permission = models.BooleanField(verbose_name='借出可否', default=False)
+
+    note = models.TextField(max_length=const.TEXT_LENGTH, verbose_name='備考', default='なし')
+
+    class Meta:
+        verbose_name = "資産状態"
+        verbose_name_plural = "資産状態"
+
+    def __int__(self):
+        return self.id
+
+
+class Lend(models.Model):
+    name_code = models.ForeignKey(Manage, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='資産番号',
+                                  db_index=True)
+
+    real_code = models.CharField(max_length=const.NAME_LENGTH, verbose_name='番号')
+
+    kind = models.CharField(max_length=const.NAME_LENGTH, verbose_name='分類')
+
+    name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='名称')
+
+    worker_number = models.CharField(max_length=const.TEXT_LENGTH)
+
+    user_name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='借出対象')
+
+    apply_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='申請提出日付',
+                                  default=time.strftime("%Y-%m-%d"))
+
+    lend_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='仮定借出日付', default=time.strftime("%Y-%m-%d"))
+
+    lend_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際借出日付', default='未定')
+
+    back_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='仮定返済日付', default=time.strftime("%Y-%m-%d"))
+
+    back_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際返済日付', default='未定')
+
+    lend_reason = models.CharField(max_length=const.TEXT_LENGTH, verbose_name='用途')
+
+    note = models.TextField(max_length=const.TEXT_LENGTH, verbose_name='備考', default='なし')
+
+    lend_status_choices = CodeMst.objects.filter(cd=const.BIG_STATUS).values_list('subCd',
+                                                                                  'subNm').order_by(
+        'subCd')
+
+    lend_status = models.CharField(max_length=const.NAME_LENGTH, choices=lend_status_choices, verbose_name='申請借出状態'
+                                   , default=const.LEND_STATUS)
+
+    class Meta:
+        verbose_name = "資産借出申請"
+        verbose_name_plural = "資産借出申請"
+        permissions = (
+            ("apply_lend", "Can apply 資産借出申請"),
+        )
+
+    def __int__(self):
+        return self.name_code
