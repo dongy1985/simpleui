@@ -24,8 +24,8 @@ const.UNDERLINE = '_'
 const.XLSX = '.xlsx'
 const.FILESTART = '/'
 const.SHEET = '勤務表'
-const.HEAD = '01'
-const.DATA = '02'
+const.HEAD = '001'
+const.DATA = '002'
 # adminのＩＤ
 const.ADMIN_ID = 1
 # system email
