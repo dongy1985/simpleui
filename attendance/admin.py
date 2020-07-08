@@ -193,6 +193,11 @@ class AttendanceAdmin(admin.ModelAdmin):
         # tempDel
         if os.path.exists(temp):
             os.remove(temp)  
+            for root, dirs, files in os.walk(startdir, topdown=False):
+                for name in files:
+                    os.remove(os.path.join(root, name))
+                for name in dirs:
+                    os.rmdir(os.path.join(root, name))
             os.removedirs(startdir)
         else:
             print('no such file') 
