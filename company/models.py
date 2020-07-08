@@ -187,8 +187,8 @@ class Paymain(models.Model):
     class Meta:
         verbose_name_plural = "立替金"
         permissions = (
-            ("tichu_button_paymain", "普通社員　Can提出"),
-            ("chengren_button_paymain", "管理者　Can承認")
+            ("commit_button_paymain", "普通社員　Can提出"),
+            ("confirm_button_paymain", "管理者　Can承認")
         )
 def __str__(self):
     return self.name
