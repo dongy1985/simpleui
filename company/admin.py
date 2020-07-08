@@ -5,7 +5,7 @@ from django.contrib import admin, messages
 
 from common.const import const
 from common.custom_filter import DateFieldFilter
-from company.models import Detail, Employee, Paysub, Paymain, Apply
+from company.models import Detail, Paysub, Paymain, Apply, Employee
 
 
 class DetailInline(admin.TabularInline):
@@ -107,7 +107,7 @@ class ApplyAdmin(admin.ModelAdmin):
 
 
 @admin.register(Employee)
-class Employee(admin.ModelAdmin):
+class EmployeeAdmin(admin.ModelAdmin):
     fieldsets = [(None, {'fields': ['name', 'empNo', 'gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'user', 'empSts']})]
     list_display = ('name', 'empNo', 'gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'empSts')
     search_fields = ('name', 'empNo')
