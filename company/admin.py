@@ -97,7 +97,7 @@ class ApplyAdmin(admin.ModelAdmin):
     # 保存の場合、該当ユーザーIDをセット
     def save_model(self, request, obj, form, change):
         obj.user_id = request.user.id
-        obj.applyName = Employee.objects.get(user_id=request.user.id).name
+        obj.applyName = Employee.objects.filter(user_id=request.user.id)
         # # 総金額
         detail_inlines = Detail.objects.filter(apply_id=obj.id)
         obj.totalMoney = 0
