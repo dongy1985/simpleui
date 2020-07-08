@@ -131,7 +131,7 @@ class PaymainAdmin(admin.ModelAdmin):
     list_filter = ('applyer', 'status', ('applydate', DateFieldFilter))
     list_per_page = 10
 
-    actions = ['tichu_button', 'chengren_button', 'cancel_button']
+    actions = ['commit_button', 'confirm_button', 'cancel_button']
     def save_model(self, request, obj, form, change):
         obj.user_id = request.user.id
         obj.applyer = Employee.objects.get(user_id=request.user.id).name
@@ -147,7 +147,7 @@ class PaymainAdmin(admin.ModelAdmin):
             return qs
         return qs.filter(user_id=request.user.id)
 
-    def tichu_button(self, request, queryset):
+    def commit_button(self, request, queryset):
         for obj in queryset:
             if obj.status != const.WORK_TYPE_SMALL_0:
                 messages.add_message(request, messages.ERROR, '未提出を選んでください！')
@@ -155,13 +155,13 @@ class PaymainAdmin(admin.ModelAdmin):
         queryset.update(status=const.WORK_TYPE_SMALL_1)
 
     # 显示的文本，与django admin一致
-    tichu_button.short_description = ' 提出'
+    commit_button.short_description = ' 提出'
     # icon，参考element-ui icon与https://fontawesome.com
-    tichu_button.icon = 'fas fa-check-circle'
+    commit_button.icon = 'fas fa-check-circle'
     # 指定element-ui的按钮类型，参考https://element.eleme.cn/#/zh-CN/component/button
-    tichu_button.type = 'success'
+    commit_button.type = 'success'
      # 承認
-    def chengren_button(self, request, queryset):
+    def confirm_button(self, request, queryset):
         for obj in queryset:
             if obj.status != const.WORK_TYPE_SMALL_1:
                 messages.add_message(request, messages.ERROR, '提出済を選んでください！')
@@ -169,19 +169,19 @@ class PaymainAdmin(admin.ModelAdmin):
         queryset.update(status=const.WORK_TYPE_SMALL_2)
 
     # 显示的文本，与django admin一致
-    chengren_button.short_description = ' 承認'
+    confirm_button.short_description = ' 承認'
     # icon，参考element-ui icon与https://fontawesome.com
-    chengren_button.icon = 'fas fa-check-circle'
+    confirm_button.icon = 'fas fa-check-circle'
     # 指定element-ui的按钮类型，参考https://element.eleme.cn/#/zh-CN/component/button
-    chengren_button.type = 'success'
-    chengren_button.allowed_permissions = ('chengren_button',)
+    confirm_button.type = 'success'
+    confirm_button.allowed_permissions = ('confirm_button',)
 
     #承認権限チェック
-    def has_chengren_button_permission(self, request):
+    def has_confirm_button_permission(self, request):
         if not request.user.is_superuser:
             return False
         opts = self.opts
-        codename = get_permission_codename('chengren_button', opts)
+        codename = get_permission_codename('confirm_button', opts)
         return request.user.has_perm("%s.%s" % (opts.app_label, codename))
     #取消
     def cancel_button(self, request, queryset):
