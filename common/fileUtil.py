@@ -1,9 +1,7 @@
 import time, datetime
 import shutil
 import openpyxl 
-import calendar
 import os
-import zipfile
 
 from django.contrib import admin, messages
 from django.db import transaction
@@ -13,7 +11,6 @@ from django.urls import reverse
 from django.contrib import admin
 from django.utils.encoding import escape_uri_path
 from django.db.models import Q
-from six.moves import urllib
 
 from attendance.models import *
 from import_export import resources
@@ -72,9 +69,18 @@ def mkExcel(queryset, folder_name):
         userName = obj.name
         objMonth = obj.date.month
         objYear = obj.date.year
+    # 社員番号
     sheet.cell(headMst[0][0], headMst[0][1], userNumber)
+    # 氏名
     sheet.cell(headMst[1][0], headMst[1][1], userName)
+    # 報告月
     sheet.cell(headMst[2][0], headMst[2][1], str(objYear) + '/' + str(objMonth))
+    # 基本時間1 固定文言
+    sheet.cell(headMst[3][0], headMst[3][1], headMst[3][2])
+    # 基本時間2 固定文言
+    sheet.cell(headMst[4][0], headMst[4][1], headMst[4][2])
+    # # 休憩 固定文言
+    sheet.cell(headMst[5][0], headMst[5][1], headMst[5][2])
 
     # duty data write
     dataMst = CrdMst.objects.filter(crdDiv=const.DATA, delFlg=const.DEL_FLG_0).\
