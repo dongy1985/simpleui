@@ -190,6 +190,12 @@ class AttendanceAdmin(admin.ModelAdmin):
         response = HttpResponse(fread, content_type='application/zip')
         response['Content-Disposition'] = 'attachment;filename="{0}"'.format(folder_name+".zip")
         fread.close()
+        # tempDel
+        if os.path.exists(temp):
+            os.remove(temp)  
+            os.removedirs(startdir)
+        else:
+            print('no such file') 
         return response
 
     export.short_description = 'Excleエクスポート'
