@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth import get_permission_codename
-from django.core.checks import messages
-
+from django.contrib import admin, messages
 from company.models import Apply, Detail, Employee
 
 
@@ -102,9 +101,11 @@ class ApplyAdmin(admin.ModelAdmin):
             obj.totalMoney = obj.totalMoney + line.trafficExpense
         super().save_model(request, obj, form, change)
 
+
 @admin.register(Employee)
 class Employee(admin.ModelAdmin):
-    fieldsets = [(None, {'fields': ['name', 'empNo', ' gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'user', 'empSts']})]
+    fieldsets = [(None, {
+        'fields': ['name', 'empNo', ' gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'user', 'empSts']})]
     list_display = ('name', 'empNo', ' gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'empSts')
     search_fields = ('name', 'empNo')
     list_per_page = 20

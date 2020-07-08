@@ -33,8 +33,12 @@ const.GENDER_DEF = '1'
 const.EMPLOYEE_DEF = '1'
 const.GENDER_CD = '4'
 const.EMPLOYEE_CD = '5'
-# 作業状態区分004　未提出、提出済、承認済
+# 作業状態大分類の値004　
 const.WORK_TYPE = '004'
+# 作業状態小分類：0 未提出; 1 提出済; 2 承認済
+const.WORK_TYPE_SMALL_0 = '0'
+const.WORK_TYPE_SMALL_1 = '1'
+const.WORK_TYPE_SMALL_2 = '2'
 
 
 #   Excel座標管理

@@ -2,17 +2,21 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
-
 # Create your models here
 from common.const import const
 from common.models import CodeMst
 import time
 
+
 class Apply(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='apply_user', )
-    applyName = models.CharField(verbose_name='申請者', max_length=128)
+    applyName = models.CharField(verbose_name='申請者', max_length=30)
     applyDate = models.DateField(verbose_name='申請日', default=timezone.now)
     totalMoney = models.IntegerField(verbose_name='定期券運賃(1ヶ月)', default='')
+    # 状態
+    status_list = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
+    traffic_status = models.CharField(choices=status_list, verbose_name='状態', max_length=3,
+                                      default=const.WORK_TYPE_SMALL_0)
 
     class Meta:
         verbose_name = "通勤手当"
@@ -35,9 +39,7 @@ class Detail(models.Model):
         verbose_name = "通勤手当明細"
 
 
-
 class Employee(models.Model):
-
     name = models.CharField(max_length=30, verbose_name='社員名前', null=False, blank=False, db_index=True)
 
     empNo = models.CharField(verbose_name='社員番号', max_length=3, null=False, blank=False)
@@ -57,7 +59,8 @@ class Employee(models.Model):
 
     phone = models.CharField(max_length=11, verbose_name='電話番号')
 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='UserId', db_index=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='UserId',
+                             db_index=True)
 
     status_choices = CodeMst.objects.filter(cd=const.EMPLOYEE_CD).values_list('subCd', 'subNm').order_by('subCd')
     empSts = models.CharField(max_length=3, choices=status_choices, verbose_name='社員状態', default=const.EMPLOYEE_DEF)
@@ -73,7 +76,6 @@ class Employee(models.Model):
 
     def __str__(self):
         return self.name
-
 
 
 class Expenditure(models.Model):
