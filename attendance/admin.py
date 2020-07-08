@@ -22,7 +22,7 @@ from common.models import *
 from company.models import *
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
-from common.templatetags.duty_filter import DutyDateFieldFilter
+from common.custom_filter import DateFieldFilter
 from common import fileUtil
 from common import mailUtil
 from common.const import const
@@ -41,7 +41,7 @@ class AttendanceAdmin(admin.ModelAdmin):
     #display
     list_display = ('name', 'date', 'duty', 'start_time', 'end_time', 'rest', 'working_time', 'contents', 'status')
     #list
-    list_filter = ('name','status',('date', DutyDateFieldFilter))
+    list_filter = ('name','status',('date', DateFieldFilter))
     #set search
     search_fields = ('name',)
     #set field
