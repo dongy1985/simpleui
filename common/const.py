@@ -34,6 +34,9 @@ const.EMPLOYEE_DEF = '1'
 const.GENDER_CD = '4'
 const.EMPLOYEE_CD = '5'
 # 作業状態区分004　未提出、提出済、承認済
+const.STATUS_UNCOMMIT = '000'
+const.STATUS_COMMIT = '001'
+const.STATUS_CONFIRM = '002'
 const.WORK_TYPE = '004'
 
 
