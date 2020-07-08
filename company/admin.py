@@ -5,7 +5,6 @@ from django.core.checks import messages
 from company.models import Apply, Detail, Employee
 
 
-
 class DetailInline(admin.TabularInline):
     model = Detail
     fieldsets = [(u'', {'fields': ['trafficMethod', 'trafficSectionStart', 'trafficSectionEnd', 'trafficExpense']})]
