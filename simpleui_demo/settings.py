@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'common',
     # 勤務管理
     'attendance',
-    # 会社管理（社員、資産）
+    # # 会社管理（社員、資産）
     'company',
 
 ]
@@ -128,10 +128,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# STATICFILES_DIRS = [
-#      os.path.join(BASE_DIR, "static"),
-#  ]
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATICFILES_DIRS = [
+     os.path.join(BASE_DIR, "static"),
+ ]
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # simpleui 设置
 
