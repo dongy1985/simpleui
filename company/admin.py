@@ -4,6 +4,7 @@ from django.contrib import admin, messages
 from django_filters import DateFilter
 
 from common.const import const
+from common.custom_filter import DateFieldFilter
 from company.models import Detail, Employee, Paysub, Paymain, Apply
 
 
@@ -127,7 +128,7 @@ class PaymainAdmin(admin.ModelAdmin):
     inlines = [PaysubInline, ]
     fieldsets = [(None, {'fields': ['applydate', 'bikou_text']})]
     list_display = ('applyer', 'applydate', 'total_money', 'bikou_text', 'status')
-    list_filter = ('applyer', 'status', ('applydate', DateFilter))
+    list_filter = ('applyer', 'status', ('applydate', DateFieldFilter))
     list_per_page = 10
 
     actions = ['tichu_button', 'chengren_button', 'cancel_button']
