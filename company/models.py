@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
@@ -38,7 +40,7 @@ class Detail(models.Model):
     class Meta:
         verbose_name = "通勤手当明細"
 
-
+# 社員モデル
 class Employee(models.Model):
     name = models.CharField(max_length=30, verbose_name='社員名前', null=False, blank=False, db_index=True)
 
@@ -173,3 +175,31 @@ class Lend(models.Model):
 
     def __int__(self):
         return self.name_code
+
+# 立替金モデル
+class Paymain(models.Model):
+    applyer = models.CharField(max_length=30, verbose_name='申請者名')
+    applydate = models.DateField(verbose_name='提出日付', default=datetime.date.today())
+    total_money = models.CharField(max_length=30, verbose_name='総金額')
+    status_choices = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
+    status = models.CharField(max_length=3, choices=status_choices, verbose_name='状態', default=const.WORK_TYPE_SMALL_0)
+    bikou_text = models.CharField(max_length=180, verbose_name='備考')
+
+    class Meta:
+        verbose_name_plural = "立替金"
+        permissions = (
+            ("tichu_button_paymain", "普通社員　Can提出"),
+            ("chengren_button_paymain", "管理者　Can承認")
+        )
+def __str__(self):
+    return self.name
+
+class Paysub(models.Model):
+    paymain = models.ForeignKey(Paymain, on_delete=models.CASCADE,)
+    komoku = models.CharField(max_length=30, verbose_name='費用項目')
+    detail_text = models.CharField(max_length=180, verbose_name='用途')
+    price = models.IntegerField(verbose_name='単一金額')
+    usedate = models.DateField(verbose_name='使用日付', default=datetime.date.today())
+
+    class Meta:
+        verbose_name = "項目明細"
