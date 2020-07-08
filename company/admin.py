@@ -105,8 +105,8 @@ class ApplyAdmin(admin.ModelAdmin):
 @admin.register(Employee)
 class Employee(admin.ModelAdmin):
     fieldsets = [(None, {
-        'fields': ['name', 'empNo', ' gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'user', 'empSts']})]
-    list_display = ('name', 'empNo', ' gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'empSts')
+        'fields': ['name', 'empNo', 'gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'user', 'empSts']})]
+    list_display = ('name', 'empNo', 'gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'empSts')
     search_fields = ('name', 'empNo')
     list_per_page = 20
     raw_id_fields = ('user',)
