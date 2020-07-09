@@ -203,40 +203,6 @@ class PaymainAdmin(admin.ModelAdmin):
 
 
 
-# 資産合計明細
-class DetailInline2(admin.TabularInline):
-    model = Statement
-    fieldsets = [(u'', {'fields': ['name_code', 'configure', ]})]
-    extra = const.EXTRA
-
-
-# 資産合計
-@admin.register(Expenditure)
-class ExpenditureAdmin(admin.ModelAdmin):
-    inlines = [DetailInline2, ]
-
-    # 編集必要なレコード
-    fieldsets = [(None, {'fields': ['name', 'buy_date', 'unit_price', 'number',
-                                    'note', ]})]
-
-    # 表示必要なレコード
-    list_display = ('name', 'buy_date', 'unit_price', 'number', 'total_price',
-                    'note',)
-
-    # サーチ必要なレコード
-    search_fields = ('name',)
-
-    # 一ページ表示の数
-    list_per_page = const.PAGES
-
-    actions_on_top = True
-
-    # 金額計算
-    def save_model(self, request, obj, form, change):
-        obj.total_price = obj.unit_price * obj.number
-        super().save_model(request, obj, form, change, )
-
-
 # 資産状態
 @admin.register(Manage)
 class ManageAdmin(admin.ModelAdmin):
