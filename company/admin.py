@@ -1,13 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth import get_permission_codename
 from django.contrib import admin, messages
-
 from common.const import const
 from common.custom_filter import DateFieldFilter
-from company.models import Detail, Paysub, Paymain, Apply, Employee, Expenditure, Statement, Manage, Lend
+from company.models import Detail, Paysub, Paymain, Apply, Employee, Statement, Manage, Lend
 import time
 from django.contrib.auth.models import User
 from django.contrib import messages
+
 
 class DetailInline(admin.TabularInline):
     model = Detail
@@ -200,7 +200,6 @@ class PaymainAdmin(admin.ModelAdmin):
     cancel_button.icon = 'fas fa-check-circle'
     # 指定element-ui的按钮类型，参考https://element.eleme.cn/#/zh-CN/component/button
     cancel_button.type = 'warning'
-
 
 
 # 資産状態
