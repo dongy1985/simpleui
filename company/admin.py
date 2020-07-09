@@ -3,7 +3,7 @@ from django.contrib.auth import get_permission_codename
 from django.contrib import admin, messages
 from common.const import const
 from common.custom_filter import DateFieldFilter
-from company.models import Dutydetail, ExpenseReturn, ExpenseReturnDetail, ApplyDutyAmount, Employee, Manage, Lend
+from company.models import Dutydetail, ExpenseReturn, ExpenseReturnDetail, ApplyDutyAmount, Employee, AssetManage, AssetLend
 import time
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -202,21 +202,21 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
     cancel_button.type = 'warning'
 
 
-# 資産状態
-@admin.register(Manage)
-class ManageAdmin(admin.ModelAdmin):
+# 資産管理
+@admin.register(AssetManage)
+class AssetManageAdmin(admin.ModelAdmin):
     # 編集必要なレコード
-    fieldsets = [(None, {'fields': ['name_code', 'kind', 'name', 'permission',
+    fieldsets = [(None, {'fields': ['asset_id', 'type', 'name', 'permission',
                                     'note', ]})]
 
     # 表示必要なレコード
-    list_display = ('name_code', 'kind', 'name', 'permission',
+    list_display = ('asset_id', 'type', 'name', 'permission',
                     'note',)
 
     # サーチ必要なレコード
-    search_fields = ('name_code',)
+    search_fields = ('asset_id',)
 
-    list_filter = ('kind',)
+    list_filter = ('type',)
 
     # 一ページ表示の数
     list_per_page = const.PAGES
@@ -225,23 +225,23 @@ class ManageAdmin(admin.ModelAdmin):
 
 
 # 資産借出申請
-@admin.register(Lend)
-class LendAdmin(admin.ModelAdmin):
-    fieldsets = [(None, {'fields': ['name_code', 'lend_time', 'back_time', 'lend_reason',
+@admin.register(AssetLend)
+class AssetLendAdmin(admin.ModelAdmin):
+    fieldsets = [(None, {'fields': ['asset_id', 'lend_time', 'back_time', 'lend_reason',
                                     'note', ]})]
 
     # 要显示的字段
     list_display = (
-        'real_code', 'kind', 'name', 'user_name', 'apply_time', 'lend_time', 'lend_truetime', 'back_time',
+        'asset_code', 'type', 'name', 'user_name', 'apply_time', 'lend_time', 'lend_truetime', 'back_time',
         'back_truetime',
         'lend_reason', 'note', 'lend_status',)
 
     # 需要搜索的字段
-    # search_fields = ('name_code',)
+    # search_fields = ('asset_id',)
 
-    raw_id_fields = ('name_code',)
+    raw_id_fields = ('asset_id',)
     # filter
-    list_filter = ('kind', 'lend_status',)
+    list_filter = ('type', 'lend_status',)
 
     # 分页显示，一页的数量
     list_per_page = const.PAGES
@@ -255,11 +255,11 @@ class LendAdmin(admin.ModelAdmin):
     def apply_request(self, request, queryset):
         ids = request.POST.getlist('_selected_action')
         for id in ids:
-            Lend.objects.filter(id=id, lend_status=const.LEND_REQUEST).update(
+            AssetLend.objects.filter(id=id, lend_status=const.LEND_REQUEST).update(
                 lend_status=const.LEND_APPLY,
             )
         for obj in queryset:
-            Manage.objects.filter(id=obj.name_code_id).update(
+            AssetManage.objects.filter(id=obj.asset_id).update(
                 permission=const.LEND_NG,
             )
         messages.add_message(request, messages.SUCCESS, '申請承認完了')
@@ -276,7 +276,7 @@ class LendAdmin(admin.ModelAdmin):
     def apply_deny(self, request, queryset):
         ids = request.POST.getlist('_selected_action')
         for id in ids:
-            Lend.objects.filter(id=id, lend_status=const.LEND_REQUEST).update(
+            AssetLend.objects.filter(id=id, lend_status=const.LEND_REQUEST).update(
                 lend_status=const.LEND_DENY,
             )
         messages.add_message(request, messages.SUCCESS, '申請拒否完了')
@@ -293,7 +293,7 @@ class LendAdmin(admin.ModelAdmin):
     def apply_lend(self, request, queryset):
         ids = request.POST.getlist('_selected_action')
         for id in ids:
-            Lend.objects.filter(id=id, lend_status=const.LEND_APPLY).update(
+            AssetLend.objects.filter(id=id, lend_status=const.LEND_APPLY).update(
                 lend_status=const.LEND_OUT,
                 lend_truetime=time.strftime("%Y-%m-%d", time.localtime()),
             )
@@ -311,12 +311,12 @@ class LendAdmin(admin.ModelAdmin):
     def apply_back(self, request, queryset):
         ids = request.POST.getlist('_selected_action')
         for id in ids:
-            Lend.objects.filter(id=id, lend_status=const.LEND_OUT).update(
+            AssetLend.objects.filter(id=id, lend_status=const.LEND_OUT).update(
                 lend_status=const.LEND_BACK,
                 back_truetime=time.strftime("%Y-%m-%d", time.localtime()),
             )
         for obj in queryset:
-            Manage.objects.filter(id=obj.name_code_id).update(
+            AssetManage.objects.filter(id=obj.asset_id).update(
                 permission=const.LEND_OK,
             )
         messages.add_message(request, messages.SUCCESS, '返済完了')
@@ -335,13 +335,13 @@ class LendAdmin(admin.ModelAdmin):
         codename = get_permission_codename('apply', opts)
         return request.user.has_perm("%s.%s" % (opts.app_label, codename))
 
-    # 保存
+    # 保存TODO
     def save_model(self, request, obj, form, change):
-        obj.worker_number = request.user.id
+        obj.user_id = request.user.id
         obj.user_name = User.objects.get(id=request.user.id).username
-        obj.real_code = Manage.objects.get(id=obj.name_code).name_code
-        obj.kind = Manage.objects.get(id=obj.name_code).kind
-        obj.name = Manage.objects.get(id=obj.name_code).name
+        obj.asset_code = AssetManage.objects.get(id=obj.asset_id).asset_id
+        obj.type = AssetManage.objects.get(id=obj.asset_id).type
+        obj.name = AssetManage.objects.get(id=obj.asset_id).name
         super().save_model(request, obj, form, change, )
 
     # 名前マッチ
@@ -349,4 +349,4 @@ class LendAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
-        return qs.filter(worker_number=request.user.id)
+        return qs.filter(user_id=request.user.id)

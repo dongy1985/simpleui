@@ -90,58 +90,79 @@ class Employee(models.Model):
         return self.name
 
 
-class Manage(models.Model):
-    name_code = models.CharField(max_length=const.NAME_LENGTH, verbose_name='資産番号')
+# 資産管理
+class AssetManage(models.Model):
+    # 資産番号
+    asset_id = models.CharField(max_length=const.NAME_LENGTH, verbose_name='資産番号')
 
-    kind = models.CharField(max_length=const.NAME_LENGTH, verbose_name='分類')
+    # 分類
+    type = models.CharField(max_length=const.NAME_LENGTH, verbose_name='分類')
 
+    # 名称
     name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='名称')
 
+    # 借出可否
     permission = models.BooleanField(verbose_name='借出可否', default=False)
 
+    # 備考
     note = models.TextField(max_length=const.TEXT_LENGTH, verbose_name='備考', default='なし')
 
     class Meta:
-        verbose_name = "資産状態"
-        verbose_name_plural = "資産状態"
+        verbose_name = "資産管理"
+        verbose_name_plural = "資産管理"
 
     def __int__(self):
         return self.id
 
 
-class Lend(models.Model):
-    name_code = models.ForeignKey(Manage, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='資産番号',
-                                  db_index=True)
+# 資産借出
+class AssetLend(models.Model):
+    # 資産番号
+    asset_id = models.ForeignKey(AssetManage, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='資産番号',
+                                 db_index=True)
 
-    real_code = models.CharField(max_length=const.NAME_LENGTH, verbose_name='番号')
+    # 表示番号
+    asset_code = models.CharField(max_length=const.NAME_LENGTH, verbose_name='番号')
 
-    kind = models.CharField(max_length=const.NAME_LENGTH, verbose_name='分類')
+    # 分類
+    type = models.CharField(max_length=const.NAME_LENGTH, verbose_name='分類')
 
+    # 名称
     name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='名称')
 
-    worker_number = models.CharField(max_length=const.TEXT_LENGTH)
+    # user id
+    user_id = models.CharField(max_length=const.TEXT_LENGTH)
 
+    # 借出対象
     user_name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='借出対象')
 
+    # 申請提出日付
     apply_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='申請提出日付',
                                   default=time.strftime("%Y-%m-%d"))
 
+    # 仮定借出日付
     lend_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='仮定借出日付', default=time.strftime("%Y-%m-%d"))
 
+    # 実際借出日付
     lend_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際借出日付', default='未定')
 
+    # 仮定返済日付
     back_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='仮定返済日付', default=time.strftime("%Y-%m-%d"))
 
+    # 実際返済日付
     back_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際返済日付', default='未定')
 
+    # 用途
     lend_reason = models.CharField(max_length=const.TEXT_LENGTH, verbose_name='用途')
 
+    # 備考
     note = models.TextField(max_length=const.TEXT_LENGTH, verbose_name='備考', default='なし')
 
     lend_status_choices = CodeMst.objects.filter(cd=const.BIG_STATUS).values_list('subCd',
                                                                                   'subNm').order_by(
         'subCd')
 
+    # 申請借出状態
     lend_status = models.CharField(max_length=const.NAME_LENGTH, choices=lend_status_choices, verbose_name='申請借出状態'
                                    , default=const.LEND_STATUS)
 
@@ -153,7 +174,7 @@ class Lend(models.Model):
         )
 
     def __int__(self):
-        return self.name_code
+        return self.asset_id
 
 
 # 立替金モデル
