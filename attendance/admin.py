@@ -34,7 +34,7 @@ class ProxyResource(resources.ModelResource):
 @admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
 
-    actions = ['commit_button', 'confirm_button', 'cancel_button', 'export', ]
+    actions = ['cancel_button', 'commit_button', 'confirm_button', 'export', ]
     #admin.site.disable_action('delete_selected')
     resource_class = ProxyResource
 
@@ -51,13 +51,13 @@ class AttendanceAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         if obj:
-            if obj.status != const.STATUS_UNCOMMIT:  
+            if obj.status != const.WORK_TYPE_SMALL_0:  
                 return False
         return super().has_delete_permission(request)
 
     #user set
     def save_model(self, request, obj, form, change):
-        if obj.status != const.STATUS_UNCOMMIT:
+        if obj.status != const.WORK_TYPE_SMALL_0:
             messages.add_message(request, messages.ERROR, '提出済记录が編集できません')
             return
         # 名前、ＩＤ
@@ -91,10 +91,10 @@ class AttendanceAdmin(admin.ModelAdmin):
     #commit
     def commit_button(self, request,queryset):
         for obj in queryset:
-            if obj.status != const.STATUS_UNCOMMIT:
+            if obj.status != const.WORK_TYPE_SMALL_0:
                 messages.add_message(request, messages.ERROR, '未提出记录を選択してください')
                 return
-            queryset.update(status=const.STATUS_COMMIT)
+            queryset.update(status=const.WORK_TYPE_SMALL_1)
         #mail
         mailUtil.sendmail(const.MAIL_KBN_COMMIT, queryset)
         messages.add_message(request, messages.SUCCESS, '提出済')
@@ -113,10 +113,10 @@ class AttendanceAdmin(admin.ModelAdmin):
     #cancel
     def cancel_button(self, request, queryset):
         for obj in queryset:
-            if obj.status != const.STATUS_COMMIT:
+            if obj.status != const.WORK_TYPE_SMALL_1:
                 messages.add_message(request, messages.ERROR, '提出记录を選択してください')
                 return
-            queryset.update(status=const.STATUS_UNCOMMIT)
+            queryset.update(status=const.WORK_TYPE_SMALL_0)
         #mail
         if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
             mailUtil.sendmail(const.MAIL_KBN_CANCEL, queryset)
@@ -124,16 +124,17 @@ class AttendanceAdmin(admin.ModelAdmin):
 
     cancel_button.short_description = '取消'
     cancel_button.type = 'warning'
+    cancel_button.icon = 'el-icon-refresh-left'
     cancel_button.confirm = '取消よろしですか？'
 
     #confirm
     def confirm_button(self, request,queryset):
         tempId = ''
         for obj in queryset:
-            if obj.status != const.STATUS_COMMIT:
+            if obj.status != const.WORK_TYPE_SMALL_1:
                 messages.add_message(request, messages.ERROR, '提出済记录を選択してください')
                 return
-            queryset.update(status=const.STATUS_CONFIRM)
+            queryset.update(status=const.WORK_TYPE_SMALL_2)
         #mail
         mailUtil.sendmail(const.MAIL_KBN_CONFIRM, queryset)
         messages.add_message(request, messages.SUCCESS, '承認済')
@@ -151,7 +152,7 @@ class AttendanceAdmin(admin.ModelAdmin):
     #queryset筛选
     def querysetFilter(self, queryset, expErrList):
         for obj in queryset:
-            if obj.status != const.STATUS_COMMIT:
+            if obj.status != const.WORK_TYPE_SMALL_2:
                 expErrList.append(obj.name + ':' + obj.date.strftime('%Y%m'))
                 queryset = queryset.filter(
                     ~(Q(user_id=obj.user_id)
@@ -170,6 +171,12 @@ class AttendanceAdmin(admin.ModelAdmin):
         folder_name = datetime.now().strftime("%Y-%m-%d_%H%M%S")
         if os.path.isdir(const.DIR):
             os.mkdir(os.path.join(const.DIR, folder_name))
+        #ErrList write
+        errListPath = const.DIR + folder_name + const.FILESTART +'ErrList.txt'
+        fp = open(errListPath,'w+')
+        for line in expErrList:
+            fp.write(line+'\n')
+        fp.close()
         
         #呼出EXCEL制作
         fileUtil.export(temp_queryset, folder_name)
@@ -203,8 +210,9 @@ class AttendanceAdmin(admin.ModelAdmin):
             print('no such file') 
         return response
 
-    export.short_description = 'Excleエクスポート'
-    export.type = 'success'
+    export.short_description = '導出'
+    export.type = 'primary'
+    export.icon = 'el-icon-document-copy'
     export.allowed_permissions = ('export_attendance',)
 
     def has_export_attendance_permission(self, request):

@@ -2,42 +2,52 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
-
-# Create your models here
 from common.const import const
 from common.models import CodeMst
 import time
 
 
-class Apply(models.Model):
+# Create your models here
+# 通勤手当モデル
+class ApplyDutyAmount(models.Model):
+    # ユーザー
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='apply_user', )
-    applyName = models.CharField(verbose_name='申請者', max_length=30)
+    # 通勤手当申請者名前
+    applyName = models.CharField(verbose_name='通勤手当申請者名前', max_length=30)
+    # 通勤手当申請日付
     applyDate = models.DateField(verbose_name='申請日', default=timezone.now)
-    totalMoney = models.IntegerField(verbose_name='定期券運賃(1ヶ月)', default='')
+    # 定期券運賃(1ヶ月):総金額
+    totalAmount = models.IntegerField(verbose_name='定期券運賃(1ヶ月)', default='')
     # 状態
-    status_list = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
-    traffic_status = models.CharField(choices=status_list, verbose_name='状態', max_length=3,
-                                      default=const.WORK_TYPE_SMALL_0)
+    stsList = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
+    trafficStatus = models.CharField(choices=stsList, verbose_name='状態', max_length=3, default=const.WORK_TYPE_SMALL_0)
 
     class Meta:
         verbose_name = "通勤手当"
         verbose_name_plural = "通勤手当"
         permissions = (
-            ("commit_button_apply", "Can 提出"),
-            ("confirm_button_apply", "Can 承認"),
-            ("cancel_button_apply", "Can 取消"),
+            ("commit_button_applydutyamount", "申請者 Can 提出"),
+            ("confirm_button_applydutyamount", "申請者Can 承認"),
+            ("cancel_button_applydutyamount", "申請者 Can 取消"),
         )
 
 
-class Detail(models.Model):
-    apply = models.ForeignKey(Apply, on_delete=models.CASCADE, verbose_name='申請者', max_length=128, default='')
+# 通勤手当明細モデル
+class Dutydetail(models.Model):
+    # ForeignKey
+    apply = models.ForeignKey(ApplyDutyAmount, on_delete=models.CASCADE, verbose_name='申請者', max_length=128, default='')
+    # 交通機関
     trafficMethod = models.CharField(verbose_name='交通機関', max_length=125, default='')
-    trafficSectionStart = models.CharField(verbose_name='開始区間', max_length=12, default='')
-    trafficSectionEnd = models.CharField(verbose_name='終了区間', max_length=12, default='')
-    trafficExpense = models.IntegerField(verbose_name='金額', default='')
+    # 開始区間
+    trafficFrom = models.CharField(verbose_name='開始区間', max_length=12, default='')
+    # 終了区間
+    trafficTo = models.CharField(verbose_name='終了区間', max_length=12, default='')
+    # 定期券運賃(1ヶ月):交通金額明細
+    trafficAmount = models.IntegerField(verbose_name='金額', default='')
 
     class Meta:
         verbose_name = "通勤手当明細"
+
 
 
 # 社員モデル
@@ -80,58 +90,79 @@ class Employee(models.Model):
         return self.name
 
 
-class Manage(models.Model):
-    name_code = models.CharField(max_length=const.NAME_LENGTH, verbose_name='資産番号')
+# 資産管理
+class AssetManage(models.Model):
+    # 資産番号
+    asset_id = models.CharField(max_length=const.NAME_LENGTH, verbose_name='資産番号')
 
-    kind = models.CharField(max_length=const.NAME_LENGTH, verbose_name='分類')
+    # 分類
+    type = models.CharField(max_length=const.NAME_LENGTH, verbose_name='分類')
 
+    # 名称
     name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='名称')
 
+    # 借出可否
     permission = models.BooleanField(verbose_name='借出可否', default=False)
 
+    # 備考
     note = models.TextField(max_length=const.TEXT_LENGTH, verbose_name='備考', default='なし')
 
     class Meta:
-        verbose_name = "資産状態"
-        verbose_name_plural = "資産状態"
+        verbose_name = "資産管理"
+        verbose_name_plural = "資産管理"
 
     def __int__(self):
         return self.id
 
 
-class Lend(models.Model):
-    name_code = models.ForeignKey(Manage, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='資産番号',
-                                  db_index=True)
+# 資産借出
+class AssetLend(models.Model):
+    # 資産番号
+    asset_id = models.ForeignKey(AssetManage, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='資産番号',
+                                 db_index=True)
 
-    real_code = models.CharField(max_length=const.NAME_LENGTH, verbose_name='番号')
+    # 表示番号
+    asset_code = models.CharField(max_length=const.NAME_LENGTH, verbose_name='番号')
 
-    kind = models.CharField(max_length=const.NAME_LENGTH, verbose_name='分類')
+    # 分類
+    type = models.CharField(max_length=const.NAME_LENGTH, verbose_name='分類')
 
+    # 名称
     name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='名称')
 
-    worker_number = models.CharField(max_length=const.TEXT_LENGTH)
+    # user id
+    user_id = models.CharField(max_length=const.TEXT_LENGTH)
 
+    # 借出対象
     user_name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='借出対象')
 
+    # 申請提出日付
     apply_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='申請提出日付',
                                   default=time.strftime("%Y-%m-%d"))
 
+    # 仮定借出日付
     lend_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='仮定借出日付', default=time.strftime("%Y-%m-%d"))
 
+    # 実際借出日付
     lend_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際借出日付', default='未定')
 
+    # 仮定返済日付
     back_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='仮定返済日付', default=time.strftime("%Y-%m-%d"))
 
+    # 実際返済日付
     back_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際返済日付', default='未定')
 
+    # 用途
     lend_reason = models.CharField(max_length=const.TEXT_LENGTH, verbose_name='用途')
 
+    # 備考
     note = models.TextField(max_length=const.TEXT_LENGTH, verbose_name='備考', default='なし')
 
     lend_status_choices = CodeMst.objects.filter(cd=const.BIG_STATUS).values_list('subCd',
                                                                                   'subNm').order_by(
         'subCd')
 
+    # 申請借出状態
     lend_status = models.CharField(max_length=const.NAME_LENGTH, choices=lend_status_choices, verbose_name='申請借出状態'
                                    , default=const.LEND_STATUS)
 
@@ -143,33 +174,32 @@ class Lend(models.Model):
         )
 
     def __int__(self):
-        return self.name_code
+        return self.asset_id
 
 
 # 立替金モデル
-class Paymain(models.Model):
+class ExpenseReturn(models.Model):
     applyer = models.CharField(max_length=30, verbose_name='申請者名')
     applydate = models.DateField(verbose_name='提出日付')
-    total_money = models.CharField(max_length=30, verbose_name='総金額')
+    amount = models.CharField(max_length=30, verbose_name='総金額')
     status_choices = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
-    status = models.CharField(max_length=3, choices=status_choices, verbose_name='状態', default=const.WORK_TYPE_SMALL_0)
-    bikou_text = models.CharField(max_length=180, verbose_name='備考')
+    status = models.CharField(max_length=3, choices=status_choices, verbose_name='申请状態', default=const.WORK_TYPE_SMALL_0)
+    comment = models.CharField(max_length=180, verbose_name='備考')
 
     class Meta:
         verbose_name_plural = "立替金"
         permissions = (
-            ("commit_button_paymain", "普通社員　Can提出"),
-            ("confirm_button_paymain", "管理者　Can承認")
+            ("commit_button_ExpenseReturn", "普通社員　Can提出"),
+            ("confirm_button_ExpenseReturn", "管理者　Can承認")
         )
-
 
 def __str__(self):
     return self.name
 
 
-class Paysub(models.Model):
-    paymain = models.ForeignKey(Paymain, on_delete=models.CASCADE, )
-    komoku = models.CharField(max_length=30, verbose_name='費用項目')
+class ExpenseReturnDetail(models.Model):
+    expenseReturn = models.ForeignKey(ExpenseReturn, on_delete=models.CASCADE, )
+    detail_type = models.CharField(max_length=30, verbose_name='費用項目')
     detail_text = models.CharField(max_length=180, verbose_name='用途')
     price = models.IntegerField(verbose_name='単一金額')
     usedate = models.DateField(verbose_name='使用日付')

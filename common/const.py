@@ -25,6 +25,8 @@ const.EMPLOYEE_CD = '004'
 const.CRD_DIV_CD = '005'
 # 申請借出状態 大区分
 const.BIG_STATUS = '006'
+# 大分類:適用状態
+const.DEL_STATUS_CD = '007'
 
 # Excel管理
 const.DIR = 'export/'
@@ -43,11 +45,6 @@ const.MAIL_KBN_CONFIRM = '3'
 # 性别デフォルト
 const.GENDER_DEF = '1'
 const.EMPLOYEE_DEF = '1'
-
-# 作業状態 未提出、提出済、承認済
-const.STATUS_UNCOMMIT = '0'
-const.STATUS_COMMIT = '1'
-const.STATUS_CONFIRM = '2'
 
 # 作業状態小分類：0 未提出; 1 提出済; 2 承認済
 const.WORK_TYPE_SMALL_0 = '0'
