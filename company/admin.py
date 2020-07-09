@@ -3,7 +3,7 @@ from django.contrib.auth import get_permission_codename
 from django.contrib import admin, messages
 from common.const import const
 from common.custom_filter import DateFieldFilter
-from company.models import Detail, Paysub, Paymain, Apply, Employee, Statement, Manage, Lend
+from company.models import Detail, Paysub, Paymain, Apply, Employee, Manage, Lend
 import time
 from django.contrib.auth.models import User
 from django.contrib import messages
