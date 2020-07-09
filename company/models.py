@@ -101,8 +101,8 @@ class AssetManage(models.Model):
     # 名称
     name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='名称')
 
-    # 借出可否
-    permission = models.BooleanField(verbose_name='借出可否', default=False)
+    # 貸出可否
+    permission = models.BooleanField(verbose_name='貸出可否', default=False)
 
     # 備考
     note = models.TextField(max_length=const.TEXT_LENGTH, verbose_name='備考', default='なし')
@@ -133,8 +133,8 @@ class AssetLend(models.Model):
     # user id
     user_id = models.CharField(max_length=const.TEXT_LENGTH)
 
-    # 借出対象
-    user_name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='借出対象')
+    # 貸出対象
+    user_name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='貸出対象')
 
     # 申請提出日付
     apply_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='申請提出日',
@@ -162,15 +162,15 @@ class AssetLend(models.Model):
                                                                                   'subNm').order_by(
         'subCd')
 
-    # 申請借出状態
-    lend_status = models.CharField(max_length=const.NAME_LENGTH, choices=lend_status_choices, verbose_name='申請借出状態'
+    # 申請貸出状態
+    lend_status = models.CharField(max_length=const.NAME_LENGTH, choices=lend_status_choices, verbose_name='申請貸出状態'
                                    , default=const.LEND_STATUS)
 
     class Meta:
-        verbose_name = "資産借出申請"
-        verbose_name_plural = "資産借出申請"
+        verbose_name = "資産貸出申請"
+        verbose_name_plural = "資産貸出申請"
         permissions = (
-            ("apply_lend", "Can apply 資産借出申請"),
+            ("apply_lend", "Can apply 資産貸出申請"),
         )
 
     def __int__(self):

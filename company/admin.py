@@ -224,7 +224,7 @@ class AssetManageAdmin(admin.ModelAdmin):
     actions_on_top = True
 
 
-# 資産借出申請
+# 資産貸出申請
 @admin.register(AssetLend)
 class AssetLendAdmin(admin.ModelAdmin):
     fieldsets = [(None, {'fields': ['asset_id', 'lend_time', 'back_time', 'lend_reason',
@@ -289,7 +289,7 @@ class AssetLendAdmin(admin.ModelAdmin):
 
     apply_deny.allowed_permissions = ('apply',)
 
-    # 借出
+    # 貸出
     def apply_lend(self, request, queryset):
         ids = request.POST.getlist('_selected_action')
         for id in ids:
@@ -297,9 +297,9 @@ class AssetLendAdmin(admin.ModelAdmin):
                 lend_status=const.LEND_OUT,
                 lend_truetime=time.strftime("%Y-%m-%d", time.localtime()),
             )
-        messages.add_message(request, messages.SUCCESS, '借出完了')
+        messages.add_message(request, messages.SUCCESS, '貸出完了')
 
-    apply_lend.short_description = '借出'
+    apply_lend.short_description = '貸出'
 
     apply_lend.type = 'info'
 

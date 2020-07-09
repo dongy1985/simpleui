@@ -34,7 +34,7 @@
             var requestBtn = $(".actions button[data-name='apply_request']");
             // 拒否ボタン
             var denyBtn = $(".actions button[data-name='apply_deny']");
-            // 借出ボタン
+            // 貸出ボタン
             var lendBtn = $(".actions button[data-name='apply_lend']");
             // 返済ボタン
             var backBtn = $(".actions button[data-name='apply_back']");
@@ -54,7 +54,7 @@
             if (denyBtn) {
                 denyBtn.show();
             }
-            // 借出ボタン
+            // 貸出ボタン
             if (lendBtn) {
                 lendBtn.show();
             }
@@ -69,10 +69,10 @@
                     // 選択されているかを判断する
                     var selectedFlg = $(changeList[i]).find('tr').context.classList.contains('selected');
 
-                    // 申請借出状態
+                    // 申請貸出状態
                     var lend_sts = $(changeList[i]).find("td[class='field-lend_status']").text()
 
-                    // 報告状態が申請提出済の場合、返済と借出ボタンを隠す
+                    // 報告状態が申請提出済の場合、返済と貸出ボタンを隠す
                     if (selectedFlg && lend_sts == '申請提出済'){
                         if (backBtn) {
                             backBtn.hide();
@@ -97,7 +97,7 @@
                         break;
                     }
 
-                    // 報告状態が借出済の場合、借出ボタン、拒否ボタン、承認ボタンを隠す
+                    // 報告状態が貸出済の場合、貸出ボタン、拒否ボタン、承認ボタンを隠す
                     if (selectedFlg && lend_sts == '借出済'){
                         if (lendBtn) {
                             lendBtn.hide();
@@ -111,7 +111,7 @@
                         break;
                     }
 
-                    // 報告状態が返済済の場合、借出ボタン、拒否ボタン、承認ボタン、返済ボタンを隠す
+                    // 報告状態が返却済の場合、貸出ボタン、拒否ボタン、承認ボタン、返済ボタンを隠す
                     if (selectedFlg && lend_sts == '返却済'){
                         if (lendBtn) {
                             lendBtn.hide();
@@ -128,7 +128,7 @@
                         break;
                     }
 
-                    // 報告状態が返済済の場合、借出ボタン、拒否ボタン、承認ボタン、返済ボタンを隠す
+                    // 報告状態が返却済の場合、貸出ボタン、拒否ボタン、承認ボタン、返却ボタンを隠す
                     if (selectedFlg && lend_sts == '申請拒否'){
                         if (lendBtn) {
                             lendBtn.hide();
