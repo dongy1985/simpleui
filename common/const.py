@@ -25,6 +25,8 @@ const.EMPLOYEE_CD = '004'
 const.CRD_DIV_CD = '005'
 # 申請借出状態 大区分
 const.BIG_STATUS = '006'
+# 大分類:適用状態
+const.DEL_STATUS_CD = '007'
 
 # Excel管理
 const.DIR = 'export/'

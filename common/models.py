@@ -62,7 +62,7 @@ class CrdMst(models.Model):
     cmnt2 = models.TextField(verbose_name="備考2", max_length=60, help_text='60文字まで入力してください.',
                              null=True, blank=True)
     # 適用状態
-    delFlg_choices = CodeMst.objects.filter(cd=const.DEL_FLG_CD, delFlg=const.DEL_FLG_0).\
+    delFlg_choices = CodeMst.objects.filter(cd=const.DEL_STATUS_CD, delFlg=const.DEL_FLG_0).\
         values_list('subCd', 'subNm').order_by('subCd')
     delFlg = models.CharField(verbose_name="適用状態", choices=delFlg_choices, max_length=1, default=const.DEF_DEL_FLG)
     # 登録日付
