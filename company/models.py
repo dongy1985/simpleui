@@ -158,8 +158,8 @@ class ExpenseReturn(models.Model):
     class Meta:
         verbose_name_plural = "立替金"
         permissions = (
-            ("commit_button_paymain", "普通社員　Can提出"),
-            ("confirm_button_paymain", "管理者　Can承認")
+            ("commit_button_ExpenseReturn", "普通社員　Can提出"),
+            ("confirm_button_ExpenseReturn", "管理者　Can承認")
         )
 
 def __str__(self):
