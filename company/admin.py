@@ -107,6 +107,7 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
+# 社員admin
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
     fieldsets = [(None, {
@@ -123,7 +124,7 @@ class EmployeeAdmin(admin.ModelAdmin):
 # 立替金admin
 class ExpenseReturnDetailInline(admin.TabularInline):
     model = ExpenseReturnDetail
-    extra = 1  # 默认显示条目的数量
+    extra = 1  # デフォルト表示数
     fieldsets = [(None, {'fields': ['usedate', 'detail_type', 'detail_text', 'price']})]
 
 
@@ -137,6 +138,7 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
 
     actions = ['commit_button', 'confirm_button', 'cancel_button']
 
+    # モデル保存
     def save_model(self, request, obj, form, change):
         obj.user_id = request.user.id
         obj.applyer = Employee.objects.get(user_id=request.user.id).name
@@ -146,24 +148,22 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
             obj.amount = obj.amount + line.price
         super().save_model(request, obj, form, change)
 
+    # ユーザーマッチ
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
         return qs.filter(user_id=request.user.id)
 
+    # 提出
     def commit_button(self, request, queryset):
         for obj in queryset:
             if obj.status != const.WORK_TYPE_SMALL_0:
                 messages.add_message(request, messages.ERROR, '未提出を選んでください！')
                 return
         queryset.update(status=const.WORK_TYPE_SMALL_1)
-
-    # 显示的文本，与django admin一致
     commit_button.short_description = ' 提出'
-    # icon，参考element-ui icon与https://fontawesome.com
     commit_button.icon = 'fas fa-check-circle'
-    # 指定element-ui的按钮类型，参考https://element.eleme.cn/#/zh-CN/component/button
     commit_button.type = 'success'
 
     # 承認
@@ -174,11 +174,8 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
                 return
         queryset.update(status=const.WORK_TYPE_SMALL_2)
 
-    # 显示的文本，与django admin一致
     confirm_button.short_description = ' 承認'
-    # icon，参考element-ui icon与https://fontawesome.com
     confirm_button.icon = 'fas fa-check-circle'
-    # 指定element-ui的按钮类型，参考https://element.eleme.cn/#/zh-CN/component/button
     confirm_button.type = 'success'
     confirm_button.allowed_permissions = ('confirm_button',)
 
@@ -193,14 +190,9 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
     # 取消
     def cancel_button(self, request, queryset):
         queryset.update(status=const.WORK_TYPE_SMALL_0)
-
-    # 显示的文本，与django admin一致
     cancel_button.short_description = ' 取消'
-    # icon，参考element-ui icon与https://fontawesome.com
     cancel_button.icon = 'fas fa-check-circle'
-    # 指定element-ui的按钮类型，参考https://element.eleme.cn/#/zh-CN/component/button
     cancel_button.type = 'warning'
-
 
 # 資産管理
 @admin.register(AssetManage)
