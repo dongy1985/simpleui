@@ -35,11 +35,14 @@ const.ADMIN_MAIL_PAS = 'testTest0917'
 const.MAIL_KBN_COMMIT = 1
 const.MAIL_KBN_CANCEL = 2
 const.MAIL_KBN_CONFIRM = 3
-
+# 性别デフォルト
 const.GENDER_DEF = '1'
 const.EMPLOYEE_DEF = '1'
-const.GENDER_CD = '4'
-const.EMPLOYEE_CD = '5'
+# 性別
+const.GENDER_CD = '005'
+# 社員状態(在職　離職)
+const.EMPLOYEE_CD = '006'
+
 # 作業状態 未提出、提出済、承認済
 const.STATUS_UNCOMMIT = '000'
 const.STATUS_COMMIT = '001'
