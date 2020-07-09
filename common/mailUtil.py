@@ -59,7 +59,9 @@ def chooseKbn(mailKbn, employe_name, employe_mail):
         users = User.objects.filter(Q(user_permissions=perm) | Q(is_superuser=True)).distinct()
         to_addr = ''
         for obj in users:
-            to_addr += Employee.objects.get(user=obj.id).email + ', '
+            if len(Employee.objects.filter(user=obj.id).values('email')) != 0:
+                to_addr += Employee.objects.get(user=obj.id).email + ', '
+            
         #main
         main = '承認者さん、お疲れ様です。\n\n' + employe_name +'勤務を提出しました、ご確認お願い致します。\n'
         #Subject
