@@ -206,4 +206,5 @@ class ExpenseReturnDetail(models.Model):
     usedate = models.DateField(verbose_name='使用日付')
 
     class Meta:
-        verbose_name_plural = "項目明細"
+        verbose_name = "项目明细"
+        verbose_name_plural = "项目明细"
