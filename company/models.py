@@ -2,42 +2,52 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
-
-# Create your models here
 from common.const import const
 from common.models import CodeMst
 import time
 
 
-class Apply(models.Model):
+# Create your models here
+# 通勤手当モデル
+class ApplyDutyAmount(models.Model):
+    # ユーザー
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='apply_user', )
-    applyName = models.CharField(verbose_name='申請者', max_length=30)
+    # 通勤手当申請者名前
+    applyName = models.CharField(verbose_name='通勤手当申請者名前', max_length=30)
+    # 通勤手当申請日付
     applyDate = models.DateField(verbose_name='申請日', default=timezone.now)
-    totalMoney = models.IntegerField(verbose_name='定期券運賃(1ヶ月)', default='')
+    # 定期券運賃(1ヶ月):総金額
+    totalAmount = models.IntegerField(verbose_name='定期券運賃(1ヶ月)', default='')
     # 状態
-    status_list = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
-    traffic_status = models.CharField(choices=status_list, verbose_name='状態', max_length=3,
-                                      default=const.WORK_TYPE_SMALL_0)
+    stsList = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
+    trafficStatus = models.CharField(choices=stsList, verbose_name='状態', max_length=3, default=const.WORK_TYPE_SMALL_0)
 
     class Meta:
         verbose_name = "通勤手当"
         verbose_name_plural = "通勤手当"
         permissions = (
-            ("commit_button_apply", "Can 提出"),
-            ("confirm_button_apply", "Can 承認"),
-            ("cancel_button_apply", "Can 取消"),
+            ("commit_button_applydutyamount", "申請者 Can 提出"),
+            ("confirm_button_applydutyamount", "申請者Can 承認"),
+            ("cancel_button_applydutyamount", "申請者 Can 取消"),
         )
 
 
-class Detail(models.Model):
-    apply = models.ForeignKey(Apply, on_delete=models.CASCADE, verbose_name='申請者', max_length=128, default='')
+# 通勤手当明細モデル
+class Dutydetail(models.Model):
+    # ForeignKey
+    apply = models.ForeignKey(ApplyDutyAmount, on_delete=models.CASCADE, verbose_name='申請者', max_length=128, default='')
+    # 交通機関
     trafficMethod = models.CharField(verbose_name='交通機関', max_length=125, default='')
-    trafficSectionStart = models.CharField(verbose_name='開始区間', max_length=12, default='')
-    trafficSectionEnd = models.CharField(verbose_name='終了区間', max_length=12, default='')
-    trafficExpense = models.IntegerField(verbose_name='金額', default='')
+    # 開始区間
+    trafficFrom = models.CharField(verbose_name='開始区間', max_length=12, default='')
+    # 終了区間
+    trafficTo = models.CharField(verbose_name='終了区間', max_length=12, default='')
+    # 定期券運賃(1ヶ月):交通金額明細
+    trafficAmount = models.IntegerField(verbose_name='金額', default='')
 
     class Meta:
         verbose_name = "通勤手当明細"
+
 
 
 # 社員モデル

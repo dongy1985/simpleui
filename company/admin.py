@@ -3,23 +3,23 @@ from django.contrib.auth import get_permission_codename
 from django.contrib import admin, messages
 from common.const import const
 from common.custom_filter import DateFieldFilter
-from company.models import Detail, Apply, Employee, Manage, Lend, ExpenseReturnDetail, ExpenseReturn
+from company.models import Dutydetail, ExpenseReturn, ExpenseReturnDetail, ApplyDutyAmount, Employee, Manage, Lend
 import time
 from django.contrib.auth.models import User
 from django.contrib import messages
 
 
-class DetailInline(admin.TabularInline):
-    model = Detail
-    fieldsets = [(u'', {'fields': ['trafficMethod', 'trafficSectionStart', 'trafficSectionEnd', 'trafficExpense']})]
+class DutydetailInline(admin.TabularInline):
+    model = Dutydetail
+    fieldsets = [(u'', {'fields': ['trafficMethod', 'trafficFrom', 'trafficTo', 'trafficAmount']})]
     extra = 1
 
 
-@admin.register(Apply)
-class ApplyAdmin(admin.ModelAdmin):
-    inlines = [DetailInline, ]
+@admin.register(ApplyDutyAmount)
+class ApplyDutyAmountAdmin(admin.ModelAdmin):
+    inlines = [DutydetailInline, ]
 
-    list_display = ('applyName', 'applyDate', 'totalMoney', 'traffic_status')
+    list_display = ('applyName', 'applyDate', 'totalAmount', 'trafficStatus')
     list_per_page = 7
     list_filter = ('applyName',)
     fieldsets = [(None, {'fields': ['applyDate']})]
@@ -29,10 +29,10 @@ class ApplyAdmin(admin.ModelAdmin):
     # 提出ボタン
     def commit_button(self, request, queryset):
         for obj in queryset:
-            if obj.traffic_status != '0':
+            if obj.trafficStatus != '0':
                 messages.add_message(request, messages.ERROR, '未提出記録を選択してください。')
                 return
-        queryset.update(traffic_status='1')
+        queryset.update(trafficStatus='1')
 
     commit_button.short_description = '提出'
     commit_button.type = 'success'
@@ -57,10 +57,10 @@ class ApplyAdmin(admin.ModelAdmin):
     # 承認ボタン
     def confirm_button(self, request, queryset):
         for obj in queryset:
-            if obj.traffic_status != '1':
+            if obj.trafficStatus != '1':
                 messages.add_message(request, messages.ERROR, '提出済の記録を選択してください。')
                 return
-        queryset.update(traffic_status='2')
+        queryset.update(trafficStatus='2')
 
     confirm_button.short_description = '承認'
     confirm_button.type = 'success'
@@ -77,11 +77,11 @@ class ApplyAdmin(admin.ModelAdmin):
     # cancelボタン
     def cancel_button(self, request, queryset):
         for obj in queryset:
-            if obj.traffic_status == '2':
-                queryset.update(traffic_status='0')
+            if obj.trafficStatus == '2':
+                queryset.update(trafficStatus='0')
             else:
-                if obj.traffic_status == '1':
-                    queryset.update(traffic_status='0')
+                if obj.trafficStatus == '1':
+                    queryset.update(trafficStatus='0')
 
     cancel_button.short_description = 'キャンセル'
     cancel_button.type = 'warning'
@@ -99,11 +99,11 @@ class ApplyAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.user_id = request.user.id
         obj.applyName = Employee.objects.get(user_id=request.user.id).name
-        # # 総金額
-        detail_inlines = Detail.objects.filter(apply_id=obj.id)
-        obj.totalMoney = 0
+        # 定期券運賃(1ヶ月):総金額
+        detail_inlines = Dutydetail.objects.filter(apply_id=obj.id)
+        obj.totalAmount = 0
         for line in detail_inlines:
-            obj.totalMoney = obj.totalMoney + line.trafficExpense
+            obj.totalAmount = obj.totalAmount + line.trafficAmount
         super().save_model(request, obj, form, change)
 
 
