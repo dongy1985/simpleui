@@ -3,7 +3,7 @@ from django.contrib.auth import get_permission_codename
 from django.contrib import admin, messages
 from common.const import const
 from common.custom_filter import DateFieldFilter
-from company.models import Detail, Paysub, Paymain, Apply, Employee, Manage, Lend
+from company.models import Detail, Apply, Employee, Manage, Lend, ExpenseReturnDetail, ExpenseReturn
 import time
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -121,17 +121,17 @@ class EmployeeAdmin(admin.ModelAdmin):
 
 
 # 立替金admin
-class PaysubInline(admin.TabularInline):
-    model = Paysub
+class ExpenseReturnDetailInline(admin.TabularInline):
+    model = ExpenseReturnDetail
     extra = 1  # 默认显示条目的数量
-    fieldsets = [(None, {'fields': ['usedate', 'komoku', 'detail_text', 'price']})]
+    fieldsets = [(None, {'fields': ['usedate', 'detail_type', 'detail_text', 'price']})]
 
 
-@admin.register(Paymain)
-class PaymainAdmin(admin.ModelAdmin):
-    inlines = [PaysubInline, ]
-    fieldsets = [(None, {'fields': ['applydate', 'bikou_text']})]
-    list_display = ('applyer', 'applydate', 'total_money', 'bikou_text', 'status')
+@admin.register(ExpenseReturn)
+class ExpenseReturnAdmin(admin.ModelAdmin):
+    inlines = [ExpenseReturnDetail, ]
+    fieldsets = [(None, {'fields': ['applydate', 'comment']})]
+    list_display = ('applyer', 'applydate', 'amount', 'comment', 'status')
     list_filter = ('applyer', 'status', ('applydate', DateFieldFilter))
     list_per_page = 10
 
@@ -140,10 +140,10 @@ class PaymainAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.user_id = request.user.id
         obj.applyer = Employee.objects.get(user_id=request.user.id).name
-        subquery = Paysub.objects.filter(paymain_id=obj.id)
-        obj.total_money = 0
+        subquery = ExpenseReturnDetail.objects.filter(ExpenseReturn_id=obj.id)
+        obj.amount = 0
         for line in subquery:
-            obj.total_money = obj.total_money + line.price
+            obj.amount = obj.amount + line.price
         super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):

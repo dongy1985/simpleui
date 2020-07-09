@@ -147,29 +147,28 @@ class Lend(models.Model):
 
 
 # 立替金モデル
-class Paymain(models.Model):
+class ExpenseReturn(models.Model):
     applyer = models.CharField(max_length=30, verbose_name='申請者名')
     applydate = models.DateField(verbose_name='提出日付')
-    total_money = models.CharField(max_length=30, verbose_name='総金額')
+    amount = models.CharField(max_length=30, verbose_name='総金額')
     status_choices = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
-    status = models.CharField(max_length=3, choices=status_choices, verbose_name='状態', default=const.WORK_TYPE_SMALL_0)
-    bikou_text = models.CharField(max_length=180, verbose_name='備考')
+    status = models.CharField(max_length=3, choices=status_choices, verbose_name='申请状態', default=const.WORK_TYPE_SMALL_0)
+    comment = models.CharField(max_length=180, verbose_name='備考')
 
     class Meta:
         verbose_name_plural = "立替金"
         permissions = (
-            ("commit_button_paymain", "普通社員　Can提出"),
-            ("confirm_button_paymain", "管理者　Can承認")
+            ("commit_button_ExpenseReturn", "普通社員　Can提出"),
+            ("confirm_button_ExpenseReturn", "管理者　Can承認")
         )
-
 
 def __str__(self):
     return self.name
 
 
-class Paysub(models.Model):
-    paymain = models.ForeignKey(Paymain, on_delete=models.CASCADE, )
-    komoku = models.CharField(max_length=30, verbose_name='費用項目')
+class ExpenseReturnDetail(models.Model):
+    expenseReturn = models.ForeignKey(ExpenseReturn, on_delete=models.CASCADE, )
+    detail_type = models.CharField(max_length=30, verbose_name='費用項目')
     detail_text = models.CharField(max_length=180, verbose_name='用途')
     price = models.IntegerField(verbose_name='単一金額')
     usedate = models.DateField(verbose_name='使用日付')
