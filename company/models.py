@@ -79,36 +79,6 @@ class Employee(models.Model):
         return self.name
 
 
-class Expenditure(models.Model):
-    name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='資産名')
-
-    buy_date = models.DateField(verbose_name='購入日付', default=time.strftime("%Y-%m-%d"))
-
-    unit_price = models.IntegerField(verbose_name='単価')
-
-    number = models.IntegerField(verbose_name='数量', default=1)
-
-    total_price = models.IntegerField(verbose_name='合計金額')
-
-    note = models.TextField(max_length=const.TEXT_LENGTH, verbose_name='備考', default='なし')
-
-    class Meta:
-        verbose_name = "資産合計"
-        verbose_name_plural = "資産合計"
-
-    def __int__(self):
-        return self.name
-
-
-class Statement(models.Model):
-    name = models.ForeignKey(Expenditure, on_delete=models.CASCADE, verbose_name='資産名', max_length=const.NAME_LENGTH,
-                             default='')
-    name_code = models.CharField(verbose_name='資産番号', max_length=const.NAME_LENGTH, default='')
-    configure = models.CharField(verbose_name='明細', max_length=const.TEXT_LENGTH, default='')
-
-    class Meta:
-        verbose_name = "資産合計明細"
-
 
 class Manage(models.Model):
     name_code = models.CharField(max_length=const.NAME_LENGTH, verbose_name='資産番号')
