@@ -99,7 +99,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         mailUtil.sendmail(const.MAIL_KBN_COMMIT, queryset)
         messages.add_message(request, messages.SUCCESS, '提出済')
 
-    commit_button.short_description = '提出'
+    commit_button.short_description = ' 提出'
     commit_button.type = 'success'
     commit_button.confirm = '提出よろしですか？'
     commit_button.icon = 'fas fa-user-check'
@@ -122,7 +122,7 @@ class AttendanceAdmin(admin.ModelAdmin):
             mailUtil.sendmail(const.MAIL_KBN_CANCEL, queryset)
         messages.add_message(request, messages.SUCCESS, '取消済')
 
-    cancel_button.short_description = '取消'
+    cancel_button.short_description = ' 取消'
     cancel_button.type = 'warning'
     cancel_button.icon = 'el-icon-refresh-left'
     cancel_button.confirm = '取消よろしですか？'
@@ -138,7 +138,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         #mail
         mailUtil.sendmail(const.MAIL_KBN_CONFIRM, queryset)
         messages.add_message(request, messages.SUCCESS, '承認済')
-    confirm_button.short_description = '承認'
+    confirm_button.short_description = ' 承認'
     confirm_button.type = 'success'
     confirm_button.confirm = '承認よろしですか？'
     confirm_button.icon = 'fas fa-user-check'
@@ -210,7 +210,7 @@ class AttendanceAdmin(admin.ModelAdmin):
             print('no such file') 
         return response
 
-    export.short_description = '導出'
+    export.short_description = ' 導出'
     export.type = 'primary'
     export.icon = 'el-icon-document-copy'
     export.allowed_permissions = ('export_attendance',)

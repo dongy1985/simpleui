@@ -13,20 +13,20 @@ class Attendance(models.Model):
     date = models.DateField('出勤日付', default=timezone.now)
     # 出勤区分
     duty_status = CodeMst.objects.filter(cd=const.DUTY_TYPE, delFlg=const.DEL_FLG_0).values_list('subCd','subNm').order_by('subCd')
-    duty = models.CharField(max_length=5, choices=duty_status, verbose_name='出勤区分', default='00')
+    duty = models.CharField(max_length=5, choices=duty_status, verbose_name='出勤区分', default=const.DEF_DUTY)
     # 開始時刻
-    start_time =  models.TimeField('開始時刻',default='09:00', help_text='例：09:00')
+    start_time =  models.TimeField('開始時刻',default=const.DEF_STARTTIME, help_text='例：09:00')
     # 終了時刻
-    end_time = models.TimeField('終了時刻', default='18:00', help_text='例：18:00')
+    end_time = models.TimeField('終了時刻', default=const.DEF_ENDTIME, help_text='例：18:00')
     # 休憩時間
-    rest = models.DecimalField(verbose_name='休憩時間', max_digits=3, decimal_places=1, default=1.0)
+    rest = models.DecimalField(verbose_name='休憩時間', max_digits=3, decimal_places=1, default=const.DEF_RESTTIME)
     # 実働時間
-    working_time = models.DecimalField(verbose_name='実働時間', max_digits=3, decimal_places=1, default=8.0)
+    working_time = models.DecimalField(verbose_name='実働時間', max_digits=3, decimal_places=1, default=const.DEF_WORKTIME)
     # 作業概要
     contents = models.TextField(max_length=48, verbose_name='作業概要', default='開発作業')
     # 報告区分
     status_c = CodeMst.objects.filter(cd=const.WORK_TYPE, delFlg=const.DEL_FLG_0).values_list('subCd','subNm').order_by('subCd')
-    status = models.CharField(max_length=5, choices=status_c, verbose_name='報告区分', default='000')
+    status = models.CharField(max_length=5, choices=status_c, verbose_name='報告区分', default=const.WORK_TYPE_SMALL_0)
     # user id
     user_id = models.CharField(max_length=3, default=0)
 
