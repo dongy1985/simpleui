@@ -28,6 +28,17 @@ const.BIG_STATUS = '006'
 # 大分類:適用状態
 const.DEL_STATUS_CD = '007'
 
+# 小分類:開始時刻DEF
+const.DEF_STARTTIME = '09:00'
+# 小分類:終了時刻DEF
+const.DEF_ENDTIME = '18:00'
+# 小分類:休憩時間DEF
+const.DEF_RESTTIME = '1.0'
+# 小分類:実働時間DEF
+const.DEF_WORKTIME = '8.0'
+# 小分類:出勤区分DEF
+const.DEF_DUTY = '0'
+
 # Excel管理
 const.DIR = 'export/'
 const.TEMPLATEPATH = 'export/template/勤務表model.xlsm'
