@@ -307,7 +307,7 @@ class AssetLendAdmin(admin.ModelAdmin):
 
     apply_lend.allowed_permissions = ('apply',)
 
-    # 返済
+    # 返却
     def apply_back(self, request, queryset):
         ids = request.POST.getlist('_selected_action')
         for id in ids:
@@ -319,9 +319,9 @@ class AssetLendAdmin(admin.ModelAdmin):
             AssetManage.objects.filter(id=obj.asset_id).update(
                 permission=const.LEND_OK,
             )
-        messages.add_message(request, messages.SUCCESS, '返済完了')
+        messages.add_message(request, messages.SUCCESS, '返却完了')
 
-    apply_back.short_description = '返済'
+    apply_back.short_description = '返却'
 
     apply_back.type = 'info'
 
@@ -335,7 +335,7 @@ class AssetLendAdmin(admin.ModelAdmin):
         codename = get_permission_codename('apply', opts)
         return request.user.has_perm("%s.%s" % (opts.app_label, codename))
 
-    # 保存TODO
+    # 保存
     def save_model(self, request, obj, form, change):
         obj.user_id = request.user.id
         obj.user_name = User.objects.get(id=request.user.id).username

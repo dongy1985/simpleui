@@ -137,20 +137,20 @@ class AssetLend(models.Model):
     user_name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='借出対象')
 
     # 申請提出日付
-    apply_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='申請提出日付',
+    apply_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='申請提出日',
                                   default=time.strftime("%Y-%m-%d"))
 
-    # 仮定借出日付
-    lend_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='仮定借出日付', default=time.strftime("%Y-%m-%d"))
+    # 貸出予定日
+    lend_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='貸出予定日', default=time.strftime("%Y-%m-%d"))
 
-    # 実際借出日付
-    lend_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際借出日付', default='未定')
+    # 実際貸出日
+    lend_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際貸出日', default='未定')
 
-    # 仮定返済日付
-    back_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='仮定返済日付', default=time.strftime("%Y-%m-%d"))
+    # 仮定返却日
+    back_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='仮定返却日', default=time.strftime("%Y-%m-%d"))
 
-    # 実際返済日付
-    back_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際返済日付', default='未定')
+    # 実際返却日
+    back_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際返却日', default='未定')
 
     # 用途
     lend_reason = models.CharField(max_length=const.TEXT_LENGTH, verbose_name='用途')
