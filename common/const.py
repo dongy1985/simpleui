@@ -44,11 +44,6 @@ const.MAIL_KBN_CONFIRM = '3'
 const.GENDER_DEF = '1'
 const.EMPLOYEE_DEF = '1'
 
-# 作業状態 未提出、提出済、承認済
-const.STATUS_UNCOMMIT = '0'
-const.STATUS_COMMIT = '1'
-const.STATUS_CONFIRM = '2'
-
 # 作業状態小分類：0 未提出; 1 提出済; 2 承認済
 const.WORK_TYPE_SMALL_0 = '0'
 const.WORK_TYPE_SMALL_1 = '1'

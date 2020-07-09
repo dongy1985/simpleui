@@ -51,13 +51,13 @@ class AttendanceAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         if obj:
-            if obj.status != const.STATUS_UNCOMMIT:  
+            if obj.status != const.WORK_TYPE_SMALL_0:  
                 return False
         return super().has_delete_permission(request)
 
     #user set
     def save_model(self, request, obj, form, change):
-        if obj.status != const.STATUS_UNCOMMIT:
+        if obj.status != const.WORK_TYPE_SMALL_0:
             messages.add_message(request, messages.ERROR, '提出済记录が編集できません')
             return
         # 名前、ＩＤ
@@ -91,10 +91,10 @@ class AttendanceAdmin(admin.ModelAdmin):
     #commit
     def commit_button(self, request,queryset):
         for obj in queryset:
-            if obj.status != const.STATUS_UNCOMMIT:
+            if obj.status != const.WORK_TYPE_SMALL_0:
                 messages.add_message(request, messages.ERROR, '未提出记录を選択してください')
                 return
-            queryset.update(status=const.STATUS_COMMIT)
+            queryset.update(status=const.WORK_TYPE_SMALL_1)
         #mail
         mailUtil.sendmail(const.MAIL_KBN_COMMIT, queryset)
         messages.add_message(request, messages.SUCCESS, '提出済')
@@ -113,10 +113,10 @@ class AttendanceAdmin(admin.ModelAdmin):
     #cancel
     def cancel_button(self, request, queryset):
         for obj in queryset:
-            if obj.status != const.STATUS_COMMIT:
+            if obj.status != const.WORK_TYPE_SMALL_1:
                 messages.add_message(request, messages.ERROR, '提出记录を選択してください')
                 return
-            queryset.update(status=const.STATUS_UNCOMMIT)
+            queryset.update(status=const.WORK_TYPE_SMALL_0)
         #mail
         if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
             mailUtil.sendmail(const.MAIL_KBN_CANCEL, queryset)
@@ -130,10 +130,10 @@ class AttendanceAdmin(admin.ModelAdmin):
     def confirm_button(self, request,queryset):
         tempId = ''
         for obj in queryset:
-            if obj.status != const.STATUS_COMMIT:
+            if obj.status != const.WORK_TYPE_SMALL_1:
                 messages.add_message(request, messages.ERROR, '提出済记录を選択してください')
                 return
-            queryset.update(status=const.STATUS_CONFIRM)
+            queryset.update(status=const.WORK_TYPE_SMALL_2)
         #mail
         mailUtil.sendmail(const.MAIL_KBN_CONFIRM, queryset)
         messages.add_message(request, messages.SUCCESS, '承認済')
@@ -151,7 +151,7 @@ class AttendanceAdmin(admin.ModelAdmin):
     #queryset筛选
     def querysetFilter(self, queryset, expErrList):
         for obj in queryset:
-            if obj.status != const.STATUS_COMMIT:
+            if obj.status != const.WORK_TYPE_SMALL_2:
                 expErrList.append(obj.name + ':' + obj.date.strftime('%Y%m'))
                 queryset = queryset.filter(
                     ~(Q(user_id=obj.user_id)
