@@ -89,17 +89,17 @@ def mkExcel(queryset, folder_name):
     for obj in queryset:
         #duty_status
         duty_status = CodeMst.objects.get(cd=const.DUTY_TYPE, subCd=obj.duty, delFlg=const.DEL_FLG_0).subNm
-        sheet.cell(data_row + obj.date.day, dataMst[1][1], duty_status)
+        sheet.cell(data_row + obj.date.day, dataMst[0][1], duty_status)
         #start_time
-        sheet.cell(data_row + obj.date.day, dataMst[2][1], obj.start_time)
+        sheet.cell(data_row + obj.date.day, dataMst[1][1], obj.start_time)
         #end_time
-        sheet.cell(data_row + obj.date.day, dataMst[3][1], obj.end_time)
+        sheet.cell(data_row + obj.date.day, dataMst[2][1], obj.end_time)
         #restTime
-        sheet.cell(data_row + obj.date.day, dataMst[4][1], float(obj.rest))
+        sheet.cell(data_row + obj.date.day, dataMst[3][1], float(obj.rest))
         #sumTimeS
-        sheet.cell(data_row + obj.date.day, dataMst[5][1], obj.working_time)
+        sheet.cell(data_row + obj.date.day, dataMst[4][1], obj.working_time)
         #contents
-        sheet.cell(data_row + obj.date.day, dataMst[6][1], obj.contents)
+        sheet.cell(data_row + obj.date.day, dataMst[5][1], obj.contents)
     #save
     book.save(fileName)
 

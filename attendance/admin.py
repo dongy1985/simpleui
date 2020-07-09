@@ -178,13 +178,13 @@ class AttendanceAdmin(admin.ModelAdmin):
             fp.write(line+'\n')
         fp.close()
         
-        #呼出EXCEL制作
-        fileUtil.export(temp_queryset, folder_name)
-        messages.add_message(request, messages.SUCCESS, 'SUCCESS')
+        if len(queryset) != 0:
+            #呼出EXCEL制作
+            fileUtil.export(temp_queryset, folder_name)
+            messages.add_message(request, messages.SUCCESS, 'SUCCESS')
 
         #ZIp
         temp = const.DIR + folder_name + '.zip'
-        #temp = tempfile.TemporaryFile()
         temp_zip = zipfile.ZipFile(temp,'w',zipfile.ZIP_DEFLATED)        
         startdir = const.DIR + folder_name
         for dirpath, dirnames, filenames in os.walk(startdir):
