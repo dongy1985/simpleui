@@ -180,8 +180,8 @@ SIMPLEUI_CONFIG = {
 SIMPLEUI_ICON = {
     '系统管理': 'fab fa-apple',
     '员工管理': 'fas fa-user-tie',
+    '勤務': 'el-icon-collection',
     '勤務管理': 'el-icon-notebook-1'
-    
 }
 
 # 指定simpleui 是否以脱机模式加载静态资源，为True的时候将默认从本地读取所有资源，即使没有联网一样可以。适合内网项目
