@@ -21,7 +21,7 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
 
     list_display = ('applyName', 'applyDate', 'totalAmount', 'trafficStatus')
     list_per_page = 7
-    list_filter = ('applyName',)
+    list_filter = ('applyName', 'trafficStatus', ('applyDate', DateFieldFilter))
     fieldsets = [(None, {'fields': ['applyDate']})]
     list_display_links = ('applyName',)
     actions = ['commit_button', 'confirm_button', 'cancel_button']
