@@ -46,6 +46,7 @@ class Dutydetail(models.Model):
     trafficAmount = models.IntegerField(verbose_name='金額', default='')
 
     class Meta:
+        verbose_name = "通勤手当明細"
         verbose_name_plural = "通勤手当明細"
 
 
