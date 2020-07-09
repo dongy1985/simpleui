@@ -71,7 +71,7 @@ class Employee(models.Model):
     # 電話番号
     phone = models.CharField(max_length=11, verbose_name='電話番号')
 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='UserId',
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='ログインユーザー',
                              db_index=True)
     # 社員状態
     status_choices = CodeMst.objects.filter(cd=const.EMPLOYEE_CD).values_list('subCd', 'subNm').order_by('subCd')
