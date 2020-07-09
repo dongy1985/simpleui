@@ -187,6 +187,7 @@ class ExpenseReturn(models.Model):
     comment = models.CharField(max_length=180, verbose_name='備考')
 
     class Meta:
+        verbose_name = "立替金"
         verbose_name_plural = "立替金"
         permissions = (
             ("commit_button_ExpenseReturn", "普通社員　Can提出"),
