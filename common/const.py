@@ -44,7 +44,7 @@ const.MAIL_KBN_CANCEL = '2'
 const.MAIL_KBN_CONFIRM = '3'
 # 性别デフォルト
 const.GENDER_DEF = '1'
-const.EMPLOYEE_DEF = '1'
+const.EMPLOYEE_DEF = '0'
 
 # 作業状態小分類：0 未提出; 1 提出済; 2 承認済
 const.WORK_TYPE_SMALL_0 = '0'

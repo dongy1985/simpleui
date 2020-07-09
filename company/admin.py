@@ -111,7 +111,7 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
 class EmployeeAdmin(admin.ModelAdmin):
     fieldsets = [(None, {
         'fields': ['name', 'empNo', 'gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'user', 'empSts']})]
-    list_display = ('name', 'empNo', 'gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'empSts')
+    list_display = ('name', 'empNo', 'email', 'phone')
     search_fields = ('name', 'empNo')
     list_per_page = 20
     raw_id_fields = ('user',)
