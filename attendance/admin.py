@@ -1,4 +1,4 @@
-import time, datetime
+import time
 import calendar
 import os
 import zipfile
@@ -15,7 +15,7 @@ from django.http import HttpResponse
 from django.contrib.auth import get_permission_codename
 from django.db.models import Q
 from wsgiref.util import FileWrapper
-
+from datetime import date, timedelta
 
 from attendance.models import *
 from common.models import *
@@ -64,8 +64,8 @@ class AttendanceAdmin(admin.ModelAdmin):
         obj.user_id = request.user.id
         obj.name = Employee.objects.get(user=request.user.id).name
         # 実働時間计算
-        end_time = datetime.datetime.strptime(str(obj.end_time),"%H:%M:%S")
-        sumTime1 = end_time - datetime.timedelta(hours=obj.start_time.hour,minutes=obj.start_time.minute,seconds=obj.start_time.second)
+        end_time = datetime.strptime(str(obj.end_time),"%H:%M:%S")
+        sumTime1 = end_time - timedelta(hours=obj.start_time.hour,minutes=obj.start_time.minute,seconds=obj.start_time.second)
         sum_hour = sumTime1.hour
         sum_minute = sumTime1.minute
         if sum_minute != 0:
@@ -167,7 +167,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         temp_queryset = AttendanceAdmin.querysetFilter(self, queryset, expErrList)
 
         #mkDir
-        folder_name = datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")
+        folder_name = datetime.now().strftime("%Y-%m-%d_%H%M%S")
         if os.path.isdir(const.DIR):
             os.mkdir(os.path.join(const.DIR, folder_name))
         
