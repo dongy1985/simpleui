@@ -129,7 +129,7 @@ class ExpenseReturnDetailInline(admin.TabularInline):
 
 @admin.register(ExpenseReturn)
 class ExpenseReturnAdmin(admin.ModelAdmin):
-    inlines = [ExpenseReturnDetail, ]
+    inlines = [ExpenseReturnDetailInline, ]
     fieldsets = [(None, {'fields': ['applydate', 'comment']})]
     list_display = ('applyer', 'applydate', 'amount', 'comment', 'status')
     list_filter = ('applyer', 'status', ('applydate', DateFieldFilter))
