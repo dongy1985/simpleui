@@ -140,7 +140,7 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.user_id = request.user.id
         obj.applyer = Employee.objects.get(user_id=request.user.id).name
-        subquery = ExpenseReturnDetail.objects.filter(ExpenseReturn_id=obj.id)
+        subquery = ExpenseReturnDetail.objects.filter(expenseReturn_id=obj.id)
         obj.amount = 0
         for line in subquery:
             obj.amount = obj.amount + line.price
