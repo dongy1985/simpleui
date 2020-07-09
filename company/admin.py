@@ -111,7 +111,7 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
 class EmployeeAdmin(admin.ModelAdmin):
     fieldsets = [(None, {
         'fields': ['name', 'empNo', 'gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'user', 'empSts']})]
-    list_display = ('name', 'empNo', 'gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'empSts')
+    list_display = ('name', 'empNo', 'email', 'phone')
     search_fields = ('name', 'empNo')
     list_per_page = 20
     raw_id_fields = ('user',)
@@ -140,7 +140,7 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.user_id = request.user.id
         obj.applyer = Employee.objects.get(user_id=request.user.id).name
-        subquery = ExpenseReturnDetail.objects.filter(ExpenseReturn_id=obj.id)
+        subquery = ExpenseReturnDetail.objects.filter(expenseReturn_id=obj.id)
         obj.amount = 0
         for line in subquery:
             obj.amount = obj.amount + line.price
