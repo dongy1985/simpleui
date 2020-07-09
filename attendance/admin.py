@@ -170,6 +170,12 @@ class AttendanceAdmin(admin.ModelAdmin):
         folder_name = datetime.now().strftime("%Y-%m-%d_%H%M%S")
         if os.path.isdir(const.DIR):
             os.mkdir(os.path.join(const.DIR, folder_name))
+        #ErrList write
+        errListPath = const.DIR + folder_name + const.FILESTART +'ErrList.txt'
+        fp = open(errListPath,'w+')
+        for line in expErrList:
+            fp.write(line+'\n')
+        fp.close()
         
         #呼出EXCEL制作
         fileUtil.export(temp_queryset, folder_name)
