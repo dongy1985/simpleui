@@ -13,38 +13,41 @@ class _const:
         self.__dict__[name] = value
 
 const = _const()
-# 出勤区分
-const.DUTY_TYPE = '003'
-# 作業状態大分類の値004　
-const.WORK_TYPE = '004'
-# excel dir
+# 大分類:出勤区分
+const.DUTY_TYPE = '001'
+# 大分類:作業状態
+const.WORK_TYPE = '002'
+# 大分類:性別
+const.GENDER_CD = '003'
+# 大分類:社員状態(在職　離職)
+const.EMPLOYEE_CD = '004'
+# 大分類:Excel座標管理
+const.CRD_DIV_CD = '005'
+# 申請借出状態 大区分
+const.BIG_STATUS = '006'
+
+# Excel管理
 const.DIR = 'export/'
 const.TEMPLATEPATH = 'export/template/勤務表model.xlsm'
 const.UNDERLINE = '_'
 const.XLSX = '.xlsm'
 const.FILESTART = '/'
 const.SHEET = '勤務表'
-# adminのＩＤ
-const.ADMIN_ID = 1
 # system email
 const.ADMIN_MAIL = 'testid0917@gmail.com'
 const.ADMIN_MAIL_PAS = 'testTest0917'
 # メール区分
-const.MAIL_KBN_COMMIT = 1
-const.MAIL_KBN_CANCEL = 2
-const.MAIL_KBN_CONFIRM = 3
+const.MAIL_KBN_COMMIT = '1'
+const.MAIL_KBN_CANCEL = '2'
+const.MAIL_KBN_CONFIRM = '3'
 # 性别デフォルト
 const.GENDER_DEF = '1'
 const.EMPLOYEE_DEF = '1'
-# 性別
-const.GENDER_CD = '005'
-# 社員状態(在職　離職)
-const.EMPLOYEE_CD = '006'
 
 # 作業状態 未提出、提出済、承認済
-const.STATUS_UNCOMMIT = '000'
-const.STATUS_COMMIT = '001'
-const.STATUS_CONFIRM = '002'
+const.STATUS_UNCOMMIT = '0'
+const.STATUS_COMMIT = '1'
+const.STATUS_CONFIRM = '2'
 
 # 作業状態小分類：0 未提出; 1 提出済; 2 承認済
 const.WORK_TYPE_SMALL_0 = '0'
@@ -64,7 +67,7 @@ const.DEF_DEL_FLG = '0'
 const.CRD_DIV_H = '0'
 const.CRD_DIV_D = '1'
 const.CRD_DIV_F = '2'
-const.CRD_DIV_CD = '006'
+
 
 # 資産管理用
 # CharField 名前の長さ
@@ -75,9 +78,6 @@ const.TEXT_LENGTH = 128
 
 # 申請借出状態default
 const.LEND_STATUS = '001'
-
-# 申請借出状態 大区分
-const.BIG_STATUS = '007'
 
 # 資産合計明細extra
 const.EXTRA = 1
