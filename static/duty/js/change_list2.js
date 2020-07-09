@@ -8,6 +8,10 @@
         // 編集リンク削除・追加
         if (changeList) {
             for (i = 0; i < changeList.length; i++) {
+                // 社員名前
+                var workSalary_name = $(changeList[i]).find("th[class='field-applyName']").text()
+                // 報告状態
+                var traffic_status = $(changeList[i]).find("td[class='field-traffic_status']").text()
                 // 資産番号
                 var duty_code = $(changeList[i]).find("th[class='field-real_code']").text()
                 // 資産借出状態
@@ -18,6 +22,13 @@
                     $(changeList[i]).find("th[class='field-real_code']").find('a').remove();
                     // もとの表示内容を追加
                     $(changeList[i]).find("th[class='field-real_code']").html(duty_code);
+                }
+                // 報告状態が提出済または承認済の場合、編集リンクを削除する
+                if (traffic_status == '提出済' || traffic_status == '承認済'){
+                    // リンク削除
+                    $(changeList[i]).find("th[class='field-applyName']").find('a').remove();
+                    // もとの表示内容を追加
+                    $(changeList[i]).find("th[class='field-applyName']").html(workSalary_name);
                 }
              }
         }
@@ -71,6 +82,9 @@
 
                     // 申請借出状態
                     var lend_sts = $(changeList[i]).find("td[class='field-lend_status']").text()
+
+                    // 報告状態
+                    var traffic_status = $(changeList[i]).find("td[class='field-traffic_status']").text()
 
                     // 報告状態が申請提出済の場合、返済と借出ボタンを隠す
                     if (selectedFlg && lend_sts == '申請提出済'){
@@ -144,6 +158,15 @@
                         }
                         break;
                     }
+
+                    // 報告状態が提出済または承認済の場合、削除ボタンを隠す
+                    if (selectedFlg && (traffic_status == '提出済' || traffic_status == '承認済')){
+                        // 削除ボタンを隠す
+                        if (delBtn) {
+                            delBtn.hide();
+                        }
+                        break;
+                      }
                  }
             }
       }
