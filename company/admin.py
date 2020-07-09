@@ -19,7 +19,7 @@ class DetailInline(admin.TabularInline):
 class ApplyAdmin(admin.ModelAdmin):
     inlines = [DetailInline, ]
 
-    list_display = ('applyName', 'applyDate', 'totalMoney')
+    list_display = ('applyName', 'applyDate', 'totalMoney', 'traffic_status')
     list_per_page = 7
     list_filter = ('applyName',)
     fieldsets = [(None, {'fields': ['applyDate']})]
