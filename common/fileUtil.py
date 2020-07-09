@@ -62,7 +62,7 @@ def mkExcel(queryset, folder_name):
     sheet = book.get_sheet_by_name(const.SHEET)
 
     # head data write
-    headMst = CrdMst.objects.filter(crdDiv=const.HEAD, delFlg=const.DEL_FLG_0).\
+    headMst = CrdMst.objects.filter(crdDiv=const.CRD_DIV_H, delFlg=const.DEL_FLG_0).\
     values_list('crdY', 'crdX', 'defVal').order_by('itemSort')
     for obj in queryset:
         userNumber = Employee.objects.get(user=obj.user_id).empNo
@@ -83,7 +83,7 @@ def mkExcel(queryset, folder_name):
     sheet.cell(headMst[5][0], headMst[5][1], headMst[5][2])
 
     # duty data write
-    dataMst = CrdMst.objects.filter(crdDiv=const.DATA, delFlg=const.DEL_FLG_0).\
+    dataMst = CrdMst.objects.filter(crdDiv=const.CRD_DIV_D, delFlg=const.DEL_FLG_0).\
         values_list('crdY', 'crdX', 'defVal').order_by('itemSort')
     data_row = dataMst[0][0]
     for obj in queryset:

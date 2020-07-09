@@ -24,8 +24,6 @@ const.UNDERLINE = '_'
 const.XLSX = '.xlsm'
 const.FILESTART = '/'
 const.SHEET = '勤務表'
-const.HEAD = '001'
-const.DATA = '002'
 # adminのＩＤ
 const.ADMIN_ID = 1
 # system email
@@ -64,6 +62,8 @@ const.DEL_FLG_0 = '0'
 const.DEL_FLG_1 = '1'
 const.DEF_DEL_FLG = '0'
 const.CRD_DIV_H = '0'
+const.CRD_DIV_D = '1'
+const.CRD_DIV_F = '2'
 const.CRD_DIV_CD = '006'
 
 # 資産管理用

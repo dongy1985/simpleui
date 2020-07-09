@@ -15,13 +15,13 @@ class Attendance(models.Model):
     duty_status = CodeMst.objects.filter(cd=const.DUTY_TYPE, delFlg=const.DEL_FLG_0).values_list('subCd','subNm').order_by('subCd')
     duty = models.CharField(max_length=5, choices=duty_status, verbose_name='出勤区分', default='00')
     # 開始時刻
-    start_time =  models.TimeField('開始時刻',default='09:00')
+    start_time =  models.TimeField('開始時刻',default='09:00', help_text='例：09:00')
     # 終了時刻
-    end_time = models.TimeField('終了時刻', default='18:00')
+    end_time = models.TimeField('終了時刻', default='18:00', help_text='例：18:00')
     # 休憩時間
     rest = models.DecimalField(verbose_name='休憩時間', max_digits=3, decimal_places=1, default=1.0)
     # 実働時間
-    working_time = models.DecimalField(verbose_name='実働時間', max_digits=3, decimal_places=1, default=1.5)
+    working_time = models.DecimalField(verbose_name='実働時間', max_digits=3, decimal_places=1, default=8.0)
     # 作業概要
     contents = models.TextField(max_length=48, verbose_name='作業概要', default='開発作業')
     # 報告区分
