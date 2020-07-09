@@ -37,7 +37,7 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
     commit_button.short_description = '提出'
     commit_button.type = 'success'
     commit_button.style = 'color:white;'
-    commit_button.confirm = '選択された勤務管理レコードを提出よろしいでしょうか？'
+    commit_button.confirm = '選択された通勤手当レコードを提出よろしいでしょうか？'
     commit_button.icon = 'fas fa-user-check'
     commit_button.allowed_permissions = ('commit_button_duty',)
 
@@ -65,7 +65,7 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
     confirm_button.short_description = '承認'
     confirm_button.type = 'success'
     confirm_button.style = 'color:white;'
-    confirm_button.confirm = '選択された勤務管理レコードを承認よろしいでしょうか？'
+    confirm_button.confirm = '選択された通勤手当レコードを承認よろしいでしょうか？'
     confirm_button.icon = 'fas fa-user-check'
     confirm_button.allowed_permissions = ('confirm_button_duty',)
 
@@ -86,7 +86,7 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
     cancel_button.short_description = 'キャンセル'
     cancel_button.type = 'warning'
     cancel_button.style = 'color:white;'
-    cancel_button.confirm = '選択された勤務管理レコードを取消よろしいでしょうか？'
+    cancel_button.confirm = '選択された通勤手当レコードを取消よろしいでしょうか？'
     cancel_button.icon = 'el-icon-upload el-icon--right'
     cancel_button.allowed_permissions = ('cancel_button_duty',)
 
