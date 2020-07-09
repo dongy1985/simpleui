@@ -180,8 +180,17 @@ SIMPLEUI_CONFIG = {
 SIMPLEUI_ICON = {
     '系统管理': 'fab fa-apple',
     '员工管理': 'fas fa-user-tie',
-    '勤務': 'el-icon-collection',
-    '勤務管理': 'el-icon-notebook-1'
+    '勤務': 'el-icon-suitcase',
+    '勤務管理': 'el-icon-notebook-1',
+    '会社管理': 'el-icon-s-custom',
+    '社員情報': 'el-icon-user-solid',
+    '立替金': 'el-icon-edit',
+    '資産借出申請': 'el-icon-s-unfold',
+    '資産管理': 'el-icon-s-claim',
+    '通勤手当': 'el-icon-edit',
+    '共通管理': 'el-icon-notebook-1',
+    'コード管理': 'el-icon-notebook-2',
+    '座標管理': 'el-icon-notebook-2',
 }
 
 # 指定simpleui 是否以脱机模式加载静态资源，为True的时候将默认从本地读取所有资源，即使没有联网一样可以。适合内网项目
@@ -193,4 +202,3 @@ SIMPLEUI_STATIC_OFFLINE = False
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # 设置前缀
 MEDIA_URL = '/media/'
-
