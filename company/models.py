@@ -46,7 +46,7 @@ class Dutydetail(models.Model):
     trafficAmount = models.IntegerField(verbose_name='金額', default='')
 
     class Meta:
-        verbose_name = "通勤手当明細"
+        verbose_name_plural = "通勤手当明細"
 
 
 
@@ -206,4 +206,4 @@ class ExpenseReturnDetail(models.Model):
     usedate = models.DateField(verbose_name='使用日付')
 
     class Meta:
-        verbose_name = "項目明細"
+        verbose_name_plural = "項目明細"
