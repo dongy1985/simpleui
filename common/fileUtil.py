@@ -58,7 +58,7 @@ def mkExcel(queryset, folder_name):
         objYear = obj.date.year
     # copy
     fileName = copyExl(folder_name, userName, objYear, objMonth)
-    book = openpyxl.load_workbook(fileName)
+    book = openpyxl.load_workbook(fileName, keep_vba=True)
     sheet = book.get_sheet_by_name(const.SHEET)
 
     # head data write
