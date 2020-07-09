@@ -34,7 +34,7 @@ class ProxyResource(resources.ModelResource):
 @admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
 
-    actions = ['commit_button', 'confirm_button', 'cancel_button', 'export', ]
+    actions = ['cancel_button', 'commit_button', 'confirm_button', 'export', ]
     #admin.site.disable_action('delete_selected')
     resource_class = ProxyResource
 
@@ -124,6 +124,7 @@ class AttendanceAdmin(admin.ModelAdmin):
 
     cancel_button.short_description = '取消'
     cancel_button.type = 'warning'
+    cancel_button.icon = 'el-icon-refresh-left'
     cancel_button.confirm = '取消よろしですか？'
 
     #confirm
@@ -209,8 +210,9 @@ class AttendanceAdmin(admin.ModelAdmin):
             print('no such file') 
         return response
 
-    export.short_description = 'Excleエクスポート'
-    export.type = 'success'
+    export.short_description = '導出'
+    export.type = 'primary'
+    export.icon = 'el-icon-document-copy'
     export.allowed_permissions = ('export_attendance',)
 
     def has_export_attendance_permission(self, request):
