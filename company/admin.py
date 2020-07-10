@@ -116,7 +116,7 @@ class EmployeeAdmin(admin.ModelAdmin):
     search_fields = ('name', 'empNo')
     list_per_page = 20
     raw_id_fields = ('user',)
-    list_filter = ('name', 'empNo', 'empSts')
+    list_filter = ('empSts',)
 
     list_display_links = ('name',)
 
