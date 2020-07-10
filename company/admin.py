@@ -329,7 +329,7 @@ class AssetLendAdmin(admin.ModelAdmin):
 
     # 保存
     def save_model(self, request, obj, form, change):
-        if obj.user_name == '':
+        if change == False:
             obj.user_id = request.user.id
             obj.user_name = User.objects.get(id=request.user.id).username
         obj.asset_code = AssetManage.objects.get(id=obj.asset_id).asset_id

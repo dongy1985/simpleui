@@ -120,7 +120,7 @@ class AssetManage(models.Model):
 class AssetLend(models.Model):
     # 資産番号
     asset_id = models.ForeignKey(AssetManage, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='資産番号',
-                                 db_index=True)
+                                 db_index=True, limit_choices_to={'permission': '1'})
 
     # 表示番号
     asset_code = models.CharField(max_length=const.NAME_LENGTH, verbose_name='資産番号')
@@ -135,7 +135,7 @@ class AssetLend(models.Model):
     user_id = models.CharField(max_length=const.TEXT_LENGTH)
 
     # 貸出対象
-    user_name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='貸出対象', default='')
+    user_name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='貸出対象')
 
     # 申請提出日付
     apply_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='申請提出日',
