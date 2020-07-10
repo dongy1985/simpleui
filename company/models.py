@@ -196,8 +196,8 @@ class ExpenseReturn(models.Model):
         verbose_name = "立替金"
         verbose_name_plural = "立替金"
         permissions = (
-            ("commit_button_ExpenseReturn", "普通社員　Can提出"),
-            ("confirm_button_ExpenseReturn", "管理者　Can承認")
+            ("commit_button_ExpenseReturn", "Can 普通社員提出"),
+            ("confirm_button_ExpenseReturn", "Can 管理者承認")
         )
 
 
