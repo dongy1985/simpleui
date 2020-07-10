@@ -45,13 +45,13 @@ class CrdMst(models.Model):
     crdDiv = models.CharField(verbose_name="座標分類", max_length=3, choices=crdDiv_choices,
                               null=False, blank=False, db_index=True, default=const.CRD_DIV_H)
     # 項目名
-    itemNm = models.CharField(verbose_name="項目名", max_length=60, null=False, blank=False)
+    itemNm = models.CharField(verbose_name="項目名", max_length=60, null=False, blank=False, help_text='20文字まで入力してください.')
     # 項目順
-    itemSort = models.IntegerField(verbose_name="項目順", null=False, blank=False)
+    itemSort = models.IntegerField(verbose_name="項目順", null=False, blank=False, help_text='数字で３桁まで入力してください.')
     # 横座標
-    crdX = models.IntegerField(verbose_name="横座標", null=False, blank=False)
+    crdX = models.IntegerField(verbose_name="横座標", null=False, blank=False, help_text='数字で入力してください.')
     # 縦座標
-    crdY = models.IntegerField(verbose_name="縦座標", null=False, blank=False)
+    crdY = models.IntegerField(verbose_name="縦座標", null=False, blank=False, help_text='数字で入力してください.')
     # 固定文言
     defVal = models.CharField(verbose_name="固定文言", max_length=60, help_text='固定文言を設定してください.',
                               null=True, blank=True)
