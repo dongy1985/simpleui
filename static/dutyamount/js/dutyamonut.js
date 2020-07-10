@@ -32,13 +32,28 @@
             var changeList = $("tr[class^='row']");
             // 削除ボタン
             var delBtn = $(".actions button[data-name='delete_selected']");
+            // 提出ボタン
+            var confirmBtn = $(".actions button[data-name='commit_button']");
+            // 承認ボタン
+            var enableBtn = $(".actions button[data-name='confirm_button']");
             // 取消ボタン
-//            var cancelBtn = $(".actions button[data-name='cancel']");
+            var cancelBtn = $(".actions button[data-name='cancel_button']");
             // 削除ボタンを表示する
             if (delBtn) {
                 delBtn.show();
             }
-
+            // 提出ボタンを表示する
+            if (confirmBtn) {
+                confirmBtn.show();
+            }
+            // 承認ボタンを表示する
+            if (enableBtn) {
+                enableBtn.show();
+            }
+            // 取消ボタンを表示する
+            if (cancelBtn) {
+                cancelBtn.show();
+            }
             if (changeList) {
                 flg = false;
                 for (i = 0; i < changeList.length; i++) {
@@ -53,15 +68,36 @@
                         if (delBtn) {
                             delBtn.hide();
                         }
-
+                        // 提出ボタンを隠す
+                        if (confirmBtn) {
+                            confirmBtn.hide();
+                        }
+                        if (selectedFlg && (duty_sts == '承認済')){
+                            // 承認ボタンを隠す
+                            if (enableBtn) {
+                                enableBtn.hide();
+                            }
+                        }
                         // 管理者以外の場合、承認済のデータが取消できない
-//                        if (authPermission == 'False' && cancelBtn && duty_sts == '承認済') {
-//                            cancelBtn.hide();
+                        if (!authPermission && cancelBtn && duty_sts == '承認済') {
+                            cancelBtn.hide();
                         }
                         break;
                     }
-                 }
+                       if (selectedFlg && (duty_sts == '未提出')){
+                        // 承認ボタンを隠す
+                        if (enableBtn) {
+                            enableBtn.hide();
+                        }
+                        // 取消ボタン
+                        if (cancelBtn) {
+                            cancelBtn.hide();
+                        }
+                        break;
+                    }
+                }
             }
+        }
 
         // 明細一覧のチェックボックスのイベント
         $(".action-checkbox").bind('click', function(e){
