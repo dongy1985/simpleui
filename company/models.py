@@ -147,8 +147,8 @@ class AssetLend(models.Model):
     # 実際貸出日
     lend_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際貸出日', default='未定')
 
-    # 仮定返却日
-    back_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='仮定返却日', default=time.strftime("%Y-%m-%d"))
+    # 返却予定日
+    back_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='返却予定日', default=time.strftime("%Y-%m-%d"))
 
     # 実際返却日
     back_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際返却日', default='未定')
