@@ -227,10 +227,20 @@ class AssetLendAdmin(admin.ModelAdmin):
                                     'note', ]})]
 
     # 要显示的字段
-    list_display = (
-        'asset_code', 'type', 'name', 'user_name', 'apply_time', 'lend_time', 'lend_truetime', 'back_time',
-        'back_truetime',
-        'lend_reason', 'note', 'lend_status',)
+    def changelist_view(self, request, extra_context=None):
+        user = request.user
+
+        if self.has_apply_permission(request):
+            self.list_display = ['asset_code', 'type', 'name', 'user_name', 'apply_time', 'lend_time', 'lend_truetime',
+                                 'back_time',
+                                 'back_truetime',
+                                 'lend_reason', 'note', 'lend_status', ]
+        else:
+            self.list_display = (
+                'asset_code', 'type', 'name', 'apply_time', 'lend_time', 'lend_truetime', 'back_time',
+                'back_truetime',
+                'lend_reason', 'note', 'lend_status',)
+        return super(AssetLendAdmin, self).changelist_view(request=request, extra_context=None)
 
     # 需要搜索的字段
     # search_fields = ('asset_id',)
