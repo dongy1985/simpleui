@@ -143,16 +143,13 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
 
     # モデル保存
     def save_model(self, request, obj, form, change):
-        obj.user_id = request.user.id
-        subquery = ExpenseReturnDetail.objects.filter(expenseReturn_id=obj.id)
-        obj.amount = 0
-        if change:
-            for line in subquery:
-                obj.amount = obj.amount + line.price
-        else:
+        if obj.applyer == '':
+            obj.user_id = request.user.id
             obj.applyer = Employee.objects.get(user_id=request.user.id).name
-            for line in subquery:
-                obj.amount = obj.amount + line.price
+        obj.amount = 0
+        subquery = ExpenseReturnDetail.objects.filter(expenseReturn_id=obj.id)
+        for line in subquery:
+            obj.amount = obj.amount + line.price
         super().save_model(request, obj, form, change)
 
     # ユーザーマッチ
