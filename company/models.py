@@ -11,9 +11,9 @@ import time
 # 通勤手当モデル
 class ApplyDutyAmount(models.Model):
     # ユーザー
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='apply_user', )
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='apply_user', default=const.DEF_USERID)
     # 通勤手当申請者名前
-    applyName = models.CharField(verbose_name='通勤手当申請者名前', max_length=30)
+    applyName = models.CharField(verbose_name='申請者', max_length=30, default=0)
     # 通勤手当申請日付
     applyDate = models.DateField(verbose_name='申請日', default=timezone.now)
     # 定期券運賃(1ヶ月):総金額
@@ -26,9 +26,9 @@ class ApplyDutyAmount(models.Model):
         verbose_name = "通勤手当"
         verbose_name_plural = "通勤手当"
         permissions = (
-            ("commit_button_applydutyamount", "申請者 Can 提出"),
-            ("confirm_button_applydutyamount", "申請者Can 承認"),
-            ("cancel_button_applydutyamount", "申請者 Can 取消"),
+            ("commit_button_applydutyamount", "Can 提出"),
+            ("confirm_button_applydutyamount", "Can 承認"),
+            ("cancel_button_applydutyamount", "Can 取消"),
         )
 
 
@@ -120,7 +120,7 @@ class AssetManage(models.Model):
 class AssetLend(models.Model):
     # 資産番号
     asset_id = models.ForeignKey(AssetManage, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='資産番号',
-                                 db_index=True, limit_choices_to={'permission': '1'})
+                                 db_index=True)
 
     # 表示番号
     asset_code = models.CharField(max_length=const.NAME_LENGTH, verbose_name='資産番号')
@@ -135,7 +135,7 @@ class AssetLend(models.Model):
     user_id = models.CharField(max_length=const.TEXT_LENGTH)
 
     # 貸出対象
-    user_name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='貸出対象')
+    user_name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='貸出対象', default='')
 
     # 申請提出日付
     apply_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='申請提出日',

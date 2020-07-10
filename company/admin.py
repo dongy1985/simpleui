@@ -21,9 +21,10 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
 
     list_display = ('applyName', 'applyDate', 'totalAmount', 'trafficStatus')
     list_per_page = 7
-    list_filter = ('applyName', 'trafficStatus', ('applyDate', DateFieldFilter))
+    list_filter = ('trafficStatus', ('applyDate', DateFieldFilter))
     fieldsets = [(None, {'fields': ['applyDate']})]
     list_display_links = ('applyName',)
+    search_fields = ('name',)
     actions = ['commit_button', 'confirm_button', 'cancel_button']
 
     # 提出ボタン
@@ -97,8 +98,10 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
 
     # 保存の場合、該当ユーザーIDをセット
     def save_model(self, request, obj, form, change):
-        obj.user_id = request.user.id
-        obj.applyName = Employee.objects.get(user_id=request.user.id).name
+        # ユーザー
+        if obj.user_id == const.DEF_USERID:
+            obj.user_id = request.user.id
+            obj.name = Employee.objects.get(user=request.user.id).name
         # 定期券運賃(1ヶ月):総金額
         detail_inlines = Dutydetail.objects.filter(apply_id=obj.id)
         obj.totalAmount = 0
