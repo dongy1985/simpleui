@@ -179,6 +179,7 @@ class AssetLend(models.Model):
 
 # 立替金モデル
 class ExpenseReturn(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='list_cur_applyer', )
     # 申請者名
     applyer = models.CharField(max_length=30, verbose_name='申請者名')
     # 提出日付
@@ -195,8 +196,8 @@ class ExpenseReturn(models.Model):
         verbose_name = "立替金"
         verbose_name_plural = "立替金"
         permissions = (
-            ("commit_button_ExpenseReturn", "普通社員　Can提出"),
-            ("confirm_button_ExpenseReturn", "管理者　Can承認")
+            ("commit_button_ExpenseReturn", "Can 普通社員提出"),
+            ("confirm_button_ExpenseReturn", "Can 管理者承認")
         )
 
 
