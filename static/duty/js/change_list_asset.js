@@ -13,7 +13,7 @@
                 // 資産借出状態
                 var lend_sts = $(changeList[i]).find("td[class='field-lend_status']").text()
                 // 報告状態が承認済以後の場合、編集リンクを削除する
-                if (lend_sts == '申請承認済' || lend_sts == '借出済' || lend_sts == '返却済'){
+                if (lend_sts == '承認済' || lend_sts == '貨出済' || lend_sts == '返却済'){
                     // リンク削除
                     $(changeList[i]).find("th[class='field-asset_code']").find('a').remove();
                     // もとの表示内容を追加
@@ -73,7 +73,7 @@
                     var lend_sts = $(changeList[i]).find("td[class='field-lend_status']").text()
 
                     // 報告状態が申請提出済の場合、返済と貸出ボタンを隠す
-                    if (selectedFlg && lend_sts == '申請提出済'){
+                    if (selectedFlg && lend_sts == '申請済'){
                         if (backBtn) {
                             backBtn.hide();
                         }
@@ -84,7 +84,7 @@
                     }
 
                     // 報告状態が申請承認済の場合、返済ボタン、拒否ボタン、承認ボタンを隠す
-                    if (selectedFlg && lend_sts == '申請承認済'){
+                    if (selectedFlg && lend_sts == '承認済'){
                         if (backBtn) {
                             backBtn.hide();
                         }
@@ -98,7 +98,7 @@
                     }
 
                     // 報告状態が貸出済の場合、貸出ボタン、拒否ボタン、承認ボタンを隠す
-                    if (selectedFlg && lend_sts == '借出済'){
+                    if (selectedFlg && lend_sts == '貨出済'){
                         if (lendBtn) {
                             lendBtn.hide();
                         }
@@ -129,7 +129,7 @@
                     }
 
                     // 報告状態が返却済の場合、貸出ボタン、拒否ボタン、承認ボタン、返却ボタンを隠す
-                    if (selectedFlg && lend_sts == '申請拒否'){
+                    if (selectedFlg && lend_sts == '拒否'){
                         if (lendBtn) {
                             lendBtn.hide();
                         }
