@@ -100,16 +100,16 @@ const.LEND_OK = 1
 const.LEND_NG = 0
 
 # 資産借出申請 状態 申請提出済
-const.LEND_REQUEST = 0
+const.LEND_REQUEST = '0'
 
 # 資産借出申請 状態 申請承認済
-const.LEND_APPLY = 1
+const.LEND_APPLY = '1'
 
 # 資産借出申請 状態 借出済
-const.LEND_OUT = 2
+const.LEND_OUT = '2'
 
 # 資産借出申請 状態 返却済
-const.LEND_BACK = 3
+const.LEND_BACK = '3'
 
 # 資産借出申請 状態 返却済
-const.LEND_DENY = 4
+const.LEND_DENY = '4'
