@@ -287,7 +287,7 @@ class AssetLendAdmin(admin.ModelAdmin):
         for id in ids:
             AssetLend.objects.filter(id=id, lend_status=const.LEND_APPLY).update(
                 lend_status=const.LEND_OUT,
-                lend_truetime=time.strftime("%Y-%m-%d", time.localtime()),
+                lend_truetime=time.strftime("%Y年%m月%d日", time.localtime()),
             )
         messages.add_message(request, messages.SUCCESS, '貸出完了')
 
@@ -305,7 +305,7 @@ class AssetLendAdmin(admin.ModelAdmin):
         for id in ids:
             AssetLend.objects.filter(id=id, lend_status=const.LEND_OUT).update(
                 lend_status=const.LEND_BACK,
-                back_truetime=time.strftime("%Y-%m-%d", time.localtime()),
+                back_truetime=time.strftime("%Y年%m月%d日", time.localtime()),
             )
         for obj in queryset:
             AssetManage.objects.filter(id=obj.asset_id).update(
@@ -329,8 +329,9 @@ class AssetLendAdmin(admin.ModelAdmin):
 
     # 保存
     def save_model(self, request, obj, form, change):
-        obj.user_id = request.user.id
-        obj.user_name = User.objects.get(id=request.user.id).username
+        if obj.user_name == '':
+            obj.user_id = request.user.id
+            obj.user_name = User.objects.get(id=request.user.id).username
         obj.asset_code = AssetManage.objects.get(id=obj.asset_id).asset_id
         obj.type = AssetManage.objects.get(id=obj.asset_id).type
         obj.name = AssetManage.objects.get(id=obj.asset_id).name
