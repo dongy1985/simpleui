@@ -179,6 +179,7 @@ class AssetLend(models.Model):
 
 # 立替金モデル
 class ExpenseReturn(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='list_cur_applyer', )
     # 申請者名
     applyer = models.CharField(max_length=30, verbose_name='申請者名')
     # 提出日付
