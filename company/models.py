@@ -47,33 +47,33 @@ class Dutydetail(models.Model):
 
     class Meta:
         verbose_name = "通勤手当明細"
-
+        verbose_name_plural = "通勤手当明細"
 
 
 # 社員モデル
 class Employee(models.Model):
+    # 社員名前
     name = models.CharField(max_length=30, verbose_name='社員名前', null=False, blank=False, db_index=True)
-
+    # 社員番号
     empNo = models.CharField(verbose_name='社員番号', max_length=3, null=False, blank=False)
-
+    # 性别
     gender_choices = CodeMst.objects.filter(cd=const.GENDER_CD).values_list('subCd', 'subNm').order_by('subCd')
     gender = models.CharField(max_length=3, choices=gender_choices, verbose_name='性别', default=const.GENDER_DEF)
-
+    # 生年月日
     birthday = models.DateField(verbose_name='生年月日')
-
+    # メールアドレス
     email = models.EmailField(max_length=120, verbose_name='メールアドレス')
-
     # 自宅郵便番号
     zipCode = models.CharField(verbose_name='自宅郵便番号', max_length=7, null=False, blank=False,
                                help_text='自宅郵便番号を7桁入力してください.例：1010031')
-
+    # 住所
     homeAddr = models.TextField(max_length=360, verbose_name='住所')
-
+    # 電話番号
     phone = models.CharField(max_length=11, verbose_name='電話番号')
 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='UserId',
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='ログインユーザー',
                              db_index=True)
-
+    # 社員状態
     status_choices = CodeMst.objects.filter(cd=const.EMPLOYEE_CD).values_list('subCd', 'subNm').order_by('subCd')
     empSts = models.CharField(max_length=3, choices=status_choices, verbose_name='社員状態', default=const.EMPLOYEE_DEF)
 
@@ -88,6 +88,7 @@ class Employee(models.Model):
 
     def __str__(self):
         return self.name
+
 
 
 # 資産管理
@@ -146,8 +147,8 @@ class AssetLend(models.Model):
     # 実際貸出日
     lend_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際貸出日', default='未定')
 
-    # 仮定返却日
-    back_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='仮定返却日', default=time.strftime("%Y-%m-%d"))
+    # 返却予定日
+    back_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='返却予定日', default=time.strftime("%Y-%m-%d"))
 
     # 実際返却日
     back_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際返却日', default='未定')
@@ -176,34 +177,41 @@ class AssetLend(models.Model):
     def __int__(self):
         return self.asset_id
 
-
 # 立替金モデル
 class ExpenseReturn(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='list_cur_applyer', )
+    # 申請者名
     applyer = models.CharField(max_length=30, verbose_name='申請者名')
+    # 提出日付
     applydate = models.DateField(verbose_name='提出日付')
+    # 総金額
     amount = models.CharField(max_length=30, verbose_name='総金額')
+    # 申请状態
     status_choices = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
     status = models.CharField(max_length=3, choices=status_choices, verbose_name='申请状態', default=const.WORK_TYPE_SMALL_0)
+    # 備考
     comment = models.CharField(max_length=180, verbose_name='備考')
 
     class Meta:
         verbose_name = "立替金"
         verbose_name_plural = "立替金"
         permissions = (
-            ("commit_button_ExpenseReturn", "普通社員　Can提出"),
-            ("confirm_button_ExpenseReturn", "管理者　Can承認")
+            ("commit_button_ExpenseReturn", "Can 普通社員提出"),
+            ("confirm_button_ExpenseReturn", "Can 管理者承認")
         )
-
-def __str__(self):
-    return self.name
 
 
 class ExpenseReturnDetail(models.Model):
     expenseReturn = models.ForeignKey(ExpenseReturn, on_delete=models.CASCADE, )
+    # 費用項目
     detail_type = models.CharField(max_length=30, verbose_name='費用項目')
+    # 用途
     detail_text = models.CharField(max_length=180, verbose_name='用途')
+    # 単一金額
     price = models.IntegerField(verbose_name='単一金額')
+    # 使用日付
     usedate = models.DateField(verbose_name='使用日付')
 
     class Meta:
-        verbose_name = "項目明細"
+        verbose_name = "项目明细"
+        verbose_name_plural = "项目明细"
