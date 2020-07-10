@@ -28,7 +28,7 @@ class Attendance(models.Model):
     status_c = CodeMst.objects.filter(cd=const.WORK_TYPE, delFlg=const.DEL_FLG_0).values_list('subCd','subNm').order_by('subCd')
     status = models.CharField(max_length=5, choices=status_c, verbose_name='報告区分', default=const.WORK_TYPE_SMALL_0)
     # user id
-    user_id = models.CharField(max_length=3, default=0)
+    user_id = models.CharField(max_length=3, default=const.DEF_USERID)
 
 
     class Meta:

@@ -41,7 +41,7 @@ class AttendanceAdmin(admin.ModelAdmin):
     #display
     list_display = ('name', 'date', 'duty', 'start_time', 'end_time', 'rest', 'working_time', 'contents', 'status')
     #list
-    list_filter = ('name','status',('date', DateFieldFilter))
+    list_filter = ('status',('date', DateFieldFilter))
     #set search
     search_fields = ('name',)
     #set field
@@ -61,8 +61,9 @@ class AttendanceAdmin(admin.ModelAdmin):
             messages.add_message(request, messages.ERROR, '提出済记录が編集できません')
             return
         # 名前、ＩＤ
-        obj.user_id = request.user.id
-        obj.name = Employee.objects.get(user=request.user.id).name
+        if obj.user_id == const.DEF_USERID:
+            obj.user_id = request.user.id
+            obj.name = Employee.objects.get(user=request.user.id).name
         # 実働時間计算
         end_time = datetime.strptime(str(obj.end_time),"%H:%M:%S")
         sumTime1 = end_time - timedelta(hours=obj.start_time.hour,minutes=obj.start_time.minute,seconds=obj.start_time.second)
@@ -106,17 +107,23 @@ class AttendanceAdmin(admin.ModelAdmin):
     commit_button.allowed_permissions = ('commit_button_attendance',)
 
     def has_commit_button_attendance_permission(self, request):
-        opts = self.opts
-        codename = get_permission_codename('commit_button', opts)
-        return request.user.has_perm('%s.%s' % (opts.app_label, codename))
+        if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
+            return False
+        else:
+            opts = self.opts
+            codename = get_permission_codename('commit_button', opts)
+            return request.user.has_perm('%s.%s' % (opts.app_label, codename))
 
     #cancel
     def cancel_button(self, request, queryset):
         for obj in queryset:
-            if obj.status != const.WORK_TYPE_SMALL_1:
-                messages.add_message(request, messages.ERROR, '提出记录を選択してください')
-                return
-            queryset.update(status=const.WORK_TYPE_SMALL_0)
+            if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
+                queryset.update(status=const.WORK_TYPE_SMALL_0)
+            else:
+                if obj.status != const.WORK_TYPE_SMALL_1:
+                    messages.add_message(request, messages.ERROR, '提出记录を選択してください')
+                    return
+                queryset.update(status=const.WORK_TYPE_SMALL_0)
         #mail
         if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
             mailUtil.sendmail(const.MAIL_KBN_CANCEL, queryset)

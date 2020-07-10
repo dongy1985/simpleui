@@ -38,6 +38,8 @@ const.DEF_RESTTIME = '1.0'
 const.DEF_WORKTIME = '8.0'
 # 小分類:出勤区分DEF
 const.DEF_DUTY = '0'
+# 小分類:USERID_DEF
+const.DEF_USERID = 0
 
 # Excel管理
 const.DIR = 'export/'
