@@ -123,7 +123,7 @@ class AssetLend(models.Model):
                                  db_index=True)
 
     # 表示番号
-    asset_code = models.CharField(max_length=const.NAME_LENGTH, verbose_name='番号')
+    asset_code = models.CharField(max_length=const.NAME_LENGTH, verbose_name='資産番号')
 
     # 分類
     type = models.CharField(max_length=const.NAME_LENGTH, verbose_name='分類')
@@ -135,23 +135,21 @@ class AssetLend(models.Model):
     user_id = models.CharField(max_length=const.TEXT_LENGTH)
 
     # 貸出対象
-    user_name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='貸出対象')
+    user_name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='貸出対象', default='')
 
     # 申請提出日付
     apply_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='申請提出日',
-                                  default=time.strftime("%Y-%m-%d"))
+                                  default=time.strftime("%Y年%m月%d日"))
 
     # 貸出予定日
-    lend_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='貸出予定日', default=time.strftime("%Y-%m-%d"))
-
+    lend_time = models.DateField(verbose_name='貸出予定日', default=time.strftime("%Y-%m-%d"))
     # 実際貸出日
-    lend_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際貸出日', default='未定')
+    lend_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='貸出日', default='未定')
 
     # 返却予定日
-    back_time = models.CharField(max_length=const.NAME_LENGTH, verbose_name='返却予定日', default=time.strftime("%Y-%m-%d"))
-
+    back_time = models.DateField(verbose_name='返却予定日', default=time.strftime("%Y-%m-%d"))
     # 実際返却日
-    back_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='実際返却日', default='未定')
+    back_truetime = models.CharField(max_length=const.NAME_LENGTH, verbose_name='返却日', default='未定')
 
     # 用途
     lend_reason = models.CharField(max_length=const.TEXT_LENGTH, verbose_name='用途')
@@ -164,7 +162,7 @@ class AssetLend(models.Model):
         'subCd')
 
     # 申請貸出状態
-    lend_status = models.CharField(max_length=const.NAME_LENGTH, choices=lend_status_choices, verbose_name='申請貸出状態'
+    lend_status = models.CharField(max_length=const.NAME_LENGTH, choices=lend_status_choices, verbose_name='申請状態'
                                    , default=const.LEND_STATUS)
 
     class Meta:
