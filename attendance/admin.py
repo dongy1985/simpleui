@@ -120,10 +120,12 @@ class AttendanceAdmin(admin.ModelAdmin):
             if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
                 queryset.update(status=const.WORK_TYPE_SMALL_0)
             else:
-                if obj.status != const.WORK_TYPE_SMALL_1:
+                if obj.status == const.WORK_TYPE_SMALL_1:
+                    queryset.update(status=const.WORK_TYPE_SMALL_0)
+                else:
                     messages.add_message(request, messages.ERROR, '提出记录を選択してください')
                     return
-                queryset.update(status=const.WORK_TYPE_SMALL_0)
+                
         #mail
         if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
             mailUtil.sendmail(const.MAIL_KBN_CANCEL, queryset)
