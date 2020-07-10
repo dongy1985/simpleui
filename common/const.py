@@ -85,7 +85,7 @@ const.NAME_LENGTH = 20
 const.TEXT_LENGTH = 128
 
 # 申請借出状態default
-const.LEND_STATUS = '001'
+const.LEND_STATUS = '0'
 
 # 資産合計明細extra
 const.EXTRA = 1
