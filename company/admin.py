@@ -160,9 +160,14 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
             obj.user_id = request.user.id
             obj.applyer = Employee.objects.get(user_id=request.user.id).name
         obj.amount = 0
-        subquery = ExpenseReturnDetail.objects.filter(expenseReturn_id=obj.id)
-        for line in subquery:
-            obj.amount = obj.amount + line.price
+        for key in form.data:
+            if re.match('^expensereturndetail_set-.-price$', key):
+                if form.data[key] != "":
+                    delflag = key.replace("price", "DELETE")
+                    if delflag in form.data.keys():
+                        continue
+                    else:
+                        obj.amount = obj.amount + int(form.data[key])
         super().save_model(request, obj, form, change)
 
     # ユーザーマッチ
