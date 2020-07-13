@@ -190,8 +190,7 @@ class ExpenseReturn(models.Model):
     amount = models.CharField(max_length=30, verbose_name='総金額')
     # 申请状態
     status_choices = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
-    status = models.CharField(max_length=3, choices=status_choices, verbose_name='申请状態',
-                              default=const.WORK_TYPE_SMALL_0)
+    status = models.CharField(max_length=3, choices=status_choices, verbose_name='申请状態', default=const.WORK_TYPE_SMALL_0)
     # 備考
     comment = models.CharField(max_length=180, verbose_name='備考')
 
@@ -202,7 +201,8 @@ class ExpenseReturn(models.Model):
             ("commit_button_ExpenseReturn", "Can 普通社員提出"),
             ("confirm_button_ExpenseReturn", "Can 管理者承認")
         )
-
+    def __str__(self):
+        return self.applyer
 
 class ExpenseReturnDetail(models.Model):
     expenseReturn = models.ForeignKey(ExpenseReturn, on_delete=models.CASCADE, )
@@ -218,3 +218,6 @@ class ExpenseReturnDetail(models.Model):
     class Meta:
         verbose_name = "项目明细"
         verbose_name_plural = "项目明细"
+
+    def __str__(self):
+        return self.detail_type
