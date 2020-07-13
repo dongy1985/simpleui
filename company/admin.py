@@ -1,5 +1,3 @@
-import re
-
 from django.contrib import admin
 from django.contrib.auth import get_permission_codename
 from django.contrib import admin, messages
@@ -10,6 +8,7 @@ from company.models import Dutydetail, ExpenseReturn, ExpenseReturnDetail, Apply
 import time
 from django.contrib.auth.models import User
 from django.contrib import messages
+import re
 
 
 class DutydetailInline(admin.TabularInline):
@@ -118,11 +117,23 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
             obj.user_id = request.user.id
             obj.applyName = Employee.objects.get(user_id=request.user.id).name
         # 定期券運賃(1ヶ月):総金額
-        detail_inlines = Dutydetail.objects.filter(apply_id=obj.id)
+        #　総金額の初期値
         obj.totalAmount = 0
-        for line in detail_inlines:
-            obj.totalAmount = obj.totalAmount + line.trafficAmount
+        # form表单form.dataは画面のデータを取得、re.match/re.search匹配字符串
+        # ^	匹配字符串的开头
+        # $	匹配字符串的末尾例えば： r'(.*) are (.*?) .*'    r'^dutydetail_set.trafficAmount$', obj
+        for detail in form.data:
+            if re.match('^dutydetail_set.*trafficAmount$', detail):
+               if form.data[detail] != "":
+                  newStr = detail
+                  deleteFlg = newStr.replace("trafficAmount","DELETE")
+                  # deleteFlgは状態”on” and 存在ですか
+                  if form.data.__contains__(deleteFlg) and form.data[deleteFlg] == 'on':
+                     continue
+                  else:
+                     obj.totalAmount = obj.totalAmount + int(form.data[detail])
         super().save_model(request, obj, form, change)
+
 
 
 # 社員admin
