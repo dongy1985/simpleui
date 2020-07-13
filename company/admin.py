@@ -218,15 +218,15 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
 @admin.register(AssetManage)
 class AssetManageAdmin(admin.ModelAdmin):
     # 編集必要なレコード
-    fieldsets = [(None, {'fields': ['asset_id', 'type', 'name', 'permission',
+    fieldsets = [(None, {'fields': ['asset', 'type', 'name', 'permission',
                                     'note', ]})]
 
     # 表示必要なレコード
-    list_display = ('asset_id', 'type', 'name', 'permission',
+    list_display = ('asset', 'type', 'name', 'permission',
                     'note',)
 
     # サーチ必要なレコード
-    search_fields = ('asset_id',)
+    search_fields = ('asset',)
 
     list_filter = ('type',)
 
@@ -239,7 +239,7 @@ class AssetManageAdmin(admin.ModelAdmin):
 # 資産貸出申請
 @admin.register(AssetLend)
 class AssetLendAdmin(admin.ModelAdmin):
-    fieldsets = [(None, {'fields': ['asset_id', 'lend_time', 'back_time', 'lend_reason',
+    fieldsets = [(None, {'fields': ['asset', 'lend_time', 'back_time', 'lend_reason',
                                     'note', ]})]
 
     # 要显示的字段
@@ -259,9 +259,9 @@ class AssetLendAdmin(admin.ModelAdmin):
         return super(AssetLendAdmin, self).changelist_view(request=request, extra_context=None)
 
     # 需要搜索的字段
-    # search_fields = ('asset_id',)
+    # search_fields = ('asset',)
 
-    raw_id_fields = ('asset_id',)
+    raw_id_fields = ('asset',)
     # filter
     list_filter = ('type', 'lend_status',)
 
@@ -281,7 +281,7 @@ class AssetLendAdmin(admin.ModelAdmin):
                 lend_status=const.LEND_APPLY,
             )
         for obj in queryset:
-            AssetManage.objects.filter(id=obj.asset_id).update(
+            AssetManage.objects.filter(id=obj.asset).update(
                 permission=const.LEND_NG,
             )
         messages.add_message(request, messages.SUCCESS, '申請承認完了')
@@ -317,7 +317,7 @@ class AssetLendAdmin(admin.ModelAdmin):
         for id in ids:
             AssetLend.objects.filter(id=id, lend_status=const.LEND_APPLY).update(
                 lend_status=const.LEND_OUT,
-                lend_truetime=time.strftime("%Y年%m月%d日", time.localtime()),
+                lend_truetime=time.strftime("%Y-%m-%d", time.localtime()),
             )
         messages.add_message(request, messages.SUCCESS, '貸出完了')
 
@@ -335,10 +335,10 @@ class AssetLendAdmin(admin.ModelAdmin):
         for id in ids:
             AssetLend.objects.filter(id=id, lend_status=const.LEND_OUT).update(
                 lend_status=const.LEND_BACK,
-                back_truetime=time.strftime("%Y年%m月%d日", time.localtime()),
+                back_truetime=time.strftime("%Y-%m-%d", time.localtime()),
             )
         for obj in queryset:
-            AssetManage.objects.filter(id=obj.asset_id).update(
+            AssetManage.objects.filter(id=obj.asset).update(
                 permission=const.LEND_OK,
             )
         messages.add_message(request, messages.SUCCESS, '返却完了')
@@ -362,9 +362,9 @@ class AssetLendAdmin(admin.ModelAdmin):
         if change == False:
             obj.user_id = request.user.id
             obj.user_name = User.objects.get(id=request.user.id).username
-        obj.asset_code = AssetManage.objects.get(id=obj.asset_id).asset_id
-        obj.type = AssetManage.objects.get(id=obj.asset_id).type
-        obj.name = AssetManage.objects.get(id=obj.asset_id).name
+        obj.asset_code = AssetManage.objects.get(id=obj.asset).asset
+        obj.type = AssetManage.objects.get(id=obj.asset).type
+        obj.name = AssetManage.objects.get(id=obj.asset).name
         super().save_model(request, obj, form, change, )
 
     # 名前マッチ
