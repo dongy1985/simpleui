@@ -28,13 +28,20 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     actions = ['commit_button', 'confirm_button', 'cancel_button']
 
+    # deleteのチェック
+    def has_delete_permission(self, request, obj=None):
+        if obj:
+            if obj.trafficStatus != const.WORK_TYPE_SMALL_0:
+                return False
+        return super().has_delete_permission(request)
+
     # 提出ボタン
     def commit_button(self, request, queryset):
         for obj in queryset:
-            if obj.trafficStatus != '0':
+            if obj.trafficStatus != const.WORK_TYPE_SMALL_0:
                 messages.add_message(request, messages.ERROR, '未提出記録を選択してください。')
                 return
-        queryset.update(trafficStatus='1')
+        queryset.update(trafficStatus=const.WORK_TYPE_SMALL_1)
 
     commit_button.short_description = '提出'
     commit_button.type = 'success'
@@ -51,18 +58,20 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
 
     # 該当ユーザーのレコードをフィルター
     def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        return qs.filter(user_id=request.user.id)
+        if request.user.is_superuser or request.user.has_perm('company.confirm_button_applydutyamount'):
+           qs = super().get_queryset(request)
+           return qs
+        else:
+           qs = super().get_queryset(request)
+           return qs.filter(user_id=request.user.id)
 
     # 承認ボタン
     def confirm_button(self, request, queryset):
         for obj in queryset:
-            if obj.trafficStatus != '1':
+            if obj.trafficStatus != const.WORK_TYPE_SMALL_1:
                 messages.add_message(request, messages.ERROR, '提出済の記録を選択してください。')
                 return
-        queryset.update(trafficStatus='2')
+        queryset.update(trafficStatus=const.WORK_TYPE_SMALL_2)
 
     confirm_button.short_description = '承認'
     confirm_button.type = 'success'
@@ -79,13 +88,16 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
     # cancelボタン
     def cancel_button(self, request, queryset):
         for obj in queryset:
-            if obj.trafficStatus == '2':
-                queryset.update(trafficStatus='0')
+            if request.user.is_superuser or request.user.has_perm('company.confirm_button_applydutyamount'):
+                queryset.update(trafficStatus=const.WORK_TYPE_SMALL_0)
             else:
-                if obj.trafficStatus == '1':
-                    queryset.update(trafficStatus='0')
+                if obj.trafficStatus == const.WORK_TYPE_SMALL_1:
+                    queryset.update(trafficStatus=const.WORK_TYPE_SMALL_0)
+                else:
+                    messages.add_message(request, messages.ERROR, '提出记录を選択してください')
+                    return
 
-    cancel_button.short_description = 'キャンセル'
+    cancel_button.short_description = '取消'
     cancel_button.type = 'warning'
     cancel_button.style = 'color:white;'
     cancel_button.confirm = '選択された通勤手当レコードを取消よろしいでしょうか？'
@@ -100,9 +112,9 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
     # 保存の場合、該当ユーザーIDをセット
     def save_model(self, request, obj, form, change):
         # ユーザー
-        if obj.user_id == const.DEF_USERID:
+        if obj.applyName == '':
             obj.user_id = request.user.id
-            obj.name = Employee.objects.get(user_id=request.user.id).name
+            obj.applyName = Employee.objects.get(user_id=request.user.id).name
         # 定期券運賃(1ヶ月):総金額
         detail_inlines = Dutydetail.objects.filter(apply_id=obj.id)
         obj.totalAmount = 0

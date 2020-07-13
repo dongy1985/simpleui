@@ -13,7 +13,7 @@ class ApplyDutyAmount(models.Model):
     # ユーザー
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='apply_user')
     # 通勤手当申請者名前
-    applyName = models.CharField(verbose_name='申請者', max_length=30, default=0)
+    applyName = models.CharField(verbose_name='申請者', max_length=30)
     # 通勤手当申請日付
     applyDate = models.DateField(verbose_name='申請日', default=timezone.now)
     # 定期券運賃(1ヶ月):総金額
@@ -31,6 +31,8 @@ class ApplyDutyAmount(models.Model):
             ("cancel_button_applydutyamount", "Can 取消"),
         )
 
+    def __str__(self):
+        return self.applyName
 
 # 通勤手当明細モデル
 class Dutydetail(models.Model):
@@ -50,7 +52,7 @@ class Dutydetail(models.Model):
         verbose_name_plural = "通勤手当明細"
 
     def __str__(self):
-        return self.apply
+        return self.trafficTo
 
 
 # 社員モデル
