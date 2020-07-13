@@ -174,7 +174,7 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
             obj.applyer = Employee.objects.get(user_id=request.user.id).name
         obj.amount = 0
         for key in form.data:
-            if re.match('^expensereturndetail_set-.-price$', key):
+            if re.match('^expensereturndetail_set-.*-price$', key):
                 if form.data[key] != "":
                     delflag = key.replace("price", "DELETE")
                     if delflag in form.data.keys():
@@ -182,6 +182,7 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
                     else:
                         obj.amount = obj.amount + int(form.data[key])
         super().save_model(request, obj, form, change)
+
 
     # ユーザーマッチ
     def get_queryset(self, request):
