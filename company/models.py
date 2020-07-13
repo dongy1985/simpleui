@@ -11,7 +11,8 @@ import time
 # 通勤手当モデル
 class ApplyDutyAmount(models.Model):
     # ユーザー
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='apply_user', default=const.DEF_USERID)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='apply_user',
+                             default=const.DEF_USERID)
     # 通勤手当申請者名前
     applyName = models.CharField(verbose_name='申請者', max_length=30, default=0)
     # 通勤手当申請日付
@@ -48,6 +49,9 @@ class Dutydetail(models.Model):
     class Meta:
         verbose_name = "通勤手当明細"
         verbose_name_plural = "通勤手当明細"
+
+    def __str__(self):
+        return self.apply
 
 
 # 社員モデル
@@ -88,7 +92,6 @@ class Employee(models.Model):
 
     def __str__(self):
         return self.name
-
 
 
 # 資産管理
@@ -175,6 +178,7 @@ class AssetLend(models.Model):
     def __int__(self):
         return self.asset_id
 
+
 # 立替金モデル
 class ExpenseReturn(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='list_cur_applyer', )
@@ -186,7 +190,8 @@ class ExpenseReturn(models.Model):
     amount = models.CharField(max_length=30, verbose_name='総金額')
     # 申请状態
     status_choices = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
-    status = models.CharField(max_length=3, choices=status_choices, verbose_name='申请状態', default=const.WORK_TYPE_SMALL_0)
+    status = models.CharField(max_length=3, choices=status_choices, verbose_name='申请状態',
+                              default=const.WORK_TYPE_SMALL_0)
     # 備考
     comment = models.CharField(max_length=180, verbose_name='備考')
 

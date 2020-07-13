@@ -3,7 +3,8 @@ from django.contrib.auth import get_permission_codename
 from django.contrib import admin, messages
 from common.const import const
 from common.custom_filter import DateFieldFilter
-from company.models import Dutydetail, ExpenseReturn, ExpenseReturnDetail, ApplyDutyAmount, Employee, AssetManage, AssetLend
+from company.models import Dutydetail, ExpenseReturn, ExpenseReturnDetail, ApplyDutyAmount, Employee, AssetManage, \
+    AssetLend
 import time
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -101,7 +102,7 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
         # ユーザー
         if obj.user_id == const.DEF_USERID:
             obj.user_id = request.user.id
-            obj.name = Employee.objects.get(user=request.user.id).name
+            obj.name = Employee.objects.get(user_id=request.user.id).name
         # 定期券運賃(1ヶ月):総金額
         detail_inlines = Dutydetail.objects.filter(apply_id=obj.id)
         obj.totalAmount = 0
@@ -166,6 +167,7 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
                 messages.add_message(request, messages.ERROR, '未提出を選んでください！')
                 return
         queryset.update(status=const.WORK_TYPE_SMALL_1)
+
     commit_button.short_description = ' 提出'
     commit_button.icon = 'fas fa-check-circle'
     commit_button.type = 'success'
@@ -194,9 +196,11 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
     # 取消
     def cancel_button(self, request, queryset):
         queryset.update(status=const.WORK_TYPE_SMALL_0)
+
     cancel_button.short_description = ' 取消'
     cancel_button.icon = 'fas fa-check-circle'
     cancel_button.type = 'warning'
+
 
 # 資産管理
 @admin.register(AssetManage)
