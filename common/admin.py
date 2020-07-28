@@ -26,7 +26,7 @@ class CodeMstAdmin(admin.ModelAdmin):
 class CrdMstAdmin(admin.ModelAdmin):
 
     # 明細エリア
-    list_display = ('crdDiv', 'itemNm', 'itemSort', 'crdX', 'crdY', 'defVal', 'cmnt1')
+    list_display = ('tplType', 'crdDiv', 'itemNm', 'itemSort', 'crdX', 'crdY', 'defVal', 'cmnt1')
 
     # １ページの件数
     list_per_page = 15
@@ -35,4 +35,4 @@ class CrdMstAdmin(admin.ModelAdmin):
     list_filter = ('crdDiv', 'itemNm')
 
     # ソート順
-    ordering = ('crdDiv', 'itemSort')
+    ordering = ('tplType', 'crdDiv', 'itemSort')

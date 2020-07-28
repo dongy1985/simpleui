@@ -27,6 +27,8 @@ const.CRD_DIV_CD = '005'
 const.BIG_STATUS = '006'
 # 大分類:適用状態
 const.DEL_STATUS_CD = '007'
+# 大分類:テンプレート分類
+const.TEMPLATE_TYPE = '008'
 
 # 小分類:開始時刻DEF
 const.DEF_STARTTIME = '09:00'
@@ -77,7 +79,7 @@ const.DEF_DEL_FLG = '0'
 const.CRD_DIV_H = '0'
 const.CRD_DIV_D = '1'
 const.CRD_DIV_F = '2'
-
+const.TPL_XLS = '0'
 
 # 資産管理用
 # CharField 名前の長さ

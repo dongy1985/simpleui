@@ -39,6 +39,11 @@ class CodeMst(models.Model):
 
 # 座標マスタ
 class CrdMst(models.Model):
+    # テンプレート分類
+    tplType_choices = CodeMst.objects.filter(cd=const.TEMPLATE_TYPE, delFlg=const.DEL_FLG_0).\
+        values_list('subCd', 'subNm').order_by('subCd')
+    tplType = models.CharField(verbose_name="テンプレート分類", max_length=3, choices=tplType_choices,
+                              null=False, blank=False, db_index=True, default=const.TPL_XLS)
     # 座標分類
     crdDiv_choices = CodeMst.objects.filter(cd=const.CRD_DIV_CD, delFlg=const.DEL_FLG_0).\
         values_list('subCd', 'subNm').order_by('subCd')
