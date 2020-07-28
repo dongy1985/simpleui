@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'attendance',
     # # 会社管理（社員、資産）
     'company',
-
+    # 勤務統計
+    'aggregation'
 ]
 
 MIDDLEWARE = [
