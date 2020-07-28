@@ -4,7 +4,7 @@ from django.contrib import admin, messages
 from common.const import const
 from common.custom_filter import DateFieldFilter
 from company.models import Dutydetail, ExpenseReturn, ExpenseReturnDetail, ApplyDutyAmount, Employee, AssetManage, \
-    AssetLend
+    AssetLend, WorkSiteDetail, WorkSite
 import time
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -392,3 +392,20 @@ class AssetLendAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs
         return qs.filter(user_id=request.user.id)
+
+class WorkSiteDetailInline(admin.TabularInline):
+    model = WorkSiteDetail
+    fieldsets = [(u'', {'fields': ['member']})]
+    extra = 1
+
+
+@admin.register(WorkSite)
+class WorkSiteAdmin(admin.ModelAdmin):
+    inlines = [WorkSiteDetailInline, ]
+
+    list_display = ('site_name', 'site_number', 'project_name', 'manager')
+    list_per_page = 7
+    fieldsets = [(None, {'fields': ['site_name', 'site_number', 'project_name', 'manager']})]
+    list_display_links = ('site_name',)
+    search_fields = ('site_name',)
+    # actions = ['commit_button', 'confirm_button', 'cancel_button']

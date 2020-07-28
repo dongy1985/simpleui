@@ -227,3 +227,31 @@ class ExpenseReturnDetail(models.Model):
 
     def __str__(self):
         return self.detail_type
+
+# 現場管理モデル
+class WorkSite(models.Model):
+    # 現場名称
+    site_name = models.CharField(max_length=30, verbose_name='現場名称')
+    # 発注番号
+    site_number = models.CharField(max_length=16, verbose_name='発注番号')
+    # 案件名称
+    project_name = models.CharField(max_length=30, verbose_name='案件名称')
+    #現場責任者
+    manager = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='現場責任者',
+                             db_index=True)
+
+    class Meta:
+        verbose_name = "現場管理"
+        verbose_name_plural = "現場管理"
+
+# メンバーモデル
+class WorkSiteDetail(models.Model):
+    # ForeignKey
+    manager = models.ForeignKey(WorkSite, on_delete=models.CASCADE, verbose_name='申請者', max_length=128, default='')
+    #メンバー
+    member = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='メンバー',
+                             db_index=True)
+
+    class Meta:
+        verbose_name = "メンバー"
+        verbose_name_plural = "メンバー"
