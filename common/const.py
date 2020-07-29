@@ -42,6 +42,8 @@ const.DEF_WORKTIME = '8.0'
 const.DEF_DUTY = '0'
 # 小分類:月度集計区分agg
 const.AGG_MONTH = '1'
+# 小分類:年度集計区分
+const.AGG_YEAR = '2'
 # 小分類:USERID_DEF
 const.DEF_USERID = 0
 
@@ -49,12 +51,14 @@ const.DEF_USERID = 0
 const.DIR = 'export/'
 const.TEMPLATEPATH = 'export/template/勤務表model.xlsm'
 const.MONTH_TEMPLATEPATH = 'export/template/月度単位の集計表model.xlsx'
+const.YEAR_TEMPLATEPATH = 'export/template/年度単位の集計表model.xlsx'
 const.UNDERLINE = '_'
 const.XLSX = '.xlsm'
 const.XLS = '.xlsx'
 const.FILESTART = '/'
 const.SHEET = '勤務表'
 const.SHEET_MONTH = '月度単位の集計表'
+const.SHEET_YEAR = '年度単位の集計表'
 # system email
 const.ADMIN_MAIL = 'testid0917@gmail.com'
 const.ADMIN_MAIL_PAS = 'testTest0917'
