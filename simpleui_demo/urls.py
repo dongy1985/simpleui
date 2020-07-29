@@ -18,6 +18,7 @@ from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from company import views
 
 admin.site.site_title = '日中ブリッジ管理システム'
 admin.site.site_header = '日中ブリッジ管理システム'
@@ -27,4 +28,5 @@ urlpatterns = [
                   url(r'doc/', include('django.contrib.admindocs.urls'), name='doc'),
                   path('', admin.site.urls),
                   url(r'mdeditor/', include('mdeditor.urls')),
+                  url(r'/', views.check),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

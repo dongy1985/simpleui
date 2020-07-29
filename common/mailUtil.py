@@ -78,3 +78,24 @@ def chooseKbn(mailKbn, employe_name, employe_mail):
         Subject = employe_name + 'の勤務が承認しました'
         return (to_addr, main, Subject)
     
+def retention_mail(employe_name, employe_mail, main):
+    #fromAddrの設定
+    from_addr = const.ADMIN_MAIL
+    password = const.ADMIN_MAIL_PAS
+    smtp_server = 'smtp.gmail.com'
+    #toAddr、内容の設定
+	to_addr = employe_mail
+    Subject = '在留カード期限切れ前一ヶ月警告'
+
+    msg = MIMEText(main,'plain','utf-8')
+
+    msg['From'] = Header(from_addr)
+    msg['To'] = Header(to_addr)
+    msg['Subject'] = Header(Subject)
+    
+    server = smtplib.SMTP_SSL(host=smtp_server)
+    server.connect(host=smtp_server, port=465)
+    server.login(from_addr, password)
+    server.sendmail(from_addr, to_addr.split(','), msg.as_string())
+    server.quit()
+    print ('success    ' + to_addr)
