@@ -27,19 +27,23 @@ from import_export.admin import ImportExportModelAdmin, ImportExportActionModelA
 from common.custom_filter import DateFieldFilter
 from common import mailUtil
 from common import excelUtil
+from common import outPutFile
 from common.const import const
+
 
 @admin.register(Aggregation)
 class AggregationAdmin(admin.ModelAdmin):
-
     actions = ['export_button', ]
-    #display
-    list_display = ('name', 'empNo', 'attendance_YM', 'working_time', 'attendance_count', 'absence_count', 'annual_leave', 'rest_count', 'late_count')
-    #set search
+    # display
+    list_display = (
+        'name', 'empNo', 'attendance_YM', 'working_time', 'attendance_count', 'absence_count', 'annual_leave',
+        'rest_count',
+        'late_count')
+    # set search
     search_fields = ('empNo', 'name', 'attendance_YM')
-    #list
-    list_filter = (('attendance_YM', DateFieldFilter), )
-    ordering = ('empNo', 'attendance_YM', 'name')
+    # list
+    list_filter = (('attendance_YM', DateFieldFilter),)
+    ordering = ('attendance_YM', 'empNo', 'name')
     list_per_page = 7
 
     # excle導出
@@ -50,6 +54,10 @@ class AggregationAdmin(admin.ModelAdmin):
             os.mkdir(os.path.join(const.DIR, folder_name))
         # 月度単位の集計表(excel)の導出
         excelUtil.exportExcel(queryset, folder_name)
+        # 年度単位の集計表(excel)の導出
+        count = 0
+        fileName = ""
+        outPutFile.export(queryset, folder_name, fileName, count)
         messages.add_message(request, messages.SUCCESS, 'SUCCESS')
 
     export_button.short_description = ' 導出'
