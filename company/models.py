@@ -75,6 +75,10 @@ class Employee(models.Model):
     homeAddr = models.TextField(max_length=360, verbose_name='住所')
     # 電話番号
     phone = models.CharField(max_length=11, verbose_name='電話番号')
+    # 在留カード番号
+    retention_code = models.CharField(max_length=12, verbose_name='在留カード', null=True, blank=True)
+    # 在留カード期限
+    retention_limit = models.DateField(verbose_name='在留期限', null=True, blank=True)
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='ログインユーザー',
                              db_index=True)

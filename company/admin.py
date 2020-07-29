@@ -140,7 +140,8 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
     fieldsets = [(None, {
-        'fields': ['name', 'empNo', 'gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'user', 'empSts']})]
+        'fields': ['name', 'empNo', 'gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'retention_code',
+                   'retention_limit', 'user', 'empSts']})]
     list_display = ('name', 'empNo', 'email', 'phone')
     search_fields = ('name', 'empNo')
     list_per_page = 20
