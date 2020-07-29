@@ -21,6 +21,10 @@ def check():
     target_name = Employee.objects.filter(retention_limit=next_month).values()
     for obj in target_name:
         expErrList.append(obj['name'] + 'の在留期限まだ一ヶ月 ')
+        employe_name = obj['name']
+        employe_mail = obj['email']
+        main = employe_name + 'さん、在留期限まだ一ヶ月、ご注意ください'
+        mailUtil.retention_mail(employe_name, employe_mail, main)
     if len(expErrList) > 0:
         employe_name = Employee.objects.get(empNo='001').name
         employe_mail = Employee.objects.get(empNo='001').email
