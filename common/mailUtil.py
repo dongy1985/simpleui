@@ -84,7 +84,7 @@ def retention_mail(employe_name, employe_mail, main):
     password = const.ADMIN_MAIL_PAS
     smtp_server = 'smtp.gmail.com'
     #toAddr、内容の設定
-	to_addr = employe_mail
+    to_addr = employe_mail
     Subject = '在留カード期限切れ前一ヶ月警告'
 
     msg = MIMEText(main,'plain','utf-8')
