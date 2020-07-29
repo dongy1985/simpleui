@@ -76,10 +76,7 @@ def mkExcel(queryset, fileName, count):
                 sheet.cell(row=2, column=i + 6*count, value=copy)
                 e2 = sheet.cell(row=2, column=i + 6*count)
                 sheet[e2.coordinate]._style = sheet.cell(row=2, column=i)._style
-
-
-        ascii = chr(67 + 6*count) + '1:' + chr(72 + 6*count) + '1'
-        sheet.merge_cells(ascii)
+        sheet.merge_cells(const.SERU[count])
 
         # 社員番号
         aggEmpNo = obj.empNo
