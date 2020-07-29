@@ -6,9 +6,9 @@ class _const:
     class ConstCaseError(ConstError):
         pass
     def __setattr__(self, name, value):
-        if name in self.__dict__: 
+        if name in self.__dict__:
             raise self.ConstError("Can't change const {0}".format(name))
-        if not name.isupper(): 
+        if not name.isupper():
             raise self.ConstCaseError("const name {0} is not all uppercase".format(name))
         self.__dict__[name] = value
 
@@ -40,16 +40,21 @@ const.DEF_RESTTIME = '1.0'
 const.DEF_WORKTIME = '8.0'
 # 小分類:出勤区分DEF
 const.DEF_DUTY = '0'
+# 小分類:月度集計区分agg
+const.AGG_MONTH = '1'
 # 小分類:USERID_DEF
 const.DEF_USERID = 0
 
 # Excel管理
 const.DIR = 'export/'
 const.TEMPLATEPATH = 'export/template/勤務表model.xlsm'
+const.MONTH_TEMPLATEPATH = 'export/template/月度単位の集計表model.xlsx'
 const.UNDERLINE = '_'
 const.XLSX = '.xlsm'
+const.XLS = '.xlsx'
 const.FILESTART = '/'
 const.SHEET = '勤務表'
+const.SHEET_MONTH = '月度単位の集計表'
 # system email
 const.ADMIN_MAIL = 'testid0917@gmail.com'
 const.ADMIN_MAIL_PAS = 'testTest0917'
