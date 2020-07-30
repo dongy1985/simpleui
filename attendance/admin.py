@@ -27,17 +27,11 @@ from common import fileUtil
 from common import mailUtil
 from common.const import const
 
-class ProxyResource(resources.ModelResource):
-    class Meta:
-        model = Attendance
-
 @admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
 
     actions = ['cancel_button', 'commit_button', 'confirm_button', 'export', ]
     #admin.site.disable_action('delete_selected')
-    resource_class = ProxyResource
-
     #display
     list_display = ('name', 'date', 'duty', 'start_time', 'end_time', 'rest', 'working_time', 'contents', 'status')
     #list
