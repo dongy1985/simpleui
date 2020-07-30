@@ -265,7 +265,6 @@ class AttendanceAdmin(admin.ModelAdmin):
             if obj.duty == dutymast[1][0] or obj.duty == dutymast[2][0]:
                 late_count = late_count + 1
         empNo = Employee.objects.get(name=keyname).empNo
-        print(empNo, keyname, attendance_YM, working_time, attendance_count, absence_count, annual_leave, rest_count, late_count)
         aggregaquery = Aggregation.objects.filter(name=keyname, attendance_YM__year=attendance_YM.year, attendance_YM__month=attendance_YM.month)
         if aggregaquery.count() == 0:
             Aggregation.objects.create(empNo=empNo, name=keyname, attendance_YM=attendance_YM, working_time=working_time, attendance_count=attendance_count, absence_count=absence_count, annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
