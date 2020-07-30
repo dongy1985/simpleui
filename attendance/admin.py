@@ -107,7 +107,8 @@ class AttendanceAdmin(admin.ModelAdmin):
     commit_button.allowed_permissions = ('commit_button_attendance',)
 
     def has_commit_button_attendance_permission(self, request):
-        if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
+        # if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
+        if request.user.is_superuser :
             return False
         else:
             opts = self.opts
