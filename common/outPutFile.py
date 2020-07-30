@@ -18,24 +18,16 @@ from copy import copy
 from aggregation.models import *
 
 
-def export(queryset, folder_name, fileName, count):
-    # copy
-    if count == 0:
-        fileName = copyExl(folder_name, '年度集記表')
-    else:
-        fileName = fileName
-
-    # querysetFilter
-    for obj in queryset:
-        workYM = obj.attendance_YM.strftime('%Y-%m')
-        temp_queryset = Aggregation.objects.filter(
-            Q(attendance_YM__startswith=workYM)
-        )
-        # mkExcel
-        mkExcel(temp_queryset, fileName, count)
-        count += 1
-        queryset = queryset.filter(~(Q(attendance_YM__startswith=workYM)))
-        return export(queryset=queryset, folder_name=folder_name, fileName=fileName, count=count)
+def export(folder_name, datFrom, datTo):
+    datFrom_Y = datFrom[0:4]
+    datFrom_M = datFrom[5:7]
+    datTo_Y = datTo[0:4]
+    datTo_M = datTo[5:7]
+    # 月数
+    counts = (int(datTo_Y) - int(datFrom_Y)) * 12 + (int(datTo_M) - int(datFrom_M))
+    fileName = copyExl(folder_name, '年度集記表')
+    # mkExcel
+    mkExcel(fileName, counts, datFrom, datTo)
 
 
 def copyExl(folder_name, userName):
@@ -44,79 +36,101 @@ def copyExl(folder_name, userName):
     return fileName
 
 
-def mkExcel(queryset, fileName, count):
+def mkExcel(fileName, counts, datFrom, datTo):
     # コピー先ファイル名の取得
     book = openpyxl.load_workbook(fileName)
     # コピー先シート名の取得
     sheet = book.get_sheet_by_name(const.SHEET_YEAR)
 
-    # data write
-    row = 0
-    i = 1
-    j = 1
-
-    for obj in queryset:
-        # 行のコピー
-        j = j + 1
-        for a in range(1, 9):
-            e = sheet.cell(row=j+1, column=a)
-            sheet[e.coordinate]._style = sheet.cell(row=3, column=a)._style
-
-        # 列のコピー
+    #ヘーダエリア(１～３行目)
+    count = 1
+    j = 0
+    j = j + 1
+    while count <= counts:
         for i in range(3, 9):
-            e = sheet.cell(row=j+1, column=i + 6*count)
-            sheet[e.coordinate]._style = sheet.cell(row=3, column=i)._style
-
-            if j == 2:
-                # 月分の列を定義
-                e1 = sheet.cell(row=1, column=i + 6*count)
-                sheet[e1.coordinate]._style = sheet.cell(row=1, column=i)._style
-                # コピー元の列を定義
-                copy = sheet.cell(row=2, column=i).value
-                sheet.cell(row=2, column=i + 6*count, value=copy)
-                e2 = sheet.cell(row=2, column=i + 6*count)
-                sheet[e2.coordinate]._style = sheet.cell(row=2, column=i)._style
+            # 月分の列を定義
+            e1 = sheet.cell(row=1, column=i + 6 * count)
+            sheet[e1.coordinate]._style = sheet.cell(row=1, column=i)._style
+            # コピー元の列を定義
+            copy = sheet.cell(row=2, column=i).value
+            sheet.cell(row=2, column=i + 6 * count, value=copy)
+            e2 = sheet.cell(row=2, column=i + 6 * count)
+            sheet[e2.coordinate]._style = sheet.cell(row=2, column=i)._style
+            e3 = sheet.cell(row=3, column=i + 6 * count)
+            sheet[e3.coordinate]._style = sheet.cell(row=3, column=i)._style
         sheet.merge_cells(const.SERU[count])
+        count += 1
 
-        # 社員番号
-        aggEmpNo = obj.empNo
-        # 社員名前
-        aggName = obj.name
-        # 実働時間
-        aggWorkTime = obj.working_time
-        # 出勤日数
-        aggAttendCount = obj.attendance_count
-        # 欠勤日数
-        aggAbsCount = obj.absence_count
-        # 年休日数
-        aggAnnLeave = obj.annual_leave
-        # 休出日数
-        aggRestCount = obj.rest_count
-        # 遅早退日数
-        aggLateCount = obj.late_count
-        # 統計年月
-        objMonth = obj.attendance_YM.strftime('%Y-%m')
+    # 行のコピー
+    for a in range(1, 9):
+        e = sheet.cell(row=j + 1, column=a)
+        sheet[e.coordinate]._style = sheet.cell(row=3, column=a)._style
 
-        # write data
-        # 報告月
-        sheet.cell(1, 3 + count * 6, objMonth)
-        if count == 0:
+    datFrom_Y = int(datFrom[0:4])
+    datFrom_M = int(datFrom[5:7])
+    count = 0
+    # data write
+    while count <= counts:
+
+        if datFrom_M <= 12:
+            if datFrom_M < 10:
+                temp_queryset = Aggregation.objects.filter(
+                    Q(attendance_YM__startswith=(str(datFrom_Y) + '-0' + str(datFrom_M)))
+                )
+            else:
+                temp_queryset = Aggregation.objects.filter(
+                    Q(attendance_YM__startswith=(str(datFrom_Y) + '-' + str(datFrom_M)))
+                )
+            datFrom_M = datFrom_M + 1
+        else:
+            datFrom_Y = datFrom_Y + 1
+            temp_queryset = Aggregation.objects.filter(
+                Q(attendance_YM__startswith=(str(datFrom_Y) + '-01'))
+            )
+            datFrom_M = 2
+
+        row = 0
+        for obj in temp_queryset:
             # 社員番号
-            sheet.cell(3 + row, 1 + count * 6, aggEmpNo)
-            # 氏名
-            sheet.cell(3 + row, 2 + count * 6, aggName)
-        # 実働時間
-        sheet.cell(3 + row, 3 + count * 6, aggWorkTime)
-        # 出勤
-        sheet.cell(3 + row, 4 + count * 6, aggAttendCount)
-        # 欠勤
-        sheet.cell(3 + row, 5 + count * 6, aggAbsCount)
-        # 年休
-        sheet.cell(3 + row, 6 + count * 6, aggAnnLeave)
-        # 休出
-        sheet.cell(3 + row, 7 + count * 6, aggRestCount)
-        # 遅早退
-        sheet.cell(3 + row, 8 + count * 6, aggLateCount)
-        row = row + 1
-        # save
-        book.save(fileName)
+            aggEmpNo = obj.empNo
+            # 社員名前
+            aggName = obj.name
+            # 実働時間
+            aggWorkTime = obj.working_time
+            # 出勤日数
+            aggAttendCount = obj.attendance_count
+            # 欠勤日数
+            aggAbsCount = obj.absence_count
+            # 年休日数
+            aggAnnLeave = obj.annual_leave
+            # 休出日数
+            aggRestCount = obj.rest_count
+            # 遅早退日数
+            aggLateCount = obj.late_count
+            # 統計年月
+            objMonth = obj.attendance_YM.strftime('%Y-%m')
+
+            # write data
+            # 報告月
+            sheet.cell(1, 3 + count * 6, objMonth)
+            if count == 0:
+            # 社員番号
+                sheet.cell(3 + row, 1 + count * 6, aggEmpNo)
+                # 氏名
+                sheet.cell(3 + row, 2 + count * 6, aggName)
+            # 実働時間
+            sheet.cell(3 + row, 3 + count * 6, aggWorkTime)
+            # 出勤
+            sheet.cell(3 + row, 4 + count * 6, aggAttendCount)
+            # 欠勤
+            sheet.cell(3 + row, 5 + count * 6, aggAbsCount)
+            # 年休
+            sheet.cell(3 + row, 6 + count * 6, aggAnnLeave)
+            # 休出
+            sheet.cell(3 + row, 7 + count * 6, aggRestCount)
+            # 遅早退
+            sheet.cell(3 + row, 8 + count * 6, aggLateCount)
+            row = row + 1
+        count += 1
+    # save
+    book.save(fileName)
