@@ -52,7 +52,7 @@ class AggregationAdmin(admin.ModelAdmin):
         folder_name = datetime.now().strftime("%Y-%m-%d_%H%M%S")
         if os.path.isdir(const.DIR):
             os.mkdir(os.path.join(const.DIR, folder_name))
-        # 統計年月を取得 
+        # 統計年月を取得
         datFrom = request.GET.get('attendance_YM__gte')[0:7]
         datTo = request.GET.get('attendance_YM__lt')[0:7]
         if datFrom == datTo:
@@ -61,8 +61,6 @@ class AggregationAdmin(admin.ModelAdmin):
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
         else:
             # 年度単位の集計表(excel)の導出
-            count = 0
-            fileName = ""
             outPutFile.export(folder_name, datFrom, datTo)
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
 
