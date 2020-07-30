@@ -26,7 +26,7 @@ from import_export import resources
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from common.custom_filter import DateFieldFilter
 from common import mailUtil
-from common import excelUtil
+from common import fileUtil
 from common import outPutFile
 from common.const import const
 
@@ -64,7 +64,7 @@ class AggregationAdmin(admin.ModelAdmin):
         datTo = request.GET.get('attendance_YM__lt')[0:7]
         if datFrom == datTo:
             # 月度単位の集計表(excel)の導出
-            excelUtil.exportExcel(queryset, folder_name, datFrom)
+            fileUtil.exportExcel(folder_name, datFrom)
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
         else:
             # 年度単位の集計表(excel)の導出
