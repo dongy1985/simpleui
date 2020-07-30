@@ -35,16 +35,23 @@ from common.const import const
 class AggregationAdmin(admin.ModelAdmin):
     actions = ['export_button', ]
     # display
-    list_display = (
-        'name', 'empNo', 'attendance_YM', 'working_time', 'attendance_count', 'absence_count', 'annual_leave',
-        'rest_count',
-        'late_count')
+    list_display = ('empNo', 'name', 'attendance_YM', 'working_time', 'attendance_count', 'absence_count', 'annual_leave', 'rest_count', 'late_count')
     # set search
     search_fields = ('empNo', 'name', 'attendance_YM')
     # list
     list_filter = (('attendance_YM', DateFieldFilter),)
     ordering = ('attendance_YM', 'empNo', 'name')
     list_per_page = 7
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_readonly_fields(self, request, obj=None):
+        self.readonly_fields = ['empNo', 'name', 'attendance_YM', 'working_time', 'attendance_count', 'absence_count', 'annual_leave', 'rest_count', 'late_count']
+        return self.readonly_fields
 
     # excle導出
     def export_button(self, request, queryset):
