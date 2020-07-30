@@ -52,13 +52,19 @@ class AggregationAdmin(admin.ModelAdmin):
         folder_name = datetime.now().strftime("%Y-%m-%d_%H%M%S")
         if os.path.isdir(const.DIR):
             os.mkdir(os.path.join(const.DIR, folder_name))
-        # 月度単位の集計表(excel)の導出
-        excelUtil.exportExcel(queryset, folder_name)
-        # 年度単位の集計表(excel)の導出
-        count = 0
-        fileName = ""
-        outPutFile.export(queryset, folder_name, fileName, count)
-        messages.add_message(request, messages.SUCCESS, 'SUCCESS')
+        # 获取表单数据
+        datFrom = request.GET.get('attendance_YM__gte')[0:7]
+        datTo = request.GET.get('attendance_YM__lt')[0:7]
+        if datFrom == datTo:
+            # 月度単位の集計表(excel)の導出
+            excelUtil.exportExcel(queryset, folder_name, datFrom)
+            messages.add_message(request, messages.SUCCESS, 'SUCCESS')
+        else:
+            # 年度単位の集計表(excel)の導出
+            count = 0
+            fileName = ""
+            outPutFile.export(queryset, folder_name, fileName, count)
+            messages.add_message(request, messages.SUCCESS, 'SUCCESS')
 
     export_button.short_description = ' 導出'
     export_button.type = 'primary'

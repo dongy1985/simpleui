@@ -23,38 +23,27 @@ from common.const import const
 # 月度単位の集計表(excel)の導出
 
 
-def exportExcel(queryset, folder_name):
-    # 月度の取得（検索期間として設定）
-    for obj in queryset:
-        workYM = obj.attendance_YM.strftime('%Y-%m')
-        # DBから該当月度のデータ取得
-        temp_queryset = Aggregation.objects.filter(
-            Q(attendance_YM__startswith=workYM)
-        )
-        # 【月度単位の集計表dataの作成】を呼び出し
-        mkExcel(temp_queryset, folder_name)
-
-        queryset = queryset.filter(
-            ~(Q(attendance_YM__startswith=workYM))
-        )
-
-        return exportExcel(queryset=queryset, folder_name=folder_name)
+def exportExcel(queryset, folder_name, datFrom):
+    # DBから該当月度のデータ取得
+    temp_queryset = Aggregation.objects.filter(
+        Q(attendance_YM__startswith=datFrom)
+    )
+    # 【月度単位の集計表dataの作成】を呼び出し
+    mkExcel(temp_queryset, folder_name, datFrom)
+    return
 
 # 月度単位の集計表templateの作成
-def copyExl(folder_name, objMonth):
+def copyExl(folder_name, datFrom):
     # コピー先のパス設定
-    fileName = const.DIR + folder_name + const.FILESTART + const.SHEET_MONTH + const.UNDERLINE + str(objMonth) + const.XLS
+    fileName = const.DIR + folder_name + const.FILESTART + const.SHEET_MONTH + const.UNDERLINE + str(datFrom) + const.XLS
     # コピー
     shutil.copyfile(const.MONTH_TEMPLATEPATH, fileName)
     return fileName
 
 # 月度単位の集計表dataの作成
-def mkExcel(queryset, folder_name):
-    # 月度の取得
-    for obj in queryset:
-        objMonth = obj.attendance_YM.strftime('%Y-%m')
+def mkExcel(queryset, folder_name, datFrom):
     # 月度単位の集計表templateの作成
-    fileName = copyExl(folder_name, objMonth)
+    fileName = copyExl(folder_name, datFrom)
     # コピー先ファイル名の取得
     book = openpyxl.load_workbook(fileName)
     # コピー先シート名の取得
@@ -86,8 +75,6 @@ def mkExcel(queryset, folder_name):
         aggRestCount = obj.rest_count
         # 遅早退日数
         aggLateCount = obj.late_count
-        # 統計年月
-        objMonth = obj.attendance_YM.strftime('%Y-%m')
 
         # 社員番号
         sheet.cell(data_row, dataMst[0][1], aggEmpNo)
@@ -106,7 +93,7 @@ def mkExcel(queryset, folder_name):
         # 遅早退日数
         sheet.cell(data_row, dataMst[7][1], aggLateCount)
         # 統計年月
-        sheet.cell(headMst[0][0], headMst[0][1], str(objMonth))
+        sheet.cell(headMst[0][0], headMst[0][1], str(datFrom))
         # 行ごとに書式のコピー
         i = i + 1
         for a in range(1, 9):
@@ -114,4 +101,3 @@ def mkExcel(queryset, folder_name):
             sheet[nextrow.coordinate]._style = sheet.cell(row=5, column=a)._style
 
     book.save(fileName)
-
