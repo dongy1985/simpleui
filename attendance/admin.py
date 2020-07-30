@@ -17,6 +17,7 @@ from django.db.models import Q
 from wsgiref.util import FileWrapper
 from datetime import date, timedelta
 
+from aggregation.models import Aggregation
 from attendance.models import *
 from common.models import *
 from company.models import *
@@ -142,6 +143,20 @@ class AttendanceAdmin(admin.ModelAdmin):
         #mail
         mailUtil.sendmail(const.MAIL_KBN_CONFIRM, queryset)
         messages.add_message(request, messages.SUCCESS, '承認済')
+        #統計データ抽出
+        querysetlist = []
+        for obj in queryset:
+            querysetdir = {}
+            querysetdir[obj.name] = obj.date.strftime('%Y-%m')
+            if querysetdir not in querysetlist:
+                querysetlist.append(querysetdir)
+                continue
+        index = 0
+        while index < len(querysetlist):
+            for keyname in querysetlist[index]:
+                valueYM = querysetlist[index][keyname]
+                self.attendance(keyname, valueYM)
+            index += 1
     confirm_button.short_description = ' 承認'
     confirm_button.type = 'success'
     confirm_button.confirm = '承認よろしですか？'
@@ -223,6 +238,40 @@ class AttendanceAdmin(admin.ModelAdmin):
         opts = self.opts
         codename = get_permission_codename('export', opts)
         return request.user.has_perm('%s.%s' % (opts.app_label, codename))
+
+    #統計実行
+    def attendance(self, keyname, valueYM):
+        valueYear = int(valueYM[0:4])
+        valueMonth = int(valueYM[5:])
+        queryset = Attendance.objects.filter(name=keyname, date__year=valueYear, date__month=valueMonth, status=const.WORK_TYPE_SMALL_2).order_by('name')
+        attendance_YM = datetime.strptime(valueYM, '%Y-%m')
+        working_time = 0
+        attendance_count = 0
+        absence_count = 0
+        annual_leave = 0
+        rest_count = 0
+        late_count = 0
+        dutymast = CodeMst.objects.filter(cd=const.DUTY_TYPE).values_list('subCd', 'subNm').order_by('subCd')
+        for obj in queryset:
+            working_time = working_time + obj.working_time
+            if obj.duty == dutymast[0][0]:
+                attendance_count = attendance_count + 1
+            if obj.duty == dutymast[4][0]:
+                absence_count = absence_count + 1
+            if obj.duty == dutymast[5][0]:
+                annual_leave = annual_leave + 1
+            if obj.duty == dutymast[7][0]:
+                rest_count = rest_count + 1
+            if obj.duty == dutymast[1][0] or obj.duty == dutymast[2][0]:
+                late_count = late_count + 1
+        empNo = Employee.objects.get(name=keyname).empNo
+        print(empNo, keyname, attendance_YM, working_time, attendance_count, absence_count, annual_leave, rest_count, late_count)
+        aggregaquery = Aggregation.objects.filter(name=keyname, attendance_YM__year=attendance_YM.year, attendance_YM__month=attendance_YM.month)
+        if aggregaquery.count() == 0:
+            Aggregation.objects.create(empNo=empNo, name=keyname, attendance_YM=attendance_YM, working_time=working_time, attendance_count=attendance_count, absence_count=absence_count, annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
+        else:
+            aggregaquery.delete()
+            Aggregation.objects.create(empNo=empNo, name=keyname, attendance_YM=attendance_YM, working_time=working_time, attendance_count=attendance_count, absence_count=absence_count, annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
 
     class Media:
         js = ('admin/js/admin/attendance.js',)
