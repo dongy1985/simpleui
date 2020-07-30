@@ -234,12 +234,13 @@ class ExpenseReturnDetail(models.Model):
 
 # 現場管理モデル
 class WorkSite(models.Model):
+    # 案件名称
+    project_name = models.CharField(max_length=30, verbose_name='案件名称')
     # 現場名称
     site_name = models.CharField(max_length=30, verbose_name='現場名称')
     # 発注番号
     site_number = models.CharField(max_length=16, verbose_name='発注番号')
-    # 案件名称
-    project_name = models.CharField(max_length=30, verbose_name='案件名称')
+
     #現場責任者
     manager = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='現場責任者',
                              db_index=True)
@@ -255,7 +256,14 @@ class WorkSiteDetail(models.Model):
     #メンバー
     member = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='メンバー',
                              db_index=True)
+    # 備考
+    comment = models.CharField(max_length=180, verbose_name='備考', default=const.DEF_COMMENT)
 
     class Meta:
         verbose_name = "メンバー"
         verbose_name_plural = "メンバー"
+    
+    def __int__(self):
+        return self.id
+    def __str__(self):
+        return self.comment

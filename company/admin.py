@@ -9,6 +9,7 @@ import time
 from django.contrib.auth.models import User
 from django.contrib import messages
 import re
+from django.db.models import Q
 
 
 class DutydetailInline(admin.TabularInline):
@@ -397,6 +398,7 @@ class AssetLendAdmin(admin.ModelAdmin):
 class WorkSiteDetailInline(admin.TabularInline):
     model = WorkSiteDetail
     fieldsets = [(u'', {'fields': ['member']})]
+    raw_id_fields = ('member',)
     extra = 1
 
 
@@ -404,9 +406,26 @@ class WorkSiteDetailInline(admin.TabularInline):
 class WorkSiteAdmin(admin.ModelAdmin):
     inlines = [WorkSiteDetailInline, ]
 
-    list_display = ('site_name', 'site_number', 'project_name', 'manager')
+    list_display = ('project_name', 'site_name', 'site_number', 'manager')
     list_per_page = 7
-    fieldsets = [(None, {'fields': ['site_name', 'site_number', 'project_name', 'manager']})]
-    list_display_links = ('site_name',)
-    search_fields = ('site_name',)
+    fieldsets = [(None, {'fields': ['project_name', 'site_name', 'site_number', 'manager']})]
+    list_display_links = ('project_name',)
+    search_fields = ('project_name',)
+    raw_id_fields = ('manager',)
     # actions = ['commit_button', 'confirm_button', 'cancel_button']
+
+    #user filter
+    def get_queryset(self, request):
+        if request.user.is_superuser :
+            qs = super().get_queryset(request)
+            return qs
+        else :
+            tempid = Employee.objects.get(user_id=request.user.id).id
+            if len(WorkSite.objects.filter(Q(manager_id=tempid)).distinct()) != 0:
+                qs = super().get_queryset(request)
+                return qs.filter(manager_id=tempid)
+            # elif len(WorkSiteDetail.objects.filter(member_id=tempid).values('manager_id')) != 0:
+            #     temp_worksite_id = WorkSiteDetail.objects.filter(member_id=tempid).values('manager_id')
+            #     temp_manager_id = WorkSite.objects.filter(id=temp_worksite_id).values('manager_id')
+            #     qs = super().get_queryset(request)
+            #     return qs.filter(manager=temp_manager_id)

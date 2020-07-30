@@ -21,14 +21,15 @@ def sendmail(mailKbn, queryset):
         if obj.user_id != tempId:
             employe_name = obj.name
             employe_mail = Employee.objects.get(user=obj.user_id).email
-            send(mailKbn, employe_name, employe_mail, temp_queryset)
             tempId = obj.user_id
+            send(mailKbn, employe_name, employe_mail, tempId)
+            
             queryset = queryset.filter(
                 ~(Q(user_id=obj.user_id))
             )
             return sendmail(mailKbn=mailKbn, queryset=queryset)
 
-def send(mailKbn, employe_name, employe_mail, queryset):
+def send(mailKbn, employe_name, employe_mail, user_id):
     #fromAddrの設定
     from_addr = const.ADMIN_MAIL
     password = const.ADMIN_MAIL_PAS
@@ -37,7 +38,7 @@ def send(mailKbn, employe_name, employe_mail, queryset):
     #toAddr、内容の設定
     main = ''
     Subject = ''
-    to_addr, main, Subject = chooseKbn(mailKbn, employe_name, employe_mail)
+    to_addr, main, Subject = chooseKbn(mailKbn, employe_name, employe_mail, user_id)
     msg = MIMEText(main,'plain','utf-8')
  
     msg['From'] = Header(from_addr)
@@ -51,17 +52,30 @@ def send(mailKbn, employe_name, employe_mail, queryset):
     server.quit()
     print ('success    ' + to_addr)
 
-def chooseKbn(mailKbn, employe_name, employe_mail):
+def chooseKbn(mailKbn, employe_name, employe_mail, user_id):
 
     if mailKbn == const.MAIL_KBN_COMMIT:
         #to_addr
-        perm = Permission.objects.get(codename='confirm_button_attendance')  
-        users = User.objects.filter(Q(user_permissions=perm) | Q(is_superuser=True)).distinct()
+        # perm = Permission.objects.get(codename='confirm_button_attendance') 
+        # users = User.objects.filter(Q(user_permissions=perm) | Q(is_superuser=True)).distinct() 
+        users = User.objects.filter(Q(is_superuser=True)).distinct()
         to_addr = ''
+        #superuser
         for obj in users:
             if len(Employee.objects.filter(user=obj.id).values('email')) != 0:
                 to_addr += Employee.objects.get(user=obj.id).email + ', '
-            
+        #現場管理者
+        tempid = Employee.objects.get(user_id=user_id).id
+        if len(WorkSite.objects.filter(Q(manager_id=tempid)).distinct()) != 0:
+            to_addr += Employee.objects.get(id=tempid).email + ', '
+        #一般メンバー
+        else:
+            if len(WorkSiteDetail.objects.filter(member_id=tempid).values('manager_id')) != 0:
+                temp_Site_id = WorkSiteDetail.objects.get(member_id=tempid).manager_id
+                manager_id = WorkSite.objects.get(id=temp_Site_id).manager_id
+                to_addr += Employee.objects.get(id=manager_id).email + ', '
+
+
         #main
         main = '承認者さん、お疲れ様です。\n\n' + employe_name +'勤務を提出しました、ご確認お願い致します。\n'
         #Subject
@@ -77,7 +91,7 @@ def chooseKbn(mailKbn, employe_name, employe_mail):
         main = employe_name + 'さん、お疲れ様です。\n\n勤務が承認しました、ご確認お願い致します。\n' 
         Subject = employe_name + 'の勤務が承認しました'
         return (to_addr, main, Subject)
-    
+        
 def retention_mail(employe_name, employe_mail, main):
     #fromAddrの設定
     from_addr = const.ADMIN_MAIL

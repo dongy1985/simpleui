@@ -6,9 +6,9 @@ class _const:
     class ConstCaseError(ConstError):
         pass
     def __setattr__(self, name, value):
-        if name in self.__dict__:
+        if name in self.__dict__: 
             raise self.ConstError("Can't change const {0}".format(name))
-        if not name.isupper():
+        if not name.isupper(): 
             raise self.ConstCaseError("const name {0} is not all uppercase".format(name))
         self.__dict__[name] = value
 
@@ -49,14 +49,15 @@ const.DEF_USERID = 0
 
 # Excel管理
 const.DIR = 'export/'
-const.TEMPLATEPATH = 'export/template/勤務表model.xlsm'
+const.TEMPLATEPATH = 'export/template/勤務表model_v03.xlsm'
 const.MONTH_TEMPLATEPATH = 'export/template/月度単位の集計表model.xlsx'
 const.YEAR_TEMPLATEPATH = 'export/template/年度単位の集計表model.xlsx'
 const.UNDERLINE = '_'
-const.XLSX = '.xlsm'
+const.XLSX = '.xlsx'
+const.XLSM = '.xlsm'
 const.XLS = '.xlsx'
 const.FILESTART = '/'
-const.SHEET = '勤務表'
+const.SHEET = '業務完了報告書Ver03'
 const.SHEET_MONTH = '月度単位の集計表'
 const.SHEET_YEAR = '年度単位の集計表'
 # system email
@@ -126,6 +127,9 @@ const.LEND_BACK = '3'
 
 # 資産借出申請 状態 返却済
 const.LEND_DENY = '4'
+
+# 備考
+const.DEF_COMMENT = ' '
 
 # セル結合
 const.SERU = ['C1:H1','I1:N1','O1:T1','U1:Z1',
