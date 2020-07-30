@@ -1,6 +1,6 @@
 import time, datetime
 import shutil
-import openpyxl 
+import openpyxl
 import os
 import math
 
@@ -14,6 +14,7 @@ from django.utils.encoding import escape_uri_path
 from django.db.models import Q
 
 from attendance.models import *
+from aggregation.models import *
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from common.models import *
@@ -110,7 +111,7 @@ def mkExcel(queryset, folder_name):
         temp_modf = math.modf(float(obj.rest))
         temp_hour = int(temp_modf[1])
         temp_minute = int(temp_modf[0] * 60)
-        temp_rest_time = str(temp_hour) + ':' + str(temp_minute) 
+        temp_rest_time = str(temp_hour) + ':' + str(temp_minute)
         # end_time = datetime.strptime(temp_rest_time,"%H:%M:%S")
         # end_time = time.strptime("30 Nov 00", "%d %b %y")
         sheet.cell(data_row + obj.date.day, dataMst[2][1], temp_rest_time)
@@ -121,3 +122,84 @@ def mkExcel(queryset, folder_name):
     #save
     book.save(fileName)
 
+# 月度単位の集計表(excel)の導出
+
+
+def exportExcel(folder_name, datFrom):
+    # DBから該当月度のデータ取得
+    temp_queryset = Aggregation.objects.filter(
+        Q(attendance_YM__startswith=datFrom)
+    )
+    # 【月度単位の集計表dataの作成】を呼び出し
+    mkExl(temp_queryset, folder_name, datFrom)
+    return
+
+# 月度単位の集計表templateの作成
+def copyExle(folder_name, datFrom):
+    # コピー先のパス設定
+    fileName = const.DIR + folder_name + const.FILESTART + const.SHEET_MONTH + const.UNDERLINE + str(datFrom) + const.XLS
+    # コピー
+    shutil.copyfile(const.MONTH_TEMPLATEPATH, fileName)
+    return fileName
+
+# 月度単位の集計表dataの作成
+def mkExl(queryset, folder_name, datFrom):
+    # 月度単位の集計表templateの作成
+    fileName = copyExle(folder_name, datFrom)
+    # コピー先ファイル名の取得
+    book = openpyxl.load_workbook(fileName)
+    # コピー先シート名の取得
+    sheet = book.get_sheet_by_name(const.SHEET_MONTH)
+
+    # 月度単位の集計表ヘッダー部の取得
+    headMst = CrdMst.objects.filter(tplType=const.AGG_MONTH, crdDiv=const.CRD_DIV_H, delFlg=const.DEL_FLG_0).\
+    values_list('crdY', 'crdX', 'defVal').order_by('itemSort')
+    # 月度単位の集計表明細部の取得
+    dataMst = CrdMst.objects.filter(tplType=const.AGG_MONTH, crdDiv=const.CRD_DIV_D, delFlg=const.DEL_FLG_0).\
+        values_list('crdY', 'crdX', 'defVal').order_by('itemSort')
+    data_row = dataMst[0][0]
+    i = 3
+    for obj in queryset:
+        data_row = data_row + 1
+        # 社員番号
+        aggEmpNo = obj.empNo
+        # 社員名前
+        aggName = obj.name
+        # 実働時間
+        aggWorkTime = obj.working_time
+        # 出勤日数
+        aggAttendCount = obj.attendance_count
+        # 欠勤日数
+        aggAbsCount = obj.absence_count
+        # 年休日数
+        aggAnnLeave = obj.annual_leave
+        # 休出日数
+        aggRestCount = obj.rest_count
+        # 遅早退日数
+        aggLateCount = obj.late_count
+
+        # 社員番号
+        sheet.cell(data_row, dataMst[0][1], aggEmpNo)
+        # 社員名前
+        sheet.cell(data_row, dataMst[1][1], aggName)
+        # 実働時間
+        sheet.cell(data_row, dataMst[2][1], aggWorkTime)
+        # 出勤日数
+        sheet.cell(data_row, dataMst[3][1], aggAttendCount)
+        # 欠勤日数
+        sheet.cell(data_row, dataMst[4][1], aggAbsCount)
+        # 年休日数
+        sheet.cell(data_row, dataMst[5][1], aggAnnLeave)
+        # 休出日数
+        sheet.cell(data_row, dataMst[6][1], aggRestCount)
+        # 遅早退日数
+        sheet.cell(data_row, dataMst[7][1], aggLateCount)
+        # 統計年月
+        sheet.cell(headMst[0][0], headMst[0][1], str(datFrom))
+        # 行ごとに書式のコピー
+        i = i + 1
+        for a in range(1, 9):
+            nextrow = sheet.cell(row=i + 1, column=a)
+            sheet[nextrow.coordinate]._style = sheet.cell(row=5, column=a)._style
+
+    book.save(fileName)
