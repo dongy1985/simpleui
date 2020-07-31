@@ -43,12 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.admindocs',
     # 共通管理（コード、ファイル管理等）
     'common',
-    # 勤務管理
+    # 勤務管理,勤務統計
     'attendance',
     # # 会社管理（社員、資産）
     'company',
-    # 勤務統計
-    'attendanceStatistics',
 ]
 
 MIDDLEWARE = [
