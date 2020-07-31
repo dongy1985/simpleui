@@ -59,16 +59,18 @@ class AggregationAdmin(admin.ModelAdmin):
         folder_name = datetime.now().strftime("%Y-%m-%d_%H%M%S")
         if os.path.isdir(const.DIR):
             os.mkdir(os.path.join(const.DIR, folder_name))
-        # 統計年月を取得
-        datFrom = request.GET.get('attendance_YM__gte')[0:7]
-        datTo = request.GET.get('attendance_YM__lt')[0:7]
-        if datFrom == datTo:
+        # 統計年月開始を取得
+        attendance_YM_From = request.GET.get('attendance_YM__gte')[0:7]
+        # 統計年月終了を取得
+        attendance_YM_To = request.GET.get('attendance_YM__lt')[0:7]
+        # 月度単位または年度単位の判断
+        if attendance_YM_From == attendance_YM_To:
             # 月度単位の集計表(excel)の導出
-            fileUtil.exportExcel(folder_name, datFrom)
+            fileUtil.exportExcel(folder_name, attendance_YM_From)
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
         else:
             # 年度単位の集計表(excel)の導出
-            outPutFile.export(folder_name, datFrom, datTo)
+            fileUtil.exportYearExcel(folder_name, attendance_YM_From, attendance_YM_To)
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
 
     export_button.short_description = ' 導出'
