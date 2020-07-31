@@ -404,19 +404,27 @@ class WorkSiteDetailInline(admin.TabularInline):
 # 現場管理
 @admin.register(WorkSite)
 class WorkSiteAdmin(admin.ModelAdmin):
+    # メンバーモデル
     inlines = [WorkSiteDetailInline, ]
-
+    # 表示必要なレコード
     list_display = ('project_name', 'site_name', 'site_number', 'manager')
+    # 一ページ表示の数
     list_per_page = 7
+    # 編集必要なレコード
     fieldsets = [(None, {'fields': ['project_name', 'site_name', 'site_number', 'manager']})]
+    # リンク表示必要なレコード
     list_display_links = ('project_name',)
+    # サーチ必要なレコード
     search_fields = ('project_name',)
+    # 虫めがね
     raw_id_fields = ('manager',)
     # user filter
     def get_queryset(self, request):
+        # superuser
         if request.user.is_superuser :
             qs = super().get_queryset(request)
             return qs
+        # 現場管理者
         else :
             tempid = Employee.objects.get(user_id=request.user.id).id
             if len(WorkSite.objects.filter(Q(manager_id=tempid)).distinct()) != 0:

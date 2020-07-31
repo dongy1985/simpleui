@@ -30,7 +30,7 @@ from common.const import const
 
 @admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
-
+    # actions
     actions = ['cancel_button', 'commit_button', 'confirm_button', 'export', ]
     # display
     list_display = ('name', 'date', 'duty', 'start_time', 'end_time', 'rest', 'working_time', 'contents', 'status')
@@ -40,7 +40,9 @@ class AttendanceAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     # set field
     fieldsets = [(None,{'fields':['date', 'duty', 'start_time', 'end_time', 'rest', 'contents']})]
+    # ordering
     ordering = ( 'name', 'date')
+    # 一ページ表示の数
     list_per_page = 7
 
     def has_delete_permission(self, request, obj=None):

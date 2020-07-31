@@ -99,24 +99,17 @@ def mkExcel(queryset, folder_name):
         values_list('crdY', 'crdX', 'defVal').order_by('itemSort')
     data_row = dataMst[0][0]
     for obj in queryset:
-        # duty_status
-        # duty_status = CodeMst.objects.get(cd=const.DUTY_TYPE, subCd=obj.duty, delFlg=const.DEL_FLG_0).subNm
-        # sheet.cell(data_row + obj.date.day, dataMst[0][1], duty_status)
         # start_time
         sheet.cell(data_row + obj.date.day, dataMst[0][1], obj.start_time)
         # end_time
         sheet.cell(data_row + obj.date.day, dataMst[1][1], obj.end_time)
         # restTime
-        #0.0 -> 00:00
+        # 0.0 -> 00:00
         temp_modf = math.modf(float(obj.rest))
         temp_hour = int(temp_modf[1])
         temp_minute = int(temp_modf[0] * 60)
         temp_rest_time = str(temp_hour) + ':' + str(temp_minute)
-        # end_time = datetime.strptime(temp_rest_time,"%H:%M:%S")
-        # end_time = time.strptime("30 Nov 00", "%d %b %y")
         sheet.cell(data_row + obj.date.day, dataMst[2][1], temp_rest_time)
-        # #sumTimeS
-        # sheet.cell(data_row + obj.date.day, dataMst[4][1], obj.working_time)
         # contents
         sheet.cell(data_row + obj.date.day, dataMst[3][1], obj.contents)
     # save
