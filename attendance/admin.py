@@ -343,8 +343,8 @@ class AttendanceStatisticsAdmin(admin.ModelAdmin):
 
         fread = open(filename, "rb")
         response = HttpResponse(fread, content_type='application/vnd.ms-excel')
-        response['Content-Disposition'] = 'attachment;filename="Report.xlsx"'
-        return response
+        response['Content-Disposition'] = 'attachment;filename="月度年度統計表.xlsx"'
+        fread.close()
 
     export_button.short_description = ' 導出'
     export_button.type = 'primary'
