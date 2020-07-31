@@ -346,7 +346,7 @@ class AttendanceStatisticsAdmin(admin.ModelAdmin):
             # 年度単位の集計表(excel)の導出
             filename = fileUtil.exportYearExcel(folder_name, attendance_YM_From, attendance_YM_To)
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
-
+            
         fread = open(filename, "rb")
         response = HttpResponse(fread, content_type='application/vnd.ms-excel')
         response['Content-Disposition'] = 'attachment;filename="Report.xlsx"'
