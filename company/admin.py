@@ -421,15 +421,20 @@ class WorkSiteAdmin(admin.ModelAdmin):
     # user filter
     def get_queryset(self, request):
         # superuser
-        if request.user.is_superuser :
+        if request.user.is_superuser:
             qs = super().get_queryset(request)
             return qs
         # 現場管理者
-        else :
+        elif request.user.has_perm('attendance.confirm_button_attendance'):
             tempid = Employee.objects.get(user_id=request.user.id).id
-            if len(WorkSite.objects.filter(Q(manager_id=tempid)).distinct()) != 0:
-                qs = super().get_queryset(request)
-                return qs.filter(manager_id=tempid)
+            qs = super().get_queryset(request)
+            return qs.filter(manager_id=tempid)
+        # メンバー
+        else:
+            messages.add_message(request, messages.ERROR, '現場管理者ではありません')
+            tempid = Employee.objects.get(user_id=request.user.id).id
+            qs = super().get_queryset(request)
+            return qs.filter(manager_id=tempid)
             # elif len(WorkSiteDetail.objects.filter(member_id=tempid).values('manager_id')) != 0:
             #     temp_worksite_id = WorkSiteDetail.objects.filter(member_id=tempid).values('manager_id')
             #     temp_manager_id = WorkSite.objects.filter(id=temp_worksite_id).values('manager_id')
