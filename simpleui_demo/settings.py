@@ -182,6 +182,7 @@ SIMPLEUI_ICON = {
     '员工管理': 'fas fa-user-tie',
     '勤務': 'el-icon-suitcase',
     '勤務管理': 'el-icon-notebook-1',
+    '勤務統計': 'el-icon-document',
     '会社管理': 'el-icon-s-custom',
     '社員情報': 'el-icon-user-solid',
     '立替金': 'el-icon-edit',
