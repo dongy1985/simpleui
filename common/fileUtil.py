@@ -210,13 +210,13 @@ def exportYearExcel(folder_name, attendance_YM_From, attendance_YM_To):
     # 統計月数：統計年月開始から、統計年月終了まで、何か月
     counts = (int(attendance_YM_To_Y) - int(attendance_YM_From_Y)) * 12 + (int(attendance_YM_To_M) - int(attendance_YM_From_M))
     # ファイルの名
-    fileName = copyExl(folder_name, const.SHEET_YEAR)
+    fileName = copyExcel(folder_name, const.SHEET_YEAR)
     # 【年度単位の集計表dataの作成】を呼び出し
-    mkExcel(fileName, counts, attendance_YM_From, attendance_YM_To)
+    makeExcel(fileName, counts, attendance_YM_From, attendance_YM_To)
     return fileName
 
 # 年度単位の集計表templateの作成
-def copyExl(folder_name, userName):
+def copyExcel(folder_name, userName):
     # コピー先のパス設定
     fileName = const.DIR + folder_name + const.FILESTART + userName + const.XLS
     # コピー
@@ -225,7 +225,7 @@ def copyExl(folder_name, userName):
 
 
 # 年度単位の集計表dataの作成
-def mkExcel(fileName, counts, attendance_YM_From, attendance_YM_To):
+def makeExcel(fileName, counts, attendance_YM_From, attendance_YM_To):
     # コピー先ファイル名の取得
     book = openpyxl.load_workbook(fileName)
     # コピー先シート名の取得
