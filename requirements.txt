@@ -8,5 +8,4 @@ markdown
 Pygments
 openpyxl
 python-dateutil
-django_apscheduler
 apscheduler
