@@ -1,9 +1,6 @@
 from django.db import models
-from common.models import *
-# Create your models here.
 
-
-class Aggregation(models.Model):
+class AttendanceStatistics(models.Model):
     # 社員番号
     empNo = models.CharField(verbose_name='社員番号', max_length=3)
     # 社員名前
@@ -22,10 +19,14 @@ class Aggregation(models.Model):
     rest_count = models.IntegerField(verbose_name='休出')
     # 遅早退
     late_count = models.IntegerField(verbose_name='遅早退')
+    # 登録日付
+    createTime = models.DateTimeField(verbose_name='登録日付', auto_now=True)
+    # 更新日付
+    updateTime = models.DateTimeField(verbose_name='更新日付', auto_now=True)
 
     class Meta:
-        verbose_name = "勤務レポート"
-        verbose_name_plural = "勤務レポート"
+        verbose_name = "勤務統計"
+        verbose_name_plural = "勤務統計"
         permissions = (
             ("export_button", "Can 導出"),
         )

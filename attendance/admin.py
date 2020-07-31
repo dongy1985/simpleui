@@ -17,7 +17,7 @@ from django.db.models import Q
 from wsgiref.util import FileWrapper
 from datetime import date, timedelta
 
-from aggregation.models import Aggregation
+from attendanceStatistics.models import *
 from attendance.models import *
 from common.models import *
 from company.models import *
@@ -47,7 +47,7 @@ class AttendanceAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         if obj:
-            if obj.status != const.WORK_TYPE_SMALL_0:  
+            if obj.status != const.WORK_TYPE_SMALL_0:
                 return False
         return super().has_delete_permission(request)
 
@@ -122,7 +122,7 @@ class AttendanceAdmin(admin.ModelAdmin):
                 else:
                     messages.add_message(request, messages.ERROR, '提出记录を選択してください')
                     return
-                
+
         # mail
         if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
             mailUtil.sendmail(const.MAIL_KBN_CANCEL, queryset)
@@ -168,7 +168,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         opts = self.opts
         codename = get_permission_codename('confirm_button', opts)
         return request.user.has_perm('%s.%s' % (opts.app_label, codename))
-    
+
     # queryset筛选
     def querysetFilter(self, queryset, expErrList):
         for obj in queryset:
@@ -197,7 +197,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         for line in expErrList:
             fp.write(line+'\n')
         fp.close()
-        
+
         if len(queryset) != 0:
             # 呼出EXCEL制作
             fileUtil.export(temp_queryset, folder_name)
@@ -205,11 +205,11 @@ class AttendanceAdmin(admin.ModelAdmin):
 
         # ZIp
         temp = const.DIR + folder_name + '.zip'
-        temp_zip = zipfile.ZipFile(temp,'w',zipfile.ZIP_DEFLATED)        
+        temp_zip = zipfile.ZipFile(temp,'w',zipfile.ZIP_DEFLATED)
         startdir = const.DIR + folder_name
         for dirpath, dirnames, filenames in os.walk(startdir):
-            fpath = dirpath.replace(startdir,'') 
-            fpath = fpath and fpath + os.sep or ''            
+            fpath = dirpath.replace(startdir,'')
+            fpath = fpath and fpath + os.sep or ''
             for filename in filenames:
                 temp_zip.write(os.path.join(dirpath, filename),fpath+filename)
         temp_zip.close()
@@ -219,7 +219,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         fread.close()
         # tempDel
         if os.path.exists(temp):
-            os.remove(temp)  
+            os.remove(temp)
             for root, dirs, files in os.walk(startdir, topdown=False):
                 for name in files:
                     os.remove(os.path.join(root, name))
@@ -227,7 +227,7 @@ class AttendanceAdmin(admin.ModelAdmin):
                     os.rmdir(os.path.join(root, name))
             os.removedirs(startdir)
         else:
-            print('no such file') 
+            print('no such file')
         return response
 
     export.short_description = ' 導出'
