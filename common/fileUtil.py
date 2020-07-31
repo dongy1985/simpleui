@@ -14,7 +14,6 @@ from django.utils.encoding import escape_uri_path
 from django.db.models import Q
 
 from attendance.models import *
-from attendanceStatistics.models import *
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from common.models import *
@@ -214,7 +213,7 @@ def exportYearExcel(folder_name, attendance_YM_From, attendance_YM_To):
     fileName = copyExl(folder_name, const.SHEET_YEAR)
     # 【年度単位の集計表dataの作成】を呼び出し
     mkExcel(fileName, counts, attendance_YM_From, attendance_YM_To)
-
+    return fileName
 
 # 年度単位の集計表templateの作成
 def copyExl(folder_name, userName):

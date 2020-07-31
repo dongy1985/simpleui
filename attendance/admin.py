@@ -16,8 +16,6 @@ from django.contrib.auth import get_permission_codename
 from django.db.models import Q
 from wsgiref.util import FileWrapper
 from datetime import date, timedelta
-
-from attendanceStatistics.models import *
 from attendance.models import *
 from common.models import *
 from company.models import *
@@ -312,6 +310,11 @@ class AttendanceStatisticsAdmin(admin.ModelAdmin):
             # 年度単位の集計表(excel)の導出
             fileUtil.exportYearExcel(folder_name, attendance_YM_From, attendance_YM_To)
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
+
+        fread = open(filename, "rb")
+        response = HttpResponse(fread, content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment;filename="Report.xlsx"'
+        return response
 
     export_button.short_description = ' 導出'
     export_button.type = 'primary'
