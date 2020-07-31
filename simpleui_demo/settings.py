@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'company',
     # 勤務統計
     'aggregation'
+    'attendanceStatistics',
 ]
 
 MIDDLEWARE = [
