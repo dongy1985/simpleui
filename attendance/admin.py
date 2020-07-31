@@ -22,6 +22,7 @@ from company.models import *
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from common.custom_filter import DateFieldFilter
+from common.custom_filter import DutyDateFieldFilter
 from common import fileUtil
 from common import mailUtil
 from common.const import const
@@ -318,7 +319,7 @@ class AttendanceStatisticsAdmin(admin.ModelAdmin):
     'late_count')
     list_per_page = 7
     search_fields = ('empNo', 'name', 'attendance_YM')
-    list_filter = (('attendance_YM', DateFieldFilter),)
+    list_filter = (('attendance_YM', DutyDateFieldFilter),)
     ordering = ('attendance_YM', 'name')
     actions = ['export_button', ]
     def has_add_permission(self, request):
