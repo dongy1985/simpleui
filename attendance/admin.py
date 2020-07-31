@@ -10,7 +10,7 @@ from django.contrib.admin import actions
 from django.urls import reverse
 from django.contrib import admin
 from django.contrib.auth import get_user
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, Http404
 from django.http import HttpResponse
 from django.contrib.auth import get_permission_codename
 from django.db.models import Q
@@ -206,37 +206,43 @@ class AttendanceAdmin(admin.ModelAdmin):
             fileUtil.export(temp_queryset, folder_name)
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
 
-        # ZIp
-        temp = const.DIR + folder_name + '.zip'
-        temp_zip = zipfile.ZipFile(temp,'w',zipfile.ZIP_DEFLATED)
-        startdir = const.DIR + folder_name
-        for dirpath, dirnames, filenames in os.walk(startdir):
-            fpath = dirpath.replace(startdir,'')
-            fpath = fpath and fpath + os.sep or ''
-            for filename in filenames:
-                temp_zip.write(os.path.join(dirpath, filename),fpath+filename)
-        temp_zip.close()
-        fread = open(temp_zip.filename,"rb")
-        response = HttpResponse(fread, content_type='application/zip')
-        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(folder_name+".zip")
-        fread.close()
-        # tempDel
-        if os.path.exists(temp):
-            os.remove(temp)
-            for root, dirs, files in os.walk(startdir, topdown=False):
-                for name in files:
-                    os.remove(os.path.join(root, name))
-                for name in dirs:
-                    os.rmdir(os.path.join(root, name))
-            os.removedirs(startdir)
-        else:
-            print('no such file')
-        return response
+        try:
+            # ZIp
+            temp = const.DIR + folder_name + '.zip'
+            temp_zip = zipfile.ZipFile(temp,'w',zipfile.ZIP_DEFLATED)
+            startdir = const.DIR + folder_name
+            for dirpath, dirnames, filenames in os.walk(startdir):
+                fpath = dirpath.replace(startdir, '')
+                fpath = fpath and fpath + os.sep or ''
+                for filename in filenames:
+                    temp_zip.write(os.path.join(dirpath, filename),fpath+filename)
+            temp_zip.close()
+            fread = open(temp_zip.filename, "rb")
+            response = HttpResponse(fread, content_type='application/zip', status=200)
+            response['Content-Disposition'] = 'attachment;filename="{0}"'.format(folder_name+".zip")
+            fread.close()
+            # tempDel
+            if os.path.exists(temp):
+                os.remove(temp)
+                for root, dirs, files in os.walk(startdir, topdown=False):
+                    for name in files:
+                        os.remove(os.path.join(root, name))
+                    for name in dirs:
+                        os.rmdir(os.path.join(root, name))
+                os.removedirs(startdir)
+            else:
+                print('no such file')
+            return response
+        except Exception:
+            raise Http404
+        
+        
 
     export.short_description = ' 導出'
     export.type = 'primary'
     export.icon = 'el-icon-document-copy'
     export.allowed_permissions = ('export_attendance',)
+
 
     def has_export_attendance_permission(self, request):
         opts = self.opts
