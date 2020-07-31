@@ -5,7 +5,7 @@ from common.const import const
 from django.contrib.auth import get_permission_codename
 from django.contrib import messages
 from django.contrib import admin
-from attendanceStatistics.models import AttendanceStatistics
+from attendanceStatistics.models import *
 from common.custom_filter import DateFieldFilter
 
 
