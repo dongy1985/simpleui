@@ -193,6 +193,7 @@ SIMPLEUI_ICON = {
     '共通管理': 'el-icon-notebook-1',
     'コード管理': 'el-icon-notebook-2',
     '座標管理': 'el-icon-notebook-2',
+    '現場管理': 'el-icon-suitcase',
 }
 
 # 指定simpleui 是否以脱机模式加载静态资源，为True的时候将默认从本地读取所有资源，即使没有联网一样可以。适合内网项目
