@@ -30,12 +30,12 @@ def sendmail(mailKbn, queryset):
             return sendmail(mailKbn=mailKbn, queryset=queryset)
 
 def send(mailKbn, employe_name, employe_mail, user_id):
-    #fromAddrの設定
+    # fromAddrの設定
     from_addr = const.ADMIN_MAIL
     password = const.ADMIN_MAIL_PAS
     smtp_server = 'smtp.gmail.com'
 
-    #toAddr、内容の設定
+    # toAddr、内容の設定
     main = ''
     Subject = ''
     to_addr, main, Subject = chooseKbn(mailKbn, employe_name, employe_mail, user_id)
@@ -55,20 +55,20 @@ def send(mailKbn, employe_name, employe_mail, user_id):
 def chooseKbn(mailKbn, employe_name, employe_mail, user_id):
 
     if mailKbn == const.MAIL_KBN_COMMIT:
-        #to_addr
+        # to_addr
         # perm = Permission.objects.get(codename='confirm_button_attendance') 
         # users = User.objects.filter(Q(user_permissions=perm) | Q(is_superuser=True)).distinct() 
         users = User.objects.filter(Q(is_superuser=True)).distinct()
         to_addr = ''
-        #superuser
+        # superuser
         for obj in users:
             if len(Employee.objects.filter(user=obj.id).values('email')) != 0:
                 to_addr += Employee.objects.get(user=obj.id).email + ', '
-        #現場管理者
+        # 現場管理者
         tempid = Employee.objects.get(user_id=user_id).id
         if len(WorkSite.objects.filter(Q(manager_id=tempid)).distinct()) != 0:
             to_addr += Employee.objects.get(id=tempid).email + ', '
-        #一般メンバー
+        # 一般メンバー
         else:
             if len(WorkSiteDetail.objects.filter(member_id=tempid).values('manager_id')) != 0:
                 temp_Site_id = WorkSiteDetail.objects.get(member_id=tempid).manager_id
@@ -76,9 +76,9 @@ def chooseKbn(mailKbn, employe_name, employe_mail, user_id):
                 to_addr += Employee.objects.get(id=manager_id).email + ', '
 
 
-        #main
+        # main
         main = '承認者さん、お疲れ様です。\n\n' + employe_name +'勤務を提出しました、ご確認お願い致します。\n'
-        #Subject
+        # Subject
         Subject = employe_name + 'の勤務が提出しました'
         return (to_addr, main, Subject)
     elif mailKbn == const.MAIL_KBN_CANCEL:
@@ -93,11 +93,11 @@ def chooseKbn(mailKbn, employe_name, employe_mail, user_id):
         return (to_addr, main, Subject)
         
 def retention_mail(employe_name, employe_mail, main):
-    #fromAddrの設定
+    # fromAddrの設定
     from_addr = const.ADMIN_MAIL
     password = const.ADMIN_MAIL_PAS
     smtp_server = 'smtp.gmail.com'
-    #toAddr、内容の設定
+    # toAddr、内容の設定
     to_addr = employe_mail
     Subject = '在留カード期限切れ前一ヶ月警告'
 

@@ -24,12 +24,12 @@ from common.const import const
 
 
 def export(queryset, folder_name):
-    #temp id
+    # temp id
     tempId = ''
-    #tempYM
+    # tempYM
     tempYM = ''
     temp_queryset = None
-    #querysetFilter
+    # querysetFilter
     for obj in queryset:
         workYM = obj.date.strftime('%Y-%m')
         if obj.user_id != tempId or workYM != tempYM:
@@ -37,9 +37,9 @@ def export(queryset, folder_name):
                 Q(user_id=obj.user_id)
                 &Q(date__startswith=workYM)
             )
-            #call make Excel
+            # call make Excel
             mkExcel(temp_queryset, folder_name)
-            #更新临时数据
+            # 更新临时数据
             tempId = obj.user_id
             tempYM = workYM
             queryset = queryset.filter(
@@ -74,7 +74,7 @@ def mkExcel(queryset, folder_name):
         objMonth = obj.date.month
         objYear = obj.date.year
         userId = Employee.objects.get(user=obj.user_id).id
-        #現場
+        # 現場
         if len(WorkSiteDetail.objects.filter(member_id=userId).values('manager_id')) != 0:
             temp_Site_id = WorkSiteDetail.objects.get(member_id=userId).manager_id
             siteNumber = WorkSite.objects.get(id=temp_Site_id).site_number
@@ -99,14 +99,14 @@ def mkExcel(queryset, folder_name):
         values_list('crdY', 'crdX', 'defVal').order_by('itemSort')
     data_row = dataMst[0][0]
     for obj in queryset:
-        # #duty_status
+        # duty_status
         # duty_status = CodeMst.objects.get(cd=const.DUTY_TYPE, subCd=obj.duty, delFlg=const.DEL_FLG_0).subNm
         # sheet.cell(data_row + obj.date.day, dataMst[0][1], duty_status)
-        #start_time
+        # start_time
         sheet.cell(data_row + obj.date.day, dataMst[0][1], obj.start_time)
-        #end_time
+        # end_time
         sheet.cell(data_row + obj.date.day, dataMst[1][1], obj.end_time)
-        #restTime
+        # restTime
         #0.0 -> 00:00
         temp_modf = math.modf(float(obj.rest))
         temp_hour = int(temp_modf[1])
@@ -117,9 +117,9 @@ def mkExcel(queryset, folder_name):
         sheet.cell(data_row + obj.date.day, dataMst[2][1], temp_rest_time)
         # #sumTimeS
         # sheet.cell(data_row + obj.date.day, dataMst[4][1], obj.working_time)
-        #contents
+        # contents
         sheet.cell(data_row + obj.date.day, dataMst[3][1], obj.contents)
-    #save
+    # save
     book.save(fileName)
 
 # 月度単位の集計表(excel)の導出

@@ -32,14 +32,13 @@ from common.const import const
 class AttendanceAdmin(admin.ModelAdmin):
 
     actions = ['cancel_button', 'commit_button', 'confirm_button', 'export', ]
-    #admin.site.disable_action('delete_selected')
-    #display
+    # display
     list_display = ('name', 'date', 'duty', 'start_time', 'end_time', 'rest', 'working_time', 'contents', 'status')
-    #list
+    # list
     list_filter = ('status',('date', DateFieldFilter))
-    #set search
+    # set search
     search_fields = ('name',)
-    #set field
+    # set field
     fieldsets = [(None,{'fields':['date', 'duty', 'start_time', 'end_time', 'rest', 'contents']})]
     ordering = ( 'name', 'date')
     list_per_page = 7
@@ -50,7 +49,7 @@ class AttendanceAdmin(admin.ModelAdmin):
                 return False
         return super().has_delete_permission(request)
 
-    #user set
+    # user set
     def save_model(self, request, obj, form, change):
         if obj.status != const.WORK_TYPE_SMALL_0:
             messages.add_message(request, messages.ERROR, '提出済记录が編集できません')
@@ -75,7 +74,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         # save
         super().save_model(request, obj, form, change)
 
-    #user filter
+    # user filter
     def get_queryset(self, request):
         if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance') :
             qs = super().get_queryset(request)
@@ -84,14 +83,14 @@ class AttendanceAdmin(admin.ModelAdmin):
             qs = super().get_queryset(request)
             return qs.filter(user_id = request.user.id)
 
-    #commit
+    # commit
     def commit_button(self, request,queryset):
         for obj in queryset:
             if obj.status != const.WORK_TYPE_SMALL_0:
                 messages.add_message(request, messages.ERROR, '未提出记录を選択してください')
                 return
             queryset.update(status=const.WORK_TYPE_SMALL_1)
-        #mail
+        # mail
         mailUtil.sendmail(const.MAIL_KBN_COMMIT, queryset)
         messages.add_message(request, messages.SUCCESS, '提出済')
 
@@ -110,7 +109,7 @@ class AttendanceAdmin(admin.ModelAdmin):
             codename = get_permission_codename('commit_button', opts)
             return request.user.has_perm('%s.%s' % (opts.app_label, codename))
 
-    #cancel
+    # cancel
     def cancel_button(self, request, queryset):
         for obj in queryset:
             if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
@@ -122,7 +121,7 @@ class AttendanceAdmin(admin.ModelAdmin):
                     messages.add_message(request, messages.ERROR, '提出记录を選択してください')
                     return
                 
-        #mail
+        # mail
         if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
             mailUtil.sendmail(const.MAIL_KBN_CANCEL, queryset)
         messages.add_message(request, messages.SUCCESS, '取消済')
@@ -132,7 +131,7 @@ class AttendanceAdmin(admin.ModelAdmin):
     cancel_button.icon = 'el-icon-refresh-left'
     cancel_button.confirm = '取消よろしですか？'
 
-    #confirm
+    # confirm
     def confirm_button(self, request,queryset):
         tempId = ''
         for obj in queryset:
@@ -140,7 +139,7 @@ class AttendanceAdmin(admin.ModelAdmin):
                 messages.add_message(request, messages.ERROR, '提出済记录を選択してください')
                 return
             queryset.update(status=const.WORK_TYPE_SMALL_2)
-        #mail
+        # mail
         mailUtil.sendmail(const.MAIL_KBN_CONFIRM, queryset)
         messages.add_message(request, messages.SUCCESS, '承認済')
         #統計データ抽出
@@ -168,7 +167,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         codename = get_permission_codename('confirm_button', opts)
         return request.user.has_perm('%s.%s' % (opts.app_label, codename))
     
-    #queryset筛选
+    # queryset筛选
     def querysetFilter(self, queryset, expErrList):
         for obj in queryset:
             if obj.status != const.WORK_TYPE_SMALL_2:
@@ -180,17 +179,17 @@ class AttendanceAdmin(admin.ModelAdmin):
                 return self.querysetFilter(queryset=queryset, expErrList=expErrList)
         return queryset
 
-    #excle导出
+    # excle导出
     def export(self, request, queryset):
         expErrList=[]
-        #queryset筛选
+        # queryset筛选
         temp_queryset = AttendanceAdmin.querysetFilter(self, queryset, expErrList)
 
-        #mkDir
+        # mkDir
         folder_name = datetime.now().strftime("%Y-%m-%d_%H%M%S")
         if os.path.isdir(const.DIR):
             os.mkdir(os.path.join(const.DIR, folder_name))
-        #ErrList write
+        # ErrList write
         errListPath = const.DIR + folder_name + const.FILESTART +'ErrList.txt'
         fp = open(errListPath,'w+')
         for line in expErrList:
@@ -198,11 +197,11 @@ class AttendanceAdmin(admin.ModelAdmin):
         fp.close()
         
         if len(queryset) != 0:
-            #呼出EXCEL制作
+            # 呼出EXCEL制作
             fileUtil.export(temp_queryset, folder_name)
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
 
-        #ZIp
+        # ZIp
         temp = const.DIR + folder_name + '.zip'
         temp_zip = zipfile.ZipFile(temp,'w',zipfile.ZIP_DEFLATED)        
         startdir = const.DIR + folder_name

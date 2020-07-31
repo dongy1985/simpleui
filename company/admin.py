@@ -401,7 +401,7 @@ class WorkSiteDetailInline(admin.TabularInline):
     raw_id_fields = ('member',)
     extra = 1
 
-
+# 現場管理
 @admin.register(WorkSite)
 class WorkSiteAdmin(admin.ModelAdmin):
     inlines = [WorkSiteDetailInline, ]
@@ -412,9 +412,7 @@ class WorkSiteAdmin(admin.ModelAdmin):
     list_display_links = ('project_name',)
     search_fields = ('project_name',)
     raw_id_fields = ('manager',)
-    # actions = ['commit_button', 'confirm_button', 'cancel_button']
-
-    #user filter
+    # user filter
     def get_queryset(self, request):
         if request.user.is_superuser :
             qs = super().get_queryset(request)
