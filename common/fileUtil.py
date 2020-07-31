@@ -122,9 +122,11 @@ def exportExcel(folder_name, datFrom):
     temp_queryset = AttendanceStatistics.objects.filter(
         Q(attendance_YM__startswith=datFrom)
     )
+    # 月度単位の集計表templateの作成
+    fileName = copyExle(folder_name, datFrom)
     # 【月度単位の集計表dataの作成】を呼び出し
-    mkExl(temp_queryset, folder_name, datFrom)
-    return
+    mkExl(temp_queryset, fileName, datFrom)
+    return fileName
 
 # 月度単位の集計表templateの作成
 def copyExle(folder_name, datFrom):
@@ -135,9 +137,7 @@ def copyExle(folder_name, datFrom):
     return fileName
 
 # 月度単位の集計表dataの作成
-def mkExl(queryset, folder_name, datFrom):
-    # 月度単位の集計表templateの作成
-    fileName = copyExle(folder_name, datFrom)
+def mkExl(queryset, fileName, datFrom):
     # コピー先ファイル名の取得
     book = openpyxl.load_workbook(fileName)
     # コピー先シート名の取得

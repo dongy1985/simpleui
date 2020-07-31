@@ -304,7 +304,7 @@ class AttendanceStatisticsAdmin(admin.ModelAdmin):
         # 月度単位または年度単位の判断
         if attendance_YM_From == attendance_YM_To:
             # 月度単位の集計表(excel)の導出
-            fileUtil.exportExcel(folder_name, attendance_YM_From)
+            filename = fileUtil.exportExcel(folder_name, attendance_YM_From)
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
         else:
             # 年度単位の集計表(excel)の導出
