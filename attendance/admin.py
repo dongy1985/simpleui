@@ -284,7 +284,7 @@ class AttendanceStatisticsAdmin(admin.ModelAdmin):
     search_fields = ('empNo', 'name', 'attendance_YM')
     list_filter = (('attendance_YM', DateFieldFilter),)
     ordering = ('attendance_YM', 'name')
-
+    actions = ['export_button', ]
     def has_add_permission(self, request):
         return False
 
