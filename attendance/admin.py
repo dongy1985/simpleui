@@ -338,7 +338,7 @@ class AttendanceStatisticsAdmin(admin.ModelAdmin):
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
         else:
             # 年度単位の集計表(excel)の導出
-            fileUtil.exportYearExcel(folder_name, attendance_YM_From, attendance_YM_To)
+            filename = fileUtil.exportYearExcel(folder_name, attendance_YM_From, attendance_YM_To)
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
 
         fread = open(filename, "rb")
