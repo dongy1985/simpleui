@@ -14,7 +14,7 @@ from django.utils.encoding import escape_uri_path
 from django.db.models import Q
 
 from attendance.models import *
-from aggregation.models import *
+from attendanceStatistics.models import *
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from common.models import *
@@ -120,7 +120,7 @@ def mkExcel(queryset, folder_name):
 
 def exportExcel(folder_name, datFrom):
     # DBから該当月度のデータ取得
-    temp_queryset = Aggregation.objects.filter(
+    temp_queryset = AttendanceStatistics.objects.filter(
         Q(attendance_YM__startswith=datFrom)
     )
     # 【月度単位の集計表dataの作成】を呼び出し
@@ -259,17 +259,17 @@ def mkExcel(fileName, counts, attendance_YM_From, attendance_YM_To):
     while count <= counts:
         if attendance_YM_From_M <= 12:
             if attendance_YM_From_M < 10:
-                temp_queryset = Aggregation.objects.filter(
+                temp_queryset = AttendanceStatistics.objects.filter(
                     Q(attendance_YM__startswith=(str(attendance_YM_From_Y) + '-0' + str(attendance_YM_From_M)))
                 )
             else:
-                temp_queryset = Aggregation.objects.filter(
+                temp_queryset = AttendanceStatistics.objects.filter(
                     Q(attendance_YM__startswith=(str(attendance_YM_From_Y) + '-' + str(attendance_YM_From_M)))
                 )
             attendance_YM_From_M = attendance_YM_From_M + 1
         else:
             attendance_YM_From_Y = attendance_YM_From_Y + 1
-            temp_queryset = Aggregation.objects.filter(
+            temp_queryset = AttendanceStatistics.objects.filter(
                 Q(attendance_YM__startswith=(str(attendance_YM_From_Y) + '-01'))
             )
             attendance_YM_From_M = 2

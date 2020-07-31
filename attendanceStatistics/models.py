@@ -27,6 +27,9 @@ class AttendanceStatistics(models.Model):
     class Meta:
         verbose_name = "勤務統計"
         verbose_name_plural = "勤務統計"
+        permissions = (
+            ("export_button", "Can 導出"),
+        )
 
     def __str__(self):
         return self.name
