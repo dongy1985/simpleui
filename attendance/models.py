@@ -41,7 +41,7 @@ class Attendance(models.Model):
         )
 
 # 勤務統計モデル
-class AttendanceStatistics(models.Model):
+class DutyStatistics(models.Model):
     # 社員番号
     empNo = models.CharField(verbose_name='社員番号', max_length=3)
     # 社員名前

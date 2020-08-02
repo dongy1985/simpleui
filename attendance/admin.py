@@ -154,13 +154,13 @@ class AttendanceAdmin(admin.ModelAdmin):
             if querysetdir not in querysetlist:
                 querysetlist.append(querysetdir)
                 continue
-        # 統計リストを繰り返し処理、
+        # 統計リストを繰り返し処理
         index = 0
         while index < len(querysetlist):
             # ディクショナリー毎に社員名、勤務日付の年月の値を統計実行メソッドに渡す
             for keyname in querysetlist[index]:
                 valueYM = querysetlist[index][keyname]
-                self.attendanceCompute(keyname, valueYM)
+                self.dutyCompute(keyname, valueYM)
             index += 1
     confirm_button.short_description = ' 承認'
     confirm_button.type = 'success'
@@ -251,7 +251,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         return request.user.has_perm('%s.%s' % (opts.app_label, codename))
 
     #勤務統計実行
-    def attendanceCompute(self, keyname, valueYM):
+    def dutyCompute(self, keyname, valueYM):
         # 承認された勤務年月を取得し、int型に変換
         valueYear = int(valueYM[0:4])
         valueMonth = int(valueYM[5:])
@@ -295,16 +295,16 @@ class AttendanceAdmin(admin.ModelAdmin):
         # 社員ナンバー取得
         empNo = Employee.objects.get(name=keyname).empNo
         # 該当社員の勤務年月のデータ記録をクエリする
-        statisticsQuery = AttendanceStatistics.objects.filter(name=keyname, attendance_YM__year=attendance_YM.year,
+        dutyQuery = DutyStatistics.objects.filter(name=keyname, attendance_YM__year=attendance_YM.year,
                                                               attendance_YM__month=attendance_YM.month)
         # データ記録のクエリ結果有り無しを確認する、無ければデータ登録
-        if statisticsQuery.count() == 0:
-            AttendanceStatistics.objects.create(empNo=empNo, name=keyname, attendance_YM=attendance_YM,
+        if dutyQuery.count() == 0:
+            DutyStatistics.objects.create(empNo=empNo, name=keyname, attendance_YM=attendance_YM,
                     working_time=working_time, attendance_count=attendance_count, absence_count=absence_count,
                     annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
         # データ記録のクエリ結果あれば、データ更新
         else:
-            statisticsQuery.update(working_time=working_time, attendance_count=attendance_count,
+            dutyQuery.update(working_time=working_time, attendance_count=attendance_count,
                     absence_count=absence_count, annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
 
     class Media:
@@ -312,13 +312,13 @@ class AttendanceAdmin(admin.ModelAdmin):
 
 
 # 勤務統計モデルadmin
-@admin.register(AttendanceStatistics)
-class AttendanceStatisticsAdmin(admin.ModelAdmin):
+@admin.register(DutyStatistics)
+class DutyStatisticsAdmin(admin.ModelAdmin):
     list_display = (
     'empNo', 'name', 'attendance_YM', 'working_time', 'attendance_count', 'absence_count', 'annual_leave', 'rest_count',
     'late_count')
     list_per_page = 7
-    search_fields = ('empNo', 'name', 'attendance_YM')
+    search_fields = ('empNo', 'name')
     list_filter = (('attendance_YM', DutyDateFieldFilter),)
     ordering = ('attendance_YM', 'name')
     actions = ['export_button', ]
