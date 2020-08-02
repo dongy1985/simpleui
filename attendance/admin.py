@@ -154,13 +154,13 @@ class AttendanceAdmin(admin.ModelAdmin):
             if querysetdir not in querysetlist:
                 querysetlist.append(querysetdir)
                 continue
-        # 統計リストを繰り返し処理
+        # 統計リストを繰り返し処理、
         index = 0
         while index < len(querysetlist):
             # ディクショナリー毎に社員名、勤務日付の年月の値を統計実行メソッドに渡す
             for keyname in querysetlist[index]:
                 valueYM = querysetlist[index][keyname]
-                self.dutyCompute(keyname, valueYM)
+                self.attendanceCompute(keyname, valueYM)
             index += 1
     confirm_button.short_description = ' 承認'
     confirm_button.type = 'success'
@@ -251,7 +251,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         return request.user.has_perm('%s.%s' % (opts.app_label, codename))
 
     #勤務統計実行
-    def dutyCompute(self, keyname, valueYM):
+    def attendanceCompute(self, keyname, valueYM):
         # 承認された勤務年月を取得し、int型に変換
         valueYear = int(valueYM[0:4])
         valueMonth = int(valueYM[5:])
@@ -295,16 +295,16 @@ class AttendanceAdmin(admin.ModelAdmin):
         # 社員ナンバー取得
         empNo = Employee.objects.get(name=keyname).empNo
         # 該当社員の勤務年月のデータ記録をクエリする
-        dutyQuery = DutyStatistics.objects.filter(name=keyname, attendance_YM__year=attendance_YM.year,
+        statisticsQuery = DutyStatistics.objects.filter(name=keyname, attendance_YM__year=attendance_YM.year,
                                                               attendance_YM__month=attendance_YM.month)
         # データ記録のクエリ結果有り無しを確認する、無ければデータ登録
-        if dutyQuery.count() == 0:
+        if statisticsQuery.count() == 0:
             DutyStatistics.objects.create(empNo=empNo, name=keyname, attendance_YM=attendance_YM,
                     working_time=working_time, attendance_count=attendance_count, absence_count=absence_count,
                     annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
         # データ記録のクエリ結果あれば、データ更新
         else:
-            dutyQuery.update(working_time=working_time, attendance_count=attendance_count,
+            statisticsQuery.update(working_time=working_time, attendance_count=attendance_count,
                     absence_count=absence_count, annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
 
     class Media:
@@ -318,7 +318,7 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
     'empNo', 'name', 'attendance_YM', 'working_time', 'attendance_count', 'absence_count', 'annual_leave', 'rest_count',
     'late_count')
     list_per_page = 7
-    search_fields = ('empNo', 'name')
+    search_fields = ('empNo', 'name', 'attendance_YM')
     list_filter = (('attendance_YM', DutyDateFieldFilter),)
     ordering = ('attendance_YM', 'name')
     actions = ['export_button', ]
@@ -334,6 +334,9 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
         folder_name = datetime.now().strftime("%Y-%m-%d_%H%M%S")
         if os.path.isdir(const.DIR):
             os.mkdir(os.path.join(const.DIR, folder_name))
+        if len(queryset) != 0:
+            # 呼出EXCEL制作
+            print(len(queryset))
         # 統計年月開始を取得
         attendance_YM_From = request.GET.get('attendance_YM__gte')[0:7]
         # 統計年月終了を取得
@@ -345,14 +348,14 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
         else:
             # 年度単位の集計表(excel)の導出
-            filename = fileUtil.exportYearExcel(folder_name, attendance_YM_From, attendance_YM_To)
+            filename = fileUtil.exportYearExcel(folder_name, attendance_YM_From, attendance_YM_To, queryset)
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
-
+        # ファイルをダウンロード
         fread = open(filename, "rb")
         response = HttpResponse(fread, content_type='application/vnd.ms-excel')
         response['Content-Disposition'] = 'attachment;filename="Report.xlsx"'
         fread.close()
-
+        # サバのフォルダーを削除する
         startdir = const.DIR + folder_name
         if os.path.exists(filename):
             os.remove(filename)
@@ -375,3 +378,15 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
         opts = self.opts
         codename = get_permission_codename('export_button', opts)
         return request.user.has_perm('%s.%s' % (opts.app_label, codename))
+
+    # queryset筛选
+    def querycount(self, queryset, expErrList):
+        for obj in queryset:
+            if obj.status != const.WORK_TYPE_SMALL_2:
+                expErrList.append(obj.name + ':' + obj.date.strftime('%Y%m'))
+                queryset = queryset.filter(
+                    ~(Q(user_id=obj.user_id)
+                      & Q(date__startswith=obj.date.strftime('%Y-%m')))
+                )
+                return self.querysetFilter(queryset=queryset, expErrList=expErrList)
+        return queryset
