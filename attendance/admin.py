@@ -236,8 +236,8 @@ class AttendanceAdmin(admin.ModelAdmin):
             return response
         except Exception:
             raise Http404
-        
-        
+
+
 
     export.short_description = ' 導出'
     export.type = 'primary'
@@ -347,10 +347,23 @@ class AttendanceStatisticsAdmin(admin.ModelAdmin):
             # 年度単位の集計表(excel)の導出
             filename = fileUtil.exportYearExcel(folder_name, attendance_YM_From, attendance_YM_To)
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
-            
+
         fread = open(filename, "rb")
         response = HttpResponse(fread, content_type='application/vnd.ms-excel')
         response['Content-Disposition'] = 'attachment;filename="Report.xlsx"'
+        fread.close()
+
+        startdir = const.DIR + folder_name
+        if os.path.exists(filename):
+            os.remove(filename)
+            for root, dirs, files in os.walk(startdir, topdown=False):
+                for name in files:
+                    os.remove(os.path.join(root, name))
+                for name in dirs:
+                    os.rmdir(os.path.join(root, name))
+            os.removedirs(startdir)
+        else:
+            print('no such file')
         return response
 
     export_button.short_description = ' 導出'
