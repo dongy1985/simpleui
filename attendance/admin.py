@@ -318,7 +318,7 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
     'empNo', 'name', 'attendance_YM', 'working_time', 'attendance_count', 'absence_count', 'annual_leave', 'rest_count',
     'late_count')
     list_per_page = 7
-    search_fields = ('empNo', 'name', 'attendance_YM')
+    search_fields = ('empNo', 'name')
     list_filter = (('attendance_YM', DutyDateFieldFilter),)
     ordering = ('attendance_YM', 'name')
     actions = ['export_button', ]
