@@ -69,8 +69,9 @@ class DutyStatistics(models.Model):
         verbose_name = "勤務統計"
         verbose_name_plural = "勤務統計"
         permissions = (
-            ("export_button", "Can 導出"),
+            ("export_dutyStatistics", "Can エクスポート勤務統計"),
         )
+
 
     def __str__(self):
         return self.name

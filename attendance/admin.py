@@ -321,7 +321,7 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
     search_fields = ('empNo', 'name')
     list_filter = (('attendance_YM', DutyDateFieldFilter),)
     ordering = ('attendance_YM', 'name')
-    actions = ['export_button', ]
+    actions = ['export', ]
     def has_add_permission(self, request):
         return False
 
@@ -329,7 +329,7 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
         return False
 
     # excle導出
-    def export_button(self, request, queryset):
+    def export(self, request, queryset):
         # mkDir
         folder_name = datetime.now().strftime("%Y-%m-%d_%H%M%S")
         if os.path.isdir(const.DIR):
@@ -369,14 +369,15 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
             print('no such file')
         return response
 
-    export_button.short_description = ' 導出'
-    export_button.type = 'primary'
-    export_button.icon = 'el-icon-document-copy'
-    export_button.allowed_permissions = ('export_button_aggregation',)
+    export.short_description = ' 導出'
+    export.type = 'primary'
+    export.icon = 'el-icon-document-copy'
+    export.allowed_permissions = ('export_dutyStatistics',)
 
-    def has_export_button_aggregation_permission(self, request):
+
+    def has_export_dutyStatistics_permission(self, request):
         opts = self.opts
-        codename = get_permission_codename('export_button', opts)
+        codename = get_permission_codename('export', opts)
         return request.user.has_perm('%s.%s' % (opts.app_label, codename))
 
     # queryset筛选
