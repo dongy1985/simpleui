@@ -27,7 +27,7 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
     list_filter = ('trafficStatus', ('applyDate', DateFieldFilter))
     fieldsets = [(None, {'fields': ['applyDate']})]
     list_display_links = ('applyName',)
-    search_fields = ('name',)
+    search_fields = ('applyName',)
     actions = ['commit_button', 'confirm_button', 'cancel_button']
 
     # deleteのチェック

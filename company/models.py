@@ -11,7 +11,7 @@ import time
 # 通勤手当モデル
 class ApplyDutyAmount(models.Model):
     # ユーザー
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='apply_user')
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='apply_user')
     # 通勤手当申請者名前
     applyName = models.CharField(verbose_name='申請者', max_length=30)
     # 通勤手当申請日付
