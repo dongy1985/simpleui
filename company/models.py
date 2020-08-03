@@ -181,7 +181,7 @@ class AssetLend(models.Model):
         verbose_name = "資産貸出申請"
         verbose_name_plural = "資産貸出申請"
         permissions = (
-            ("apply_AssetLend", "Can apply 資産貸出申請"),
+            ("apply_assetlend", "Can apply 資産貸出申請"),
         )
 
     def __int__(self):
