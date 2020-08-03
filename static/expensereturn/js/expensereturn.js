@@ -77,10 +77,6 @@
                                 enableBtn.hide();
                             }
                         }
-                        // 管理者以外の場合、承認済のデータが取消できない
-                        if (!authPermission && cancelBtn && duty_sts == '承認済') {
-                            cancelBtn.hide();
-                        }
                         break;
                     }
                     if (selectedFlg && (duty_sts == '未提出')){

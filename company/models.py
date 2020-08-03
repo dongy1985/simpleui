@@ -208,8 +208,8 @@ class ExpenseReturn(models.Model):
         verbose_name = "立替金"
         verbose_name_plural = "立替金"
         permissions = (
-            ("commit_button_ExpenseReturn", "Can 普通社員提出"),
-            ("confirm_button_ExpenseReturn", "Can 管理者承認")
+            ("commit_button_expensereturn", "Can 普通社員提出"),
+            ("confirm_button_expensereturn", "Can 管理者承認")
         )
     def __str__(self):
         return self.applyer

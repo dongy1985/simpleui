@@ -190,7 +190,7 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
     # ユーザーマッチ
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        if request.user.is_superuser:
+        if request.user.is_superuser or request.user.has_perm('company.commit_button_expensereturn'):
             return qs
         return qs.filter(user_id=request.user.id)
 
@@ -221,8 +221,8 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
 
     # 承認権限チェック
     def has_confirm_button_permission(self, request):
-        if not request.user.is_superuser:
-            return False
+        # if not request.user.is_superuser:
+        #     return False
         opts = self.opts
         codename = get_permission_codename('confirm_button', opts)
         return request.user.has_perm("%s.%s" % (opts.app_label, codename))
