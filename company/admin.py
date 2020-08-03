@@ -164,7 +164,8 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
     inlines = [ExpenseReturnDetailInline, ]
     fieldsets = [(None, {'fields': ['applydate', 'comment']})]
     list_display = ('applyer', 'applydate', 'amount', 'comment', 'status')
-    list_filter = ('applyer', 'status', ('applydate', DateFieldFilter))
+    search_fields = ('applyer',)
+    list_filter = ('status', ('applydate', DateFieldFilter))
     list_per_page = 10
 
     actions = ['commit_button', 'confirm_button', 'cancel_button']
