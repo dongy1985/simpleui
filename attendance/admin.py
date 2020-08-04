@@ -132,15 +132,6 @@ class AttendanceAdmin(admin.ModelAdmin):
     # confirm
     def confirm_button(self, request,queryset):
         tempId = ''
-        for obj in queryset:
-            if obj.status != const.WORK_TYPE_SMALL_1:
-                messages.add_message(request, messages.ERROR, '提出済记录を選択してください')
-                return
-            queryset.update(status=const.WORK_TYPE_SMALL_2)
-        # mail
-        mailUtil.sendmail(const.MAIL_KBN_CONFIRM, queryset)
-        messages.add_message(request, messages.SUCCESS, '承認済')
-    # 統計データ抽出
         # 統計リスト定義
         querysetlist = []
         for obj in queryset:
@@ -150,15 +141,27 @@ class AttendanceAdmin(admin.ModelAdmin):
             # 社員名または勤務日付の年月が違うディクショナリーを統計リストに格納する
             if querysetdir not in querysetlist:
                 querysetlist.append(querysetdir)
-                continue
+
+            if obj.status != const.WORK_TYPE_SMALL_1:
+                messages.add_message(request, messages.ERROR, '提出済记录を選択してください')
+                return
+            queryset.update(status=const.WORK_TYPE_SMALL_2)
+        # mail
+        mailUtil.sendmail(const.MAIL_KBN_CONFIRM, queryset)
+        messages.add_message(request, messages.SUCCESS, '承認済')
         # 統計リストを繰り返し処理、
         index = 0
         while index < len(querysetlist):
             # ディクショナリー毎に社員名、勤務日付の年月の値を統計実行メソッドに渡す
             for keyname in querysetlist[index]:
                 valueYM = querysetlist[index][keyname]
-                self.attendanceCompute(keyname, valueYM)
+                self.dutyCompute(keyname, valueYM)
             index += 1
+    confirm_button.short_description = ' 承認'
+    confirm_button.type = 'success'
+    confirm_button.confirm = '承認よろしですか？'
+    confirm_button.icon = 'fas fa-user-check'
+    confirm_button.allowed_permissions = ('confirm_button_attendance',)
     confirm_button.short_description = ' 承認'
     confirm_button.type = 'success'
     confirm_button.confirm = '承認よろしですか？'
@@ -247,8 +250,8 @@ class AttendanceAdmin(admin.ModelAdmin):
         codename = get_permission_codename('export', opts)
         return request.user.has_perm('%s.%s' % (opts.app_label, codename))
 
-    #勤務統計実行
-    def attendanceCompute(self, keyname, valueYM):
+    #勤務承認統計実行
+    def dutyCompute(self, keyname, valueYM):
         # 承認された勤務年月を取得し、int型に変換
         valueYear = int(valueYM[0:4])
         valueMonth = int(valueYM[5:])
@@ -292,16 +295,97 @@ class AttendanceAdmin(admin.ModelAdmin):
         # 社員ナンバー取得
         empNo = Employee.objects.get(name=keyname).empNo
         # 該当社員の勤務年月のデータ記録をクエリする
-        statisticsQuery = DutyStatistics.objects.filter(empNo=empNo, name=keyname, attendance_YM__year=attendance_YM.year,
+        dutyQuery = DutyStatistics.objects.filter(empNo=empNo, name=keyname, attendance_YM__year=attendance_YM.year,
                                                               attendance_YM__month=attendance_YM.month)
         # データ記録のクエリ結果有り無しを確認する、無ければデータ登録
-        if statisticsQuery.count() == 0:
+        if dutyQuery.count() == 0:
             DutyStatistics.objects.create(empNo=empNo, name=keyname, attendance_YM=attendance_YM,
                     working_time=working_time, attendance_count=attendance_count, absence_count=absence_count,
                     annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
         # データ記録のクエリ結果あれば、データ更新
         else:
-            statisticsQuery.update(working_time=working_time, attendance_count=attendance_count,
+            dutyQuery.update(working_time=working_time, attendance_count=attendance_count,
+                    absence_count=absence_count, annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
+
+    # 勤務削除データ抽出
+    def delete_queryset(self, request, queryset):
+        # 統計リスト定義
+        querysetlist = []
+        for obj in queryset:
+            querysetdir = {}
+            # 社員名をキーとして、勤務日付の年月をバリューとして、ディクショナリーに格納する
+            querysetdir[obj.name] = obj.date.strftime('%Y-%m')
+            # 社員名または勤務日付の年月が違うディクショナリーを統計リストに格納する
+            if querysetdir not in querysetlist:
+                querysetlist.append(querysetdir)
+                continue
+        index = 0
+        while index < len(querysetlist):
+            # ディクショナリー毎に社員名、勤務日付の年月の値を統計実行メソッドに渡す
+            for keyname in querysetlist[index]:
+                valueYM = querysetlist[index][keyname]
+                self.delCompute(keyname, valueYM)
+            index += 1
+        super().delete_queryset(request, queryset)
+
+    # 勤務削除統計実行
+    def delCompute(self, keyname, valueYM):
+        # 承認された勤務年月を取得し、int型に変換
+        valueYear = int(valueYM[0:4])
+        valueMonth = int(valueYM[5:])
+        # 社員名と勤務年月と承認済を条件として,勤怠表からデータ記録をフィルターする　　
+        queryset = Attendance.objects.filter(name=keyname, date__year=valueYear, date__month=valueMonth,
+                                             status=const.WORK_TYPE_SMALL_2).order_by('name')
+        #valueYM型の勤務年月をフォーマットし、勤務統計の統計年月初期値を何年何月1日に設定する
+        attendance_YM = datetime.strptime(valueYM, '%Y-%m')
+        # 実働時間初期値
+        working_time = 0
+        # 出勤日数初期値
+        attendance_count = 0
+        # 欠勤初期値
+        absence_count = 0
+        # 年休初期値
+        annual_leave = 0
+        # 休出初期値
+        rest_count = 0
+        # 遅早退初期値
+        late_count = 0
+        # マスターコード表から勤務区分の小分類コードを抽出する
+        dutymast = CodeMst.objects.filter(cd=const.DUTY_TYPE).values_list('subCd', 'subNm').order_by('subCd')
+        for obj in queryset:
+            # 実働時間統計
+            working_time = working_time + obj.working_time
+            # 出勤日数統計
+            if obj.duty == dutymast[0][0]:
+                attendance_count = attendance_count + 1
+            # 欠勤統計
+            if obj.duty == dutymast[4][0]:
+                absence_count = absence_count + 1
+            # 年休統計
+            if obj.duty == dutymast[5][0]:
+                annual_leave = annual_leave + 1
+            # 休出統計
+            if obj.duty == dutymast[7][0]:
+                rest_count = rest_count + 1
+            # 遅早退統計
+            if obj.duty == dutymast[1][0] or obj.duty == dutymast[2][0]:
+                late_count = late_count + 1
+        # 社員ナンバー取得
+        empNo = Employee.objects.get(name=keyname).empNo
+        # 該当社員の勤務年月のデータ記録をクエリする
+        dutyQuery = DutyStatistics.objects.filter(empNo=empNo, name=keyname, attendance_YM__year=attendance_YM.year,
+                                                              attendance_YM__month=attendance_YM.month)
+        # データ記録のクエリ結果有り無しを確認する、無ければデータ登録
+        if dutyQuery.count() == 0:
+            DutyStatistics.objects.create(empNo=empNo, name=keyname, attendance_YM=attendance_YM,
+                    working_time=working_time, attendance_count=attendance_count, absence_count=absence_count,
+                    annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
+        # 勤務表から実働時間無ければ、そのデータ履歴記録を削除する
+        elif working_time == 0:
+            dutyQuery.delete()
+        # データ記録のクエリ結果あれば、データ更新
+        else:
+            dutyQuery.update(working_time=working_time, attendance_count=attendance_count,
                     absence_count=absence_count, annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
 
     class Media:
