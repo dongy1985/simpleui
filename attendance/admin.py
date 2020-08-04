@@ -333,9 +333,6 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
         folder_name = datetime.now().strftime("%Y-%m-%d_%H%M%S")
         if os.path.isdir(const.DIR):
             os.mkdir(os.path.join(const.DIR, folder_name))
-        if len(queryset) != 0:
-            # 呼出EXCEL制作
-            print(len(queryset))
         # 統計年月開始を取得
         attendance_YM_From = request.GET.get('attendance_YM__gte')[0:7]
         # 統計年月終了を取得
@@ -352,7 +349,7 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
         # ファイルをダウンロード
         fread = open(filename, "rb")
         response = HttpResponse(fread, content_type='application/vnd.ms-excel')
-        response['Content-Disposition'] = 'attachment;filename="Report.xlsx"'
+        response['Content-Disposition'] = 'attachment;filename="DutyStatistics.xlsx"'
         fread.close()
         # サバのフォルダーを削除する
         startdir = const.DIR + folder_name
