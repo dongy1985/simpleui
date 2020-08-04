@@ -371,10 +371,10 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
     export.short_description = ' 導出'
     export.type = 'primary'
     export.icon = 'el-icon-document-copy'
-    export.allowed_permissions = ('export_dutyStatistics',)
+    export.allowed_permissions = ('export_dutystatistics',)
 
 
-    def has_export_dutyStatistics_permission(self, request):
+    def has_export_dutystatistics_permission(self, request):
         opts = self.opts
         codename = get_permission_codename('export', opts)
         return request.user.has_perm('%s.%s' % (opts.app_label, codename))
