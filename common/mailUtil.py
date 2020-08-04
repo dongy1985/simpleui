@@ -22,14 +22,15 @@ def sendmail(mailKbn, queryset):
             employe_name = obj.name
             employe_mail = Employee.objects.get(user=obj.user_id).email
             tempId = obj.user_id
-            send(mailKbn, employe_name, employe_mail, tempId)
+            workDate = obj.date
+            send(mailKbn, employe_name, employe_mail, tempId, workDate)
             
             queryset = queryset.filter(
                 ~(Q(user_id=obj.user_id))
             )
             return sendmail(mailKbn=mailKbn, queryset=queryset)
 
-def send(mailKbn, employe_name, employe_mail, user_id):
+def send(mailKbn, employe_name, employe_mail, user_id, workDate):
     # fromAddrの設定
     from_addr = const.ADMIN_MAIL
     password = const.ADMIN_MAIL_PAS
@@ -38,7 +39,7 @@ def send(mailKbn, employe_name, employe_mail, user_id):
     # toAddr、内容の設定
     main = ''
     Subject = ''
-    to_addr, main, Subject = chooseKbn(mailKbn, employe_name, employe_mail, user_id)
+    to_addr, main, Subject = chooseKbn(mailKbn, employe_name, employe_mail, user_id, workDate)
     msg = MIMEText(main,'plain','utf-8')
  
     msg['From'] = Header(from_addr)
@@ -52,7 +53,7 @@ def send(mailKbn, employe_name, employe_mail, user_id):
     server.quit()
     print ('success    ' + to_addr)
 
-def chooseKbn(mailKbn, employe_name, employe_mail, user_id):
+def chooseKbn(mailKbn, employe_name, employe_mail, user_id, workDate):
 
     if mailKbn == const.MAIL_KBN_COMMIT:
         # to_addr
@@ -64,16 +65,21 @@ def chooseKbn(mailKbn, employe_name, employe_mail, user_id):
         for obj in users:
             if len(Employee.objects.filter(user=obj.id).values('email')) != 0:
                 to_addr += Employee.objects.get(user=obj.id).email + ', '
-        # 現場管理者
+        # 現場管理者/メンバー
         tempid = Employee.objects.get(user_id=user_id).id
-        if len(WorkSite.objects.filter(Q(manager_id=tempid)).distinct()) != 0:
-            to_addr += Employee.objects.get(id=tempid).email + ', '
-        # 一般メンバー
-        else:
-            if len(WorkSiteDetail.objects.filter(member_id=tempid).values('manager_id')) != 0:
-                temp_Site_id = WorkSiteDetail.objects.get(member_id=tempid).manager_id
-                manager_id = WorkSite.objects.get(id=temp_Site_id).manager_id
-                to_addr += Employee.objects.get(id=manager_id).email + ', '
+        if len(WorkSiteDetail.objects.filter(
+                Q(member_id=tempid)
+                & Q(from_date__lte=workDate)
+                & Q(to_date__gte=workDate)
+            ).values('manager_id')) != 0:
+            temp_Site_id = WorkSiteDetail.objects.filter(
+                Q(member_id=tempid)
+                & Q(from_date__lte=workDate)
+                & Q(to_date__gte=workDate)
+            ).values_list('manager_id')
+            site_id = temp_Site_id[0][0]
+            manager_id = WorkSite.objects.get(id=site_id).manager_id
+            to_addr += Employee.objects.get(id=manager_id).email + ', '
 
 
         # main

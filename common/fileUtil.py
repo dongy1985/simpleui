@@ -74,14 +74,24 @@ def mkExcel(queryset, folder_name):
         userName = obj.name
         objMonth = obj.date.month
         objYear = obj.date.year
+        projectDate = obj.date
         userId = Employee.objects.get(user=obj.user_id).id
         # 現場
-        if len(WorkSiteDetail.objects.filter(member_id=userId).values('manager_id')) != 0:
-            temp_Site_id = WorkSiteDetail.objects.get(member_id=userId).manager_id
-            siteNumber = WorkSite.objects.get(id=temp_Site_id).site_number
-            projectName = WorkSite.objects.get(id=temp_Site_id).project_name
-            managerId = WorkSite.objects.get(id=temp_Site_id).manager_id
-            managerNumber = Employee.objects.get(id=managerId).name
+        if len(WorkSiteDetail.objects.filter(
+                Q(member_id=userId)
+                & Q(from_date__lte=projectDate)
+                & Q(to_date__gte=projectDate)
+            ).values('manager_id')) != 0:
+            temp_Site_id = WorkSiteDetail.objects.filter(
+                Q(member_id=userId)
+                & Q(from_date__lte=projectDate)
+                & Q(to_date__gte=projectDate)
+            ).values_list('manager_id')
+            site_id = temp_Site_id[0][0]
+            siteNumber = WorkSite.objects.get(id=site_id).site_number
+            projectName = WorkSite.objects.get(id=site_id).project_name
+            managerId = WorkSite.objects.get(id=site_id).manager_id
+            managerName = Employee.objects.get(id=managerId).name
     # 社員番号
     sheet.cell(headMst[0][0], headMst[0][1], userNumber)
     # 氏名
@@ -93,7 +103,7 @@ def mkExcel(queryset, folder_name):
     # 案件名
     sheet.cell(headMst[4][0], headMst[4][1], projectName)
     # 責任者名
-    sheet.cell(headMst[5][0], headMst[5][1], managerNumber)
+    sheet.cell(headMst[5][0], headMst[5][1], managerName)
 
     # duty data write
     dataMst = CrdMst.objects.filter(tplType=const.TPL_XLS, crdDiv=const.CRD_DIV_D, delFlg=const.DEL_FLG_0). \

@@ -100,8 +100,8 @@
                     }
                     if (selectedFlg && (duty_sts == '未提出')) {
                         // 承認ボタンを隠す
-                        if (confirmBtn) {
-                            confirmBtn.hide();
+                        if (enableBtn) {
+                            enableBtn.hide();
                         }
                         // 取消ボタンを隠す
                         if (cancelBtn) {

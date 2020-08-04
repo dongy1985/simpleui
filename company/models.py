@@ -263,9 +263,9 @@ class WorkSiteDetail(models.Model):
     # 備考
     comment = models.CharField(max_length=180, verbose_name='備考', default=const.DEF_COMMENT)
     # 案件開始日付
-    from_date = models.DateField(verbose_name='案件開始日付', default=timezone.now)
+    from_date = models.DateField(verbose_name='案件開始日付')
     # 案件終了日付
-    to_date = models.DateField(verbose_name='案件終了日付', default=timezone.now)
+    to_date = models.DateField(verbose_name='案件終了日付')
 
     class Meta:
         verbose_name = "メンバー"
