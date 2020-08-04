@@ -398,9 +398,10 @@ class AssetLendAdmin(admin.ModelAdmin):
 
 class WorkSiteDetailInline(admin.TabularInline):
     model = WorkSiteDetail
-    fieldsets = [(u'', {'fields': ['member']})]
+    fieldsets = [(u'', {'fields': ['member', 'from_date', 'to_date']})]
     raw_id_fields = ('member',)
     extra = 1
+
 
 # 現場管理
 @admin.register(WorkSite)
@@ -412,7 +413,7 @@ class WorkSiteAdmin(admin.ModelAdmin):
     # 一ページ表示の数
     list_per_page = 7
     # 編集必要なレコード
-    fieldsets = [(None, {'fields': ['project_name', 'site_name', 'site_number', 'manager']})]
+    fieldsets = [(None, {'fields': ['project_name', 'site_name', 'site_number', 'manager', 'from_date', 'to_date']})]
     # リンク表示必要なレコード
     list_display_links = ('project_name',)
     # サーチ必要なレコード
