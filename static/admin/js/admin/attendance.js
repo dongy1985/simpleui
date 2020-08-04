@@ -69,7 +69,7 @@
                     var duty_sts = $(changeList[i]).find("td[class='field-status']").text()
 
                     // 報告状態が提出済または承認済の場合、削除ボタンを隠す
-                    if (selectedFlg && (duty_sts == '提出済' || duty_sts == '承認済')){
+                    if (selectedFlg && (duty_sts == '提出済')){
                         // 削除ボタンを隠す
                         if (delBtn) {
                             delBtn.hide();
@@ -82,21 +82,20 @@
                         if (exportBtn) {
                             exportBtn.hide();
                         }
-                        if (selectedFlg && (duty_sts == '承認済')){
-                            // 承認ボタンを隠す
-                            if (enableBtn) {
-                                enableBtn.hide();
-                            }
-                            // 取消ボタンを隠す
-                            if (cancelBtn) {
-                                cancelBtn.hide();
-                            }
-                            // 導出ボタンを表示する
-                            if (exportBtn) {
-                                exportBtn.show();
-                            }
+                    }
+                    if (selectedFlg && (duty_sts == '承認済')) {
+                        // 提出ボタンを隠す
+                        if (confirmBtn) {
+                            confirmBtn.hide();
                         }
-                        break;
+                        // 削除ボタンを隠す
+                        if (delBtn) {
+                            delBtn.hide();
+                        }
+                        // 承認ボタンを隠す
+                        if (enableBtn) {
+                            enableBtn.hide();
+                        }
                     }
                     if (selectedFlg && (duty_sts == '未提出')) {
                         // 承認ボタンを隠す
