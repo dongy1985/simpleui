@@ -409,7 +409,9 @@ class WorkSiteAdmin(admin.ModelAdmin):
     # メンバーモデル
     inlines = [WorkSiteDetailInline, ]
     # 表示必要なレコード
-    list_display = ('project_name', 'site_name', 'site_number', 'manager')
+    list_display = ('project_name', 'site_name', 'from_date', 'to_date', 'site_number', 'manager')
+    # ordering
+    ordering = ( 'site_name', 'from_date')
     # 一ページ表示の数
     list_per_page = 7
     # 編集必要なレコード
