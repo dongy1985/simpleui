@@ -60,7 +60,7 @@ class Employee(models.Model):
     # 社員名前
     name = models.CharField(max_length=30, verbose_name='社員名前', null=False, blank=False, db_index=True)
     # 社員番号
-    empNo = models.CharField(verbose_name='社員番号', max_length=3, null=False, blank=False)
+    empNo = models.CharField(primary_key=True, verbose_name='社員番号', max_length=3, null=False, blank=False)
     # 性别
     gender_choices = CodeMst.objects.filter(cd=const.GENDER_CD).values_list('subCd', 'subNm').order_by('subCd')
     gender = models.CharField(max_length=3, choices=gender_choices, verbose_name='性别', default=const.GENDER_DEF)
