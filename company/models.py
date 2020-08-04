@@ -52,7 +52,7 @@ class Dutydetail(models.Model):
         verbose_name_plural = "通勤手当明細"
 
     def __str__(self):
-        return self.trafficTo
+        return self.trafficMethod
 
 
 # 社員モデル

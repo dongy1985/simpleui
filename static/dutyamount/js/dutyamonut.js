@@ -72,19 +72,15 @@
                         if (confirmBtn) {
                             confirmBtn.hide();
                         }
-                        if (selectedFlg && (duty_sts == '承認済')){
+                        if (selectedFlg && (traffic_status == '承認済')){
                             // 承認ボタンを隠す
                             if (enableBtn) {
                                 enableBtn.hide();
                             }
                         }
-                        // 管理者以外の場合、承認済のデータが取消できない
-                        if (!authPermission && cancelBtn && duty_sts == '承認済') {
-                            cancelBtn.hide();
-                        }
                         break;
                     }
-                       if (selectedFlg && (duty_sts == '未提出')){
+                       if (selectedFlg && (traffic_status == '未提出')){
                         // 承認ボタンを隠す
                         if (enableBtn) {
                             enableBtn.hide();

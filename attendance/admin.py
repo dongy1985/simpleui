@@ -295,7 +295,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         # 社員ナンバー取得
         empNo = Employee.objects.get(name=keyname).empNo
         # 該当社員の勤務年月のデータ記録をクエリする
-        statisticsQuery = DutyStatistics.objects.filter(name=keyname, attendance_YM__year=attendance_YM.year,
+        statisticsQuery = DutyStatistics.objects.filter(empNo=empNo, name=keyname, attendance_YM__year=attendance_YM.year,
                                                               attendance_YM__month=attendance_YM.month)
         # データ記録のクエリ結果有り無しを確認する、無ければデータ登録
         if statisticsQuery.count() == 0:
@@ -371,10 +371,10 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
     export.short_description = ' 導出'
     export.type = 'primary'
     export.icon = 'el-icon-document-copy'
-    export.allowed_permissions = ('export_dutyStatistics',)
+    export.allowed_permissions = ('export_dutystatistics',)
 
 
-    def has_export_dutyStatistics_permission(self, request):
+    def has_export_dutystatistics_permission(self, request):
         opts = self.opts
         codename = get_permission_codename('export', opts)
         return request.user.has_perm('%s.%s' % (opts.app_label, codename))
