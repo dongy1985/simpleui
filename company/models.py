@@ -81,7 +81,7 @@ class Employee(models.Model):
     # 在留カード期限
     retention_limit = models.DateField(verbose_name='在留期限', null=True, blank=True)
 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='ログインユーザー',
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING(), blank=False, null=True, verbose_name='ログインユーザー',
                              db_index=True)
     # 社員状態
     status_choices = CodeMst.objects.filter(cd=const.EMPLOYEE_CD).values_list('subCd', 'subNm').order_by('subCd')
