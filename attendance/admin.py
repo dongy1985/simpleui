@@ -375,11 +375,9 @@ class AttendanceAdmin(admin.ModelAdmin):
         # 該当社員の勤務年月のデータ記録をクエリする
         dutyQuery = DutyStatistics.objects.filter(empNo=empNo, name=keyname, attendance_YM__year=attendance_YM.year,
                                                               attendance_YM__month=attendance_YM.month)
-        # データ記録のクエリ結果有り無しを確認する、無ければデータ登録
+        # データ記録のクエリ結果有り無しを確認する、無ければリターンする
         if dutyQuery.count() == 0:
-            DutyStatistics.objects.create(empNo=empNo, name=keyname, attendance_YM=attendance_YM,
-                    working_time=working_time, attendance_count=attendance_count, absence_count=absence_count,
-                    annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
+            return
         # 勤務表から実働時間無ければ、そのデータ履歴記録を削除する
         elif working_time == 0:
             dutyQuery.delete()
