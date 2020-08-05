@@ -434,13 +434,13 @@ class WorkSiteAdmin(admin.ModelAdmin):
             return qs
         # 現場管理者
         elif request.user.has_perm('attendance.confirm_button_attendance'):
-            tempid = Employee.objects.get(user_id=request.user.id).id
+            tempid = Employee.objects.get(user_id=request.user.id).empNo
             qs = super().get_queryset(request)
             return qs.filter(manager_id=tempid)
         # メンバー
         else:
             messages.add_message(request, messages.ERROR, '現場管理者ではありません')
-            tempid = Employee.objects.get(user_id=request.user.id).id
+            tempid = Employee.objects.get(user_id=request.user.id).empNo
             qs = super().get_queryset(request)
             return qs.filter(manager_id=tempid)
             # elif len(WorkSiteDetail.objects.filter(member_id=tempid).values('manager_id')) != 0:

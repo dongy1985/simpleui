@@ -55,7 +55,6 @@
                 cancelBtn.show();
             }
             if (changeList) {
-                flg = false;
                 for (i = 0; i < changeList.length; i++) {
                     // 選択されているかを判断する
                     var selectedFlg = $(changeList[i]).find('tr').context.classList.contains('selected');
@@ -63,7 +62,7 @@
                     var traffic_status = $(changeList[i]).find("td[class='field-trafficStatus']").text()
 
                     // 報告状態が提出済または承認済の場合、削除ボタンを隠す
-                    if (selectedFlg && (traffic_status == '提出済' || traffic_status == '承認済')){
+                    if (selectedFlg && (traffic_status == '提出済')){
                         // 削除ボタンを隠す
                         if (delBtn) {
                             delBtn.hide();
@@ -72,15 +71,22 @@
                         if (confirmBtn) {
                             confirmBtn.hide();
                         }
-                        if (selectedFlg && (traffic_status == '承認済')){
-                            // 承認ボタンを隠す
-                            if (enableBtn) {
-                                enableBtn.hide();
-                            }
-                        }
-                        break;
                     }
-                       if (selectedFlg && (traffic_status == '未提出')){
+                    if (selectedFlg && (traffic_status == '承認済')){
+                        // 提出ボタンを隠す
+                        if (confirmBtn) {
+                            confirmBtn.hide();
+                        }
+                        // 削除ボタンを隠す
+                        if (delBtn) {
+                            delBtn.hide();
+                        }
+                        // 承認ボタンを隠す
+                        if (enableBtn) {
+                            enableBtn.hide();
+                        }
+                    }
+                    if (selectedFlg && (traffic_status == '未提出')){
                         // 承認ボタンを隠す
                         if (enableBtn) {
                             enableBtn.hide();
@@ -89,7 +95,6 @@
                         if (cancelBtn) {
                             cancelBtn.hide();
                         }
-                        break;
                     }
                 }
             }
