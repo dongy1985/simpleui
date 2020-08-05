@@ -61,11 +61,11 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
     # 該当ユーザーのレコードをフィルター
     def get_queryset(self, request):
         if request.user.is_superuser or request.user.has_perm('company.confirm_button_applydutyamount'):
-           qs = super().get_queryset(request)
-           return qs
+            qs = super().get_queryset(request)
+            return qs
         else:
-           qs = super().get_queryset(request)
-           return qs.filter(user_id=request.user.id)
+            qs = super().get_queryset(request)
+            return qs.filter(user_id=request.user.id)
 
     # 承認ボタン
     def confirm_button(self, request, queryset):
@@ -118,23 +118,24 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
             obj.user_id = request.user.id
             obj.applyName = Employee.objects.get(user_id=request.user.id).name
         # 定期券運賃(1ヶ月):総金額
-        #　総金額の初期値
+        # # 　総金額の初期値
         obj.totalAmount = 0
         # form表单form.dataは画面のデータを取得、re.match/re.search匹配字符串
         # ^	匹配字符串的开头
         # $	匹配字符串的末尾例えば： r'(.*) are (.*?) .*'    r'^dutydetail_set.trafficAmount$', obj
         for detail in form.data:
             if re.match('^dutydetail_set.*trafficAmount$', detail):
-               if form.data[detail] != "":
-                  newStr = detail
-                  deleteFlg = newStr.replace("trafficAmount","DELETE")
-                  # deleteFlgは状態”on” and 存在ですか
-                  if form.data.__contains__(deleteFlg) and form.data[deleteFlg] == 'on':
-                     continue
-                  else:
-                     obj.totalAmount = obj.totalAmount + int(form.data[detail])
+                if form.data[detail] != "":
+                    newStr = detail
+                    deleteFlg = newStr.replace("trafficAmount", "DELETE")
+                    # deleteFlgは状態”on” and 存在ですか
+                    if form.data.__contains__(deleteFlg) and form.data[deleteFlg] == 'on':
+                        continue
+                    else:
+                        obj.totalAmount = obj.totalAmount + int(form.data[detail])
+        a = obj.totalAmount
+        obj.totalAmount = "{:,d}".format(a)
         super().save_model(request, obj, form, change)
-
 
 
 # 社員admin
@@ -185,7 +186,6 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
                     else:
                         obj.amount = obj.amount + int(form.data[key])
         super().save_model(request, obj, form, change)
-
 
     # ユーザーマッチ
     def get_queryset(self, request):
@@ -394,9 +394,8 @@ class AssetLendAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
-        elif self.has_apply_permission(request):
-            return qs
         return qs.filter(user_id=request.user.id)
+
 
 class WorkSiteDetailInline(admin.TabularInline):
     model = WorkSiteDetail
@@ -413,7 +412,7 @@ class WorkSiteAdmin(admin.ModelAdmin):
     # 表示必要なレコード
     list_display = ('project_name', 'site_name', 'from_date', 'to_date', 'site_number', 'manager')
     # ordering
-    ordering = ( 'site_name', 'from_date')
+    ordering = ('site_name', 'from_date')
     # 一ページ表示の数
     list_per_page = 7
     # 編集必要なレコード
@@ -424,6 +423,7 @@ class WorkSiteAdmin(admin.ModelAdmin):
     search_fields = ('project_name',)
     # 虫めがね
     raw_id_fields = ('manager',)
+
     # user filter
     def get_queryset(self, request):
         # superuser
@@ -432,13 +432,13 @@ class WorkSiteAdmin(admin.ModelAdmin):
             return qs
         # 現場管理者
         elif request.user.has_perm('attendance.confirm_button_attendance'):
-            tempid = Employee.objects.get(user_id=request.user.id).empNo
+            tempid = Employee.objects.get(user_id=request.user.id).id
             qs = super().get_queryset(request)
             return qs.filter(manager_id=tempid)
         # メンバー
         else:
             messages.add_message(request, messages.ERROR, '現場管理者ではありません')
-            tempid = Employee.objects.get(user_id=request.user.id).empNo
+            tempid = Employee.objects.get(user_id=request.user.id).id
             qs = super().get_queryset(request)
             return qs.filter(manager_id=tempid)
             # elif len(WorkSiteDetail.objects.filter(member_id=tempid).values('manager_id')) != 0:

@@ -17,7 +17,7 @@ class ApplyDutyAmount(models.Model):
     # 通勤手当申請日付
     applyDate = models.DateField(verbose_name='申請日', default=timezone.now)
     # 定期券運賃(1ヶ月):総金額
-    totalAmount = models.IntegerField(verbose_name='定期券運賃(1ヶ月)', default='')
+    totalAmount = models.CharField(verbose_name='定期券運賃(1ヶ月)', max_length=125, default='')
     # 状態
     stsList = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
     trafficStatus = models.CharField(choices=stsList, verbose_name='状態', max_length=3, default=const.WORK_TYPE_SMALL_0)
@@ -34,6 +34,7 @@ class ApplyDutyAmount(models.Model):
     def __str__(self):
         return self.applyName
 
+
 # 通勤手当明細モデル
 class Dutydetail(models.Model):
     # ForeignKey
@@ -45,7 +46,7 @@ class Dutydetail(models.Model):
     # 終了区間
     trafficTo = models.CharField(verbose_name='終了区間', max_length=12, default='')
     # 定期券運賃(1ヶ月):交通金額明細
-    trafficAmount = models.IntegerField(verbose_name='金額', default='')
+    trafficAmount = models.CharField(verbose_name='金額', max_length=125, default='')
 
     class Meta:
         verbose_name = "通勤手当明細"
@@ -188,7 +189,6 @@ class AssetLend(models.Model):
         return self.asset
 
 
-
 # 立替金モデル
 class ExpenseReturn(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='list_cur_applyer', )
@@ -200,7 +200,8 @@ class ExpenseReturn(models.Model):
     amount = models.CharField(max_length=30, verbose_name='総金額')
     # 申请状態
     status_choices = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
-    status = models.CharField(max_length=3, choices=status_choices, verbose_name='申请状態', default=const.WORK_TYPE_SMALL_0)
+    status = models.CharField(max_length=3, choices=status_choices, verbose_name='申请状態',
+                              default=const.WORK_TYPE_SMALL_0)
     # 備考
     comment = models.CharField(max_length=180, verbose_name='備考')
 
@@ -211,8 +212,10 @@ class ExpenseReturn(models.Model):
             ("commit_button_expensereturn", "Can 普通社員提出"),
             ("confirm_button_expensereturn", "Can 管理者承認")
         )
+
     def __str__(self):
         return self.applyer
+
 
 class ExpenseReturnDetail(models.Model):
     expenseReturn = models.ForeignKey(ExpenseReturn, on_delete=models.CASCADE, )
@@ -232,6 +235,7 @@ class ExpenseReturnDetail(models.Model):
     def __str__(self):
         return self.detail_type
 
+
 # 現場管理モデル
 class WorkSite(models.Model):
     # 案件名称
@@ -245,21 +249,22 @@ class WorkSite(models.Model):
     # 案件終了日付
     to_date = models.DateField(verbose_name='案件終了日付', default=timezone.now)
 
-    #現場責任者
+    # 現場責任者
     manager = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='現場責任者',
-                             db_index=True)
+                                db_index=True)
 
     class Meta:
         verbose_name = "現場管理"
         verbose_name_plural = "現場管理"
 
+
 # メンバーモデル
 class WorkSiteDetail(models.Model):
     # ForeignKey
     manager = models.ForeignKey(WorkSite, on_delete=models.CASCADE, verbose_name='申請者', max_length=128, default='')
-    #メンバー
+    # メンバー
     member = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='メンバー',
-                             db_index=True)
+                               db_index=True)
     # 備考
     comment = models.CharField(max_length=180, verbose_name='備考', default=const.DEF_COMMENT)
     # 案件開始日付
@@ -270,8 +275,9 @@ class WorkSiteDetail(models.Model):
     class Meta:
         verbose_name = "メンバー"
         verbose_name_plural = "メンバー"
-    
+
     def __int__(self):
         return self.id
+
     def __str__(self):
         return self.comment
