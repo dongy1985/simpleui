@@ -224,7 +224,7 @@ class ExpenseReturnDetail(models.Model):
     # 用途
     detail_text = models.CharField(max_length=180, verbose_name='用途')
     # 単一金額
-    price = models.CharField(verbose_name='単一金額', max_length=125, default='')
+    price = models.CharField(verbose_name='単一金額', max_length=30, default='')
     # 使用日付
     usedate = models.DateField(verbose_name='使用日付')
 
