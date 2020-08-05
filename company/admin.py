@@ -394,6 +394,8 @@ class AssetLendAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
+        elif self.has_apply_permission(request):
+            return qs
         return qs.filter(user_id=request.user.id)
 
 class WorkSiteDetailInline(admin.TabularInline):
