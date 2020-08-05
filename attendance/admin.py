@@ -116,8 +116,11 @@ class AttendanceAdmin(admin.ModelAdmin):
             if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
                 queryset.update(status=const.WORK_TYPE_SMALL_0)
             else:
-                messages.add_message(request, messages.ERROR, '取消出来ません')
-                return
+                if obj.status == const.WORK_TYPE_SMALL_1:
+                    queryset.update(status=const.WORK_TYPE_SMALL_0)
+                else:
+                    messages.add_message(request, messages.ERROR, '承認済记录が取消できません')
+                    return
 
         # mail
         if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
