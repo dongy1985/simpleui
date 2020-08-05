@@ -66,7 +66,7 @@ def chooseKbn(mailKbn, employe_name, employe_mail, user_id, workDate):
             if len(Employee.objects.filter(user_id=obj.id).values('email')) != 0:
                 to_addr += Employee.objects.get(user_id=obj.id).email + ', '
         # 現場管理者/メンバー
-        tempid = Employee.objects.get(user_id=user_id).empNo
+        tempid = Employee.objects.get(user_id=user_id).id
         if len(WorkSiteDetail.objects.filter(
                 Q(member_id=tempid)
                 & Q(from_date__lte=workDate)
@@ -79,7 +79,7 @@ def chooseKbn(mailKbn, employe_name, employe_mail, user_id, workDate):
             ).values_list('manager_id')
             site_id = temp_Site_id[0][0]
             manager_id = WorkSite.objects.get(id=site_id).manager_id
-            to_addr += Employee.objects.get(empNo=manager_id).email + ', '
+            to_addr += Employee.objects.get(id=manager_id).email + ', '
 
 
         # main
