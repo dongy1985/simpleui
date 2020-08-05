@@ -75,7 +75,7 @@ def mkExcel(queryset, folder_name):
         objMonth = obj.date.month
         objYear = obj.date.year
         projectDate = obj.date
-        userId = Employee.objects.get(user=obj.user_id).empNo
+        userId = Employee.objects.get(user=obj.user_id).id
         # 現場
         if len(WorkSiteDetail.objects.filter(
                 Q(member_id=userId)
@@ -91,7 +91,7 @@ def mkExcel(queryset, folder_name):
             siteNumber = WorkSite.objects.get(id=site_id).site_number
             projectName = WorkSite.objects.get(id=site_id).project_name
             managerId = WorkSite.objects.get(id=site_id).manager_id
-            managerName = Employee.objects.get(empNo=managerId).name
+            managerName = Employee.objects.get(id=managerId).name
     # 社員番号
     sheet.cell(headMst[0][0], headMst[0][1], userNumber)
     # 氏名
