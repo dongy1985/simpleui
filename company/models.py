@@ -197,7 +197,7 @@ class ExpenseReturn(models.Model):
     # 提出日付
     applydate = models.DateField(verbose_name='提出日付')
     # 総金額
-    amount = models.CharField(max_length=30, verbose_name='総金額')
+    amount = models.CharField(max_length=30, verbose_name='総金額', default='')
     # 申请状態
     status_choices = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
     status = models.CharField(max_length=3, choices=status_choices, verbose_name='申请状態',
@@ -224,7 +224,7 @@ class ExpenseReturnDetail(models.Model):
     # 用途
     detail_text = models.CharField(max_length=180, verbose_name='用途')
     # 単一金額
-    price = models.IntegerField(verbose_name='単一金額')
+    price = models.CharField(verbose_name='単一金額', max_length=125, default='')
     # 使用日付
     usedate = models.DateField(verbose_name='使用日付')
 

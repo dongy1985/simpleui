@@ -185,6 +185,8 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
                         continue
                     else:
                         obj.amount = obj.amount + int(form.data[key])
+        a = obj.amount
+        obj.amount = "{:,d}".format(a)
         super().save_model(request, obj, form, change)
 
     # ユーザーマッチ
