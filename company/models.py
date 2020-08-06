@@ -103,7 +103,7 @@ class Employee(models.Model):
 # 資産管理
 class AssetManage(models.Model):
     # 資産番号
-    asset = models.CharField(max_length=const.NAME_LENGTH, verbose_name='資産番号')
+    asset = models.CharField(unique=True, max_length=const.NAME_LENGTH, verbose_name='資産番号')
 
     # 分類
     type = models.CharField(max_length=const.NAME_LENGTH, verbose_name='分類')
