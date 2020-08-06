@@ -255,7 +255,7 @@ class AssetManageAdmin(admin.ModelAdmin):
     list_filter = ('type',)
 
     # 一ページ表示の数
-    list_per_page = const.PAGES
+    list_per_page = const.LIST_PER_PAGE
 
     actions_on_top = True
 
@@ -290,7 +290,7 @@ class AssetLendAdmin(admin.ModelAdmin):
     list_filter = ('type', 'lend_status',)
 
     # 分页显示，一页的数量
-    list_per_page = const.PAGES
+    list_per_page = const.LIST_PER_PAGE
 
     actions_on_top = True
 
