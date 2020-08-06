@@ -131,6 +131,9 @@ const.LEND_DENY = '4'
 # 備考
 const.DEF_COMMENT = ' '
 
+# 一ページ表示の数
+const.LIST_PER_PAGE = 30
+
 # セル結合
 const.SERU = ['C1:H1','I1:N1','O1:T1','U1:Z1',
               'AA1:AF1','AG1:AL1','Am1:AR1','AS1:AX1',

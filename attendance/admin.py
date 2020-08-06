@@ -40,9 +40,9 @@ class AttendanceAdmin(admin.ModelAdmin):
     # set field
     fieldsets = [(None,{'fields':['date', 'duty', 'start_time', 'end_time', 'rest', 'contents']})]
     # ordering
-    ordering = ( 'name', 'date')
+    ordering = ( 'name', '-date')
     # 一ページ表示の数
-    list_per_page = 7
+    list_per_page = const.LIST_PER_PAGE
 
     def has_delete_permission(self, request, obj=None):
         if obj:
