@@ -8,21 +8,21 @@
         // 編集リンク削除・追加
         if (changeList) {
             for (i = 0; i < changeList.length; i++) {
-                // 社員名前
-                var name = $(changeList[i]).find("th[class='field-name']").text()
-                // 報告状態
-                var status = $(changeList[i]).find("td[class='field-status']").text()
+                // 申请者名前
+                var duty_name = $(changeList[i]).find("th[class='field-applyer']").text()
+                // 申请状態
+                var duty_sts = $(changeList[i]).find("td[class='field-status']").text()
 
-                // 報告状態が提出済または承認済の場合、編集リンクを削除する
-                if (status == '提出済' || status == '承認済'){
+                // 申请状態が提出済または承認済の場合、編集リンクを削除する
+                if (duty_sts == '提出済' || duty_sts == '承認済'){
                     // リンク削除
-                    $(changeList[i]).find("th[class='field-name']").find('a').remove();
+                    $(changeList[i]).find("th[class='field-applyer']").find('a').remove();
                     // もとの表示内容を追加
-                    $(changeList[i]).find("th[class='field-name']").html(name);
+                    $(changeList[i]).find("th[class='field-applyer']").html(duty_name);
                 }
              }
         }
-        // 選択されている明細の報告状態より削除ボタンの活性化制御
+        // 選択されている明細の申请状態より削除ボタンの活性化制御
         var btnCtrlFunc = function() {
 
             // ログインユーザがすスーパーユーザかを判断する(文字列　⇒　Boolean)
