@@ -247,7 +247,7 @@ class WorkSite(models.Model):
     # 案件開始日付
     from_date = models.DateField(verbose_name='案件開始日付', default=timezone.now)
     # 案件終了日付
-    to_date = models.DateField(verbose_name='案件終了日付', default=timezone.now)
+    to_date = models.DateField(verbose_name='案件終了日付', default=datetime.strptime(str('2999-12-31'), '%Y-%m-%d'))
 
     # 現場責任者
     manager = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='現場責任者',
@@ -270,7 +270,7 @@ class WorkSiteDetail(models.Model):
     # 案件開始日付
     from_date = models.DateField(verbose_name='案件開始日付')
     # 案件終了日付
-    to_date = models.DateField(verbose_name='案件終了日付')
+    to_date = models.DateField(verbose_name='案件終了日付', default=datetime.strptime(str('2999-12-31'), '%Y-%m-%d'))
 
     class Meta:
         verbose_name = "メンバー"

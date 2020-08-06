@@ -405,7 +405,7 @@ class WorkSiteDetailInline(admin.TabularInline):
     model = WorkSiteDetail
     fieldsets = [(u'', {'fields': ['member', 'from_date', 'to_date']})]
     raw_id_fields = ('member',)
-    extra = 1
+    extra = 0
 
 
 # 現場管理
