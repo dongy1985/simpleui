@@ -80,7 +80,7 @@
                         if (lendBtn) {
                             lendBtn.hide();
                         }
-                        break;
+
                     }
 
                     // 報告状態が申請承認済の場合、返済ボタン、拒否ボタン、承認ボタンを隠す
@@ -94,7 +94,7 @@
                         if (requestBtn) {
                             requestBtn.hide();
                         }
-                        break;
+
                     }
 
                     // 報告状態が貸出済の場合、貸出ボタン、拒否ボタン、承認ボタンを隠す
@@ -108,7 +108,7 @@
                         if (requestBtn) {
                             requestBtn.hide();
                         }
-                        break;
+
                     }
 
                     // 報告状態が返却済の場合、貸出ボタン、拒否ボタン、承認ボタン、返済ボタンを隠す
@@ -125,7 +125,7 @@
                         if (backBtn) {
                             backBtn.hide();
                         }
-                        break;
+
                     }
 
                     // 報告状態が返却済の場合、貸出ボタン、拒否ボタン、承認ボタン、返却ボタンを隠す
@@ -142,7 +142,7 @@
                         if (backBtn) {
                             backBtn.hide();
                         }
-                        break;
+
                     }
                  }
             }
