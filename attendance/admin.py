@@ -72,8 +72,26 @@ class AttendanceAdmin(admin.ModelAdmin):
         float_rest = float(obj.rest)
         sumTime3 = sumTime2 - float_rest
         obj.working_time = sumTime3
-        # save
-        super().save_model(request, obj, form, change)
+
+        # unique_together = Attendance.objects.filter(
+        #             (Q(user_id=obj.user_id)
+        #               &Q(date=obj.date))
+        #         )
+        # super().save_model(request, obj, form, change)
+        # if len(unique_together) != 0:
+        #     messages.add_message(request, messages.ERROR, 'XXXXXXX')
+        #     return
+        # else:
+        #     super().save_model(request, obj, form, change)
+        #     return
+        # # save
+        try:
+            with transaction.atomic():
+                super().save_model(request, obj, form, change)
+                return
+        except:
+            messages.error(request, 'XXXXX')
+            return
 
     # user filter
     def get_queryset(self, request):

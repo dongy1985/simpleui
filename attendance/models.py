@@ -34,10 +34,11 @@ class Attendance(models.Model):
     class Meta:
         verbose_name = "勤務"
         verbose_name_plural = "勤務管理"
+        unique_together = ('user_id', 'date')
         permissions = (
             ('commit_button_attendance', 'Can 提出'),
             ('confirm_button_attendance', 'Can 承認'),
-            ("export_attendance", "Can エクスポート"),
+            ('export_attendance', 'Can エクスポート'),
         )
 
 # 勤務統計モデル
