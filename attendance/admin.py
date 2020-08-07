@@ -2,6 +2,7 @@ import time
 import calendar
 import os
 import zipfile
+import urllib.parse
 
 from django.contrib import admin, messages
 from django.db import transaction
@@ -449,8 +450,9 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
         # ファイルをダウンロード
         fread = open(filename, "rb")
+        outputName = filename[25:46]
         response = HttpResponse(fread, content_type='application/vnd.ms-excel')
-        response['Content-Disposition'] = 'attachment;filename="DutyStatistics.xlsx"'
+        response['Content-Disposition'] = 'attachment; filename="{fn}"'.format(fn=urllib.parse.quote(outputName))
         fread.close()
         # サバのフォルダーを削除する
         startdir = const.DIR + folder_name
