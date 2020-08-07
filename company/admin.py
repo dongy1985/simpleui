@@ -15,7 +15,7 @@ from django.db.models import Q
 class DutydetailInline(admin.TabularInline):
     model = Dutydetail
     fieldsets = [(u'', {'fields': ['trafficMethod', 'trafficFrom', 'trafficTo', 'trafficAmount']})]
-    extra = 1
+    extra = 0
 
 
 @admin.register(ApplyDutyAmount)
@@ -118,7 +118,7 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
             obj.user_id = request.user.id
             obj.applyName = Employee.objects.get(user_id=request.user.id).name
         # 定期券運賃(1ヶ月):総金額
-        # # 　総金額の初期値
+        # 総金額の初期値
         obj.totalAmount = 0
         # form表单form.dataは画面のデータを取得、re.match/re.search匹配字符串
         # ^	匹配字符串的开头
@@ -132,11 +132,21 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
                     if form.data.__contains__(deleteFlg) and form.data[deleteFlg] == 'on':
                         continue
                     else:
-                        obj.totalAmount = obj.totalAmount + int(form.data[detail])
-        a = obj.totalAmount
-        obj.totalAmount = "{:,d}".format(a)
+                        # 明細金額DBから取得、”，”が削除する、明細金額にプラス
+                        trafficAmount = re.sub("\D", "", form.data[detail])
+                        obj.totalAmount = obj.totalAmount + int(trafficAmount)
+        totalamount = obj.totalAmount
+        #　総金額のスタイルを変更された後、出力　
+        obj.totalAmount = "{:,d}".format(totalamount)
         super().save_model(request, obj, form, change)
 
+    # Inlineモデルの値を取得
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        for obj in instances:
+            amount = int(obj.trafficAmount)
+            obj.trafficAmount = "{:,d}".format(amount)
+            obj.save()
 
 # 社員admin
 @admin.register(Employee)
