@@ -400,8 +400,8 @@ class AttendanceAdmin(admin.ModelAdmin):
         # データ記録のクエリ結果有り無しを確認する、無ければリターンする
         if dutyQuery.count() == 0:
             return
-        # 勤務表から実働時間無ければ、そのデータ履歴記録を削除する
-        elif working_time == 0:
+        # 勤務表から出勤日数,欠勤回数,年休回数,休出回数,遅早退回数が無ければ、そのデータ履歴記録を削除する
+        elif attendance_count == 0 and absence_count == 0 and annual_leave == 0 and rest_count == 0 and late_count == 0:
             dutyQuery.delete()
         # データ記録のクエリ結果あれば、データ更新
         else:
