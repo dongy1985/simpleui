@@ -350,7 +350,7 @@ class AttendanceAdmin(admin.ModelAdmin):
             index += 1
         super().delete_queryset(request, queryset)
 
-    # 勤務削除統計実行
+    # 勤務削除一覧画面query統計実行
     def delCompute(self, keyname, valueYM):
         # 承認された勤務年月を取得し、int型に変換
         valueYear = int(valueYM[0:4])
@@ -407,6 +407,13 @@ class AttendanceAdmin(admin.ModelAdmin):
         else:
             dutyQuery.update(working_time=working_time, attendance_count=attendance_count,
                     absence_count=absence_count, annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
+
+    # 勤務削除単一モデル統計実行
+    def delete_model(self, request, obj):
+        keyname = obj.name
+        valueYM = obj.date.strftime('%Y-%m')
+        self.delCompute(keyname, valueYM)
+        super().delete_model(request, obj)
 
     class Media:
         js = ('admin/js/admin/attendance.js',)
