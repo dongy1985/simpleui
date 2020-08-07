@@ -411,15 +411,16 @@ class AttendanceAdmin(admin.ModelAdmin):
         js = ('admin/js/admin/attendance.js',)
 
 
+
 # 勤務統計モデルadmin
 @admin.register(DutyStatistics)
 class DutyStatisticsAdmin(admin.ModelAdmin):
     list_display = (
     'empNo', 'name', 'attendance_YM', 'working_time', 'attendance_count', 'absence_count', 'annual_leave', 'rest_count',
     'late_count')
-    list_per_page = 7
+    list_per_page = const.LIST_PER_PAGE
     list_filter = (('attendance_YM', DutyDateFieldFilter),)
-    ordering = ('attendance_YM', 'name')
+    ordering = ('-attendance_YM',)
     actions = ['export', ]
     def has_add_permission(self, request):
         return False
