@@ -204,11 +204,17 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
 
     # Inlineモデルの値を取得
     def save_formset(self, request, form, formset, change):
-        instances = formset.save(commit=False)
+        instances = formset.save(commit=True)
         for obj in instances:
-            a = int(obj.price)
-            obj.price = "{:,d}".format(a)
-            obj.save()
+            if obj.price.__contains__(','):
+                obj.price = re.sub("\D", "", obj.price)
+                a = int(obj.price)
+                obj.price = "{:,d}".format(a)
+                obj.save()
+            else:
+                a = int(obj.price)
+                obj.price = "{:,d}".format(a)
+                obj.save()
 
     # ユーザーマッチ
     def get_queryset(self, request):
