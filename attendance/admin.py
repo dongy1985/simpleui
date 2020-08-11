@@ -449,13 +449,13 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
 
     # excle導出
     def export(self, request, queryset):
-        # mkDir
-        folder_name = datetime.now().strftime("%Y-%m-%d_%H%M%S")
-        if os.path.isdir(const.DIR):
-            os.mkdir(os.path.join(const.DIR, folder_name))
 
         # 統計年月の入力をチェック
         if request.GET.__contains__('attendance_YM__gte'):
+            # mkDir
+            folder_name = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+            if os.path.isdir(const.DIR):
+                os.mkdir(os.path.join(const.DIR, folder_name))
             # 統計年月開始を取得
             attendance_YM_From = request.GET.get('attendance_YM__gte')[0:7]
             # 統計年月終了を取得
