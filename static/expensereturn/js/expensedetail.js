@@ -2,6 +2,8 @@
 
     // 加载事件
     window.addEventListener('load', function (e) {
+        // 保存ボタン
+        var saveBtn = $(".el-button--primary");
 
         // 一覧明細
         var changeList = $("tr[id^='expensereturndetail_set-']");
@@ -35,9 +37,11 @@
                     var amtreg=/^([1-9]\d{0,9}|0)([.]?|(\.\d{1,2})?)$/;
                     if(!amtreg.test(curValue)){
                         swal("OMG!", "正しい金額を入力してください！", "error");
+                        saveBtn.hide();
                         return;
                     }
                     var ss = formatter(curValue);
+                    saveBtn.show();
                     $(this).val(ss);
                     $(this).css('background-color', '#ffc');
                   });
@@ -75,9 +79,11 @@
                 var amtreg=/^([1-9]\d{0,9}|0)([.]?|(\.\d{1,2})?)$/;
                 if(!amtreg.test(curValue)){
                     swal("OMG!", "正しい金額を入力してください！", "error");
+                    saveBtn.hide();
                     return;
                 }
                 var ss = formatter(curValue);
+                saveBtn.show();
                 $(this).val(ss);
                 $(this).css('background-color', '#ffc');
               });
