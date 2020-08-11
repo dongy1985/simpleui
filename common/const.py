@@ -139,4 +139,5 @@ const.SERU = ['C1:H1','I1:N1','O1:T1','U1:Z1',
               'AA1:AF1','AG1:AL1','Am1:AR1','AS1:AX1',
               'AY1:BD1','BE1:BJ1','BK1:BP1','BQ1:BV1',
               'BW1:CB1','CC1:CH1','CI1:CN1','CO1:CT1',
-              'CU1:CZ1','DA1:DF1','DG1:DL1','DM1:DR1']
+              'CU1:CZ1','DA1:DF1','DG1:DL1','DM1:DR1',
+              'DS1:DX1','DY1:ED1','EE1:EJ1','EQ1:EV1']
