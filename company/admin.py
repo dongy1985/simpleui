@@ -15,7 +15,7 @@ from django.db.models import Q
 class DutydetailInline(admin.TabularInline):
     model = Dutydetail
     fieldsets = [(u'', {'fields': ['trafficMethod', 'trafficFrom', 'trafficTo', 'trafficAmount']})]
-    extra = 1
+    extra = 0
 
 
 @admin.register(ApplyDutyAmount)
@@ -118,7 +118,7 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
             obj.user_id = request.user.id
             obj.applyName = Employee.objects.get(user_id=request.user.id).name
         # 定期券運賃(1ヶ月):総金額
-        # # 　総金額の初期値
+        # 総金額の初期値
         obj.totalAmount = 0
         # form表单form.dataは画面のデータを取得、re.match/re.search匹配字符串
         # ^	匹配字符串的开头
@@ -132,11 +132,21 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
                     if form.data.__contains__(deleteFlg) and form.data[deleteFlg] == 'on':
                         continue
                     else:
-                        obj.totalAmount = obj.totalAmount + int(form.data[detail])
-        a = obj.totalAmount
-        obj.totalAmount = "{:,d}".format(a)
+                        # 明細金額DBから取得、”，”が削除する、明細金額にプラス
+                        trafficAmount = re.sub("\D", "", form.data[detail])
+                        obj.totalAmount = obj.totalAmount + int(trafficAmount)
+        totalamount = obj.totalAmount
+        #　総金額のスタイルを変更された後、出力　
+        obj.totalAmount = "{:,d}".format(totalamount)
         super().save_model(request, obj, form, change)
 
+    # Inlineモデルの値を取得
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        for obj in instances:
+            amount = int(obj.trafficAmount)
+            obj.trafficAmount = "{:,d}".format(amount)
+            obj.save()
 
 # 社員admin
 @admin.register(Employee)
@@ -146,9 +156,10 @@ class EmployeeAdmin(admin.ModelAdmin):
                    'retention_limit', 'user', 'empSts']})]
     list_display = ('name', 'empNo', 'email', 'phone')
     search_fields = ('name', 'empNo')
-    list_per_page = 20
+    list_per_page = const.LIST_PER_PAGE
     raw_id_fields = ('user',)
     list_filter = ('empSts',)
+    ordering = ('-empNo',)
 
     list_display_links = ('name',)
 
@@ -156,7 +167,7 @@ class EmployeeAdmin(admin.ModelAdmin):
 # 立替金admin
 class ExpenseReturnDetailInline(admin.TabularInline):
     model = ExpenseReturnDetail
-    extra = 1  # デフォルト表示数
+    extra = 0  # デフォルト表示数
     fieldsets = [(None, {'fields': ['usedate', 'detail_type', 'detail_text', 'price']})]
 
 
@@ -167,7 +178,8 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
     list_display = ('applyer', 'applydate', 'amount', 'comment', 'status')
     search_fields = ('applyer',)
     list_filter = ('status', ('applydate', DateFieldFilter))
-    list_per_page = 10
+    ordering = ('-applydate',)
+    list_per_page = const.LIST_PER_PAGE
 
     actions = ['commit_button', 'confirm_button', 'cancel_button']
 
@@ -184,10 +196,19 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
                     if delflag in form.data.keys():
                         continue
                     else:
-                        obj.amount = obj.amount + int(form.data[key])
-        a = obj.amount
-        obj.amount = "{:,d}".format(a)
+                        price = re.sub("\D", "", form.data[key])
+                        obj.amount = obj.amount + int(price)
+        amount = obj.amount
+        obj.amount = "{:,d}".format(amount)
         super().save_model(request, obj, form, change)
+
+    # Inlineモデルの値を取得
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        for obj in instances:
+            a = int(obj.price)
+            obj.price = "{:,d}".format(a)
+            obj.save()
 
     # ユーザーマッチ
     def get_queryset(self, request):
@@ -255,7 +276,7 @@ class AssetManageAdmin(admin.ModelAdmin):
     list_filter = ('type',)
 
     # 一ページ表示の数
-    list_per_page = const.PAGES
+    list_per_page = const.LIST_PER_PAGE
 
     actions_on_top = True
 
@@ -290,7 +311,7 @@ class AssetLendAdmin(admin.ModelAdmin):
     list_filter = ('type', 'lend_status',)
 
     # 分页显示，一页的数量
-    list_per_page = const.PAGES
+    list_per_page = const.LIST_PER_PAGE
 
     actions_on_top = True
 

@@ -70,7 +70,7 @@ class DutyStatistics(models.Model):
         verbose_name = "勤務統計"
         verbose_name_plural = "勤務統計"
         permissions = (
-            ("export_dutystatistics", "Can エクスポート勤務統計"),
+            ("export_dutystatistics", "Can エクスポート"),
         )
 
 

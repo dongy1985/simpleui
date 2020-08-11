@@ -2,6 +2,7 @@ import time
 import calendar
 import os
 import zipfile
+import urllib.parse
 
 from django.contrib import admin, messages
 from django.db import transaction
@@ -360,7 +361,7 @@ class AttendanceAdmin(admin.ModelAdmin):
             index += 1
         super().delete_queryset(request, queryset)
 
-    # 勤務削除統計実行
+    # 勤務削除一覧画面query統計実行
     def delCompute(self, keyname, valueYM):
         # 承認された勤務年月を取得し、int型に変換
         valueYear = int(valueYM[0:4])
@@ -410,16 +411,24 @@ class AttendanceAdmin(admin.ModelAdmin):
         # データ記録のクエリ結果有り無しを確認する、無ければリターンする
         if dutyQuery.count() == 0:
             return
-        # 勤務表から実働時間無ければ、そのデータ履歴記録を削除する
-        elif working_time == 0:
+        # 勤務表から出勤日数,欠勤回数,年休回数,休出回数,遅早退回数が無ければ、そのデータ履歴記録を削除する
+        elif attendance_count == 0 and absence_count == 0 and annual_leave == 0 and rest_count == 0 and late_count == 0:
             dutyQuery.delete()
         # データ記録のクエリ結果あれば、データ更新
         else:
             dutyQuery.update(working_time=working_time, attendance_count=attendance_count,
                     absence_count=absence_count, annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
 
+    # 勤務削除単一モデル統計実行
+    def delete_model(self, request, obj):
+        keyname = obj.name
+        valueYM = obj.date.strftime('%Y-%m')
+        self.delCompute(keyname, valueYM)
+        super().delete_model(request, obj)
+
     class Media:
         js = ('admin/js/admin/attendance.js',)
+
 
 
 # 勤務統計モデルadmin
@@ -428,9 +437,9 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
     list_display = (
     'empNo', 'name', 'attendance_YM', 'working_time', 'attendance_count', 'absence_count', 'annual_leave', 'rest_count',
     'late_count')
-    list_per_page = 7
+    list_per_page = const.LIST_PER_PAGE
     list_filter = (('attendance_YM', DutyDateFieldFilter),)
-    ordering = ('attendance_YM', 'name')
+    ordering = ('-attendance_YM',)
     actions = ['export', ]
     def has_add_permission(self, request):
         return False
@@ -459,8 +468,9 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
             messages.add_message(request, messages.SUCCESS, 'SUCCESS')
         # ファイルをダウンロード
         fread = open(filename, "rb")
+        outputName = filename[25:46]
         response = HttpResponse(fread, content_type='application/vnd.ms-excel')
-        response['Content-Disposition'] = 'attachment;filename="DutyStatistics.xlsx"'
+        response['Content-Disposition'] = 'attachment; filename="{fn}"'.format(fn=urllib.parse.quote(outputName))
         fread.close()
         # サバのフォルダーを削除する
         startdir = const.DIR + folder_name
