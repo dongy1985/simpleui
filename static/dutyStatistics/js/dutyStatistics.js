@@ -17,16 +17,8 @@
              }
         }
 
-        //「導出ボタン」押下する前：統計年月を入力し、「検索」ボタンを押下する
-        var start = document.getElementsByName("attendance_YM__gte");
-        var end = document.getElementsByName("attendance_YM__lt");
-        // 一覧ヘッダ部のチェックボックスのイベント
+        // 導出ボタン
         $(".actions button[data-name='export']").click(function(){
-            if ((start[0].value == '') || (end[0].value == '')) {
-//                swal("OMG!", "統計年月を入力し、「検索」ボタンを押下してください！", "error");
-                alert("統計年月を入力し、「検索」ボタンを押下してください！");
-                return;
-            }
             setTimeout("window.location.reload()",1000);
         });
 

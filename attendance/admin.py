@@ -79,7 +79,7 @@ class AttendanceAdmin(admin.ModelAdmin):
             return
         else:
             obj.working_time = sumTime3
-        
+
 
 
         # unique_together = Attendance.objects.filter(
@@ -453,38 +453,44 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
         folder_name = datetime.now().strftime("%Y-%m-%d_%H%M%S")
         if os.path.isdir(const.DIR):
             os.mkdir(os.path.join(const.DIR, folder_name))
-        # 統計年月開始を取得
-        attendance_YM_From = request.GET.get('attendance_YM__gte')[0:7]
-        # 統計年月終了を取得
-        attendance_YM_To = request.GET.get('attendance_YM__lt')[0:7]
-        # 月度単位または年度単位の判断
-        if attendance_YM_From == attendance_YM_To:
-            # 月度単位の集計表(excel)の導出
-            filename = fileUtil.exportExcel(folder_name, attendance_YM_From)
-            messages.add_message(request, messages.SUCCESS, 'SUCCESS')
+
+        # 統計年月の入力をチェック
+        if request.GET.__contains__('attendance_YM__gte'):
+            # 統計年月開始を取得
+            attendance_YM_From = request.GET.get('attendance_YM__gte')[0:7]
+            # 統計年月終了を取得
+            attendance_YM_To = request.GET.get('attendance_YM__lt')[0:7]
+            # 月度単位または年度単位の判断
+            if attendance_YM_From == attendance_YM_To:
+                # 月度単位の集計表(excel)の導出
+                filename = fileUtil.exportExcel(folder_name, attendance_YM_From)
+                messages.add_message(request, messages.SUCCESS, 'SUCCESS')
+            else:
+                # 年度単位の集計表(excel)の導出
+                filename = fileUtil.exportYearExcel(folder_name, attendance_YM_From, attendance_YM_To, queryset)
+                messages.add_message(request, messages.SUCCESS, 'SUCCESS')
+            # ファイルをダウンロード
+            fread = open(filename, "rb")
+            outputName = filename[25:46]
+            response = HttpResponse(fread, content_type='application/vnd.ms-excel')
+            response['Content-Disposition'] = 'attachment; filename="{fn}"'.format(fn=urllib.parse.quote(outputName))
+            fread.close()
+            # サバのフォルダーを削除する
+            startdir = const.DIR + folder_name
+            if os.path.exists(filename):
+                os.remove(filename)
+                for root, dirs, files in os.walk(startdir, topdown=False):
+                    for name in files:
+                        os.remove(os.path.join(root, name))
+                    for name in dirs:
+                        os.rmdir(os.path.join(root, name))
+                os.removedirs(startdir)
+            else:
+                print('no such file')
+            return response
         else:
-            # 年度単位の集計表(excel)の導出
-            filename = fileUtil.exportYearExcel(folder_name, attendance_YM_From, attendance_YM_To, queryset)
-            messages.add_message(request, messages.SUCCESS, 'SUCCESS')
-        # ファイルをダウンロード
-        fread = open(filename, "rb")
-        outputName = filename[25:46]
-        response = HttpResponse(fread, content_type='application/vnd.ms-excel')
-        response['Content-Disposition'] = 'attachment; filename="{fn}"'.format(fn=urllib.parse.quote(outputName))
-        fread.close()
-        # サバのフォルダーを削除する
-        startdir = const.DIR + folder_name
-        if os.path.exists(filename):
-            os.remove(filename)
-            for root, dirs, files in os.walk(startdir, topdown=False):
-                for name in files:
-                    os.remove(os.path.join(root, name))
-                for name in dirs:
-                    os.rmdir(os.path.join(root, name))
-            os.removedirs(startdir)
-        else:
-            print('no such file')
-        return response
+            messages.add_message(request, messages.ERROR, '統計年月を入力し、「検索」ボタンを押下してください！')
+            return
 
     export.short_description = ' 導出'
     export.type = 'primary'
