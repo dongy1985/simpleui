@@ -464,11 +464,11 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
             if attendance_YM_From == attendance_YM_To:
                 # 月度単位の集計表(excel)の導出
                 filename = fileUtil.exportExcel(folder_name, attendance_YM_From)
-                messages.add_message(request, messages.SUCCESS, 'SUCCESS')
+                messages.add_message(request, messages.SUCCESS, '導出しました')
             else:
                 # 年度単位の集計表(excel)の導出
                 filename = fileUtil.exportYearExcel(folder_name, attendance_YM_From, attendance_YM_To, queryset)
-                messages.add_message(request, messages.SUCCESS, 'SUCCESS')
+                messages.add_message(request, messages.SUCCESS, '導出しました')
             # ファイルをダウンロード
             fread = open(filename, "rb")
             outputName = filename[25:46]
@@ -494,6 +494,7 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
 
     export.short_description = ' 導出'
     export.type = 'primary'
+    export.confirm = '導出してもよろしいですか？'
     export.icon = 'el-icon-document-copy'
     export.allowed_permissions = ('export_dutystatistics',)
 
