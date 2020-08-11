@@ -70,8 +70,16 @@ class AttendanceAdmin(admin.ModelAdmin):
             sum_hour_dcm = 0
         sumTime2 = sum_hour + sum_hour_dcm
         float_rest = float(obj.rest)
+        #休憩時間の制御
         sumTime3 = sumTime2 - float_rest
-        obj.working_time = sumTime3
+        if sumTime3 < 0:
+            messages.set_level(request, messages.ERROR)
+            messages.error(request, '休憩時間を修正してください')
+            return
+        else:
+            obj.working_time = sumTime3
+        
+
 
         # unique_together = Attendance.objects.filter(
         #             (Q(user_id=obj.user_id)
@@ -90,7 +98,9 @@ class AttendanceAdmin(admin.ModelAdmin):
                 super().save_model(request, obj, form, change)
                 return
         except:
-            messages.error(request, 'XXXXX')
+            messages.set_level(request, messages.ERROR)
+            temp_errMsg = str(obj.date) + 'の勤務記録は既に存在します，修正してください。'
+            messages.error(request, temp_errMsg)
             return
 
     # user filter
@@ -226,7 +236,8 @@ class AttendanceAdmin(admin.ModelAdmin):
         if len(queryset) != 0:
             # 呼出EXCEL制作
             fileUtil.export(temp_queryset, folder_name)
-            messages.add_message(request, messages.SUCCESS, 'SUCCESS')
+            # messages.set_level(request, messages.ERROR)
+            # messages.add_message(request, messages.SUCCESS, 'SUCCESS')
 
         try:
             # ZIp

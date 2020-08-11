@@ -22,6 +22,7 @@
                 }
              }
         }
+
         // 選択されている明細の報告状態より削除ボタンの活性化制御
         var btnCtrlFunc = function() {
 
@@ -128,4 +129,22 @@
         });
 
     });
+    // 加载事件
+    window.addEventListener('change', function (e) {
+        var libselect=document.getElementById("id_duty");
+        var index=libselect.selectedIndex;
+        var status = libselect.options[index].text;
+
+        var StartTime=document.getElementById("id_start_time");
+        var EndTime=document.getElementById("id_end_time");
+        var Rest=document.getElementById("id_rest");
+        var Contents=document.getElementById("id_contents");
+
+        if (status == '欠勤' || status == '年休' || status == '振休'){
+            StartTime.value="00:00";
+            EndTime.value="00:00";
+            Rest.value="0.0";
+            Contents.value=status;
+        }
+    })
 })();
