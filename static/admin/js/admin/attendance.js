@@ -128,6 +128,12 @@
             btnCtrlFunc();
         });
 
+        $(".actions button[data-name='export']").bind('click', function(e){
+            setTimeout("window.location.reload()",1000);
+            // location.reload([false]) 
+
+        });
+
     });
     // 加载事件
     window.addEventListener('change', function (e) {
@@ -146,5 +152,13 @@
             Rest.value="0.0";
             Contents.value=status;
         }
-    })
+    });
+
+    // var exportBtn = $(".actions button[data-name='export']");
+    // $(".action-checkbox").bind('click', function(e){
+    //         setTimeout("window.location.reload()",3000);
+    //         // location.reload([false]) 
+
+    //     }
+    //     );
 })();

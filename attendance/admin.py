@@ -238,7 +238,7 @@ class AttendanceAdmin(admin.ModelAdmin):
             # 呼出EXCEL制作
             fileUtil.export(temp_queryset, folder_name)
             # messages.set_level(request, messages.ERROR)
-            # messages.add_message(request, messages.SUCCESS, 'SUCCESS')
+            messages.add_message(request, messages.SUCCESS, '導出しました')
 
         try:
             # ZIp
