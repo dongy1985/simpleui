@@ -22,31 +22,24 @@
                       var uu = num.replace(',','')
                       return uu
                 }
-//                  // テキストボックスにフォーカス時、フォームの背景色を変化
-//                $("#"+expense_id).bind('input propertychange', function() {
-//                    var curValue=$(this).val();
-//                    var ss = formatter(curValue);
-//                    $(this).val(ss);
-//                    $(this).css('background-color', '#ffc');
-//                  });
 
                   // テキストボックスにフォーカス時、フォームの背景色を変化
                 $("#"+expense_id).focus(function() {
-                    var curValue=$(this).val();
-                    var ss = formatter(curValue);
-                    $(this).val(ss);
-                    $(this).css('background-color', '#ffc');
-                  });
-                $("#"+expense_id).blur(function() {
                     var unValue=$(this).val();
                     var uu = unFormatter(unValue);
+                    $(this).val(uu);
+                    $(this).css('background-color', 'pink');
+                  });
+                $("#"+expense_id).blur(function() {
+                    var curValue=$(this).val();
                     var amtreg=/^([1-9]\d{0,9}|0)([.]?|(\.\d{1,2})?)$/;
-                    if(!amtreg.test(uu)){
+                    if(!amtreg.test(curValue)){
                         alert("正しい金額を入力してください！");
                         return;
                     }
-                    $(this).val(uu);
-                    $(this).css('background-color', 'pink');
+                    var ss = formatter(curValue);
+                    $(this).val(ss);
+                    $(this).css('background-color', '#ffc');
                   });
 
              }
@@ -71,22 +64,22 @@
             }
               // テキストボックスにフォーカス時、フォームの背景色を変化
             $("#"+expense_nextId).focus(function() {
-                var curValue=$(this).val();
-                var ss = formatter(curValue);
-                $(this).val(ss);
-                $(this).css('background-color', '#ffc');
+                var unValue=$(this).val();
+                var uu = unFormatter(unValue);
+                $(this).val(uu);
+                $(this).css('background-color', 'pink');
               });
 
             $("#"+expense_nextId).blur(function() {
-                var unValue=$(this).val();
-                var uu = unFormatter(unValue);
+                var curValue=$(this).val();
                 var amtreg=/^([1-9]\d{0,9}|0)([.]?|(\.\d{1,2})?)$/;
-                if(!amtreg.test(uu)){
+                if(!amtreg.test(curValue)){
                     alert("正しい金額を入力してください！");
                     return;
                 }
-                $(this).val(uu);
-                $(this).css('background-color', 'pink');
+                var ss = formatter(curValue);
+                $(this).val(ss);
+                $(this).css('background-color', '#ffc');
               });
             next = next + 1;
         });
