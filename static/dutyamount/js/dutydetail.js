@@ -2,7 +2,6 @@
 
     // 加载事件
     window.addEventListener('load', function (e) {
-
         // 一覧明細
         var changeList = $("tr[id^='dutydetail_set-']");
         // 編集リンク削除・追加
@@ -33,7 +32,7 @@
                     var curValue=$(this).val();
                     var amtreg=/^([1-9]\d{0,9}|0)([.]?|(\.\d{1,2})?)$/;
                     if(!amtreg.test(curValue)){
-                        alert("正しい金額を入力してください！");
+                        swal("OMG!", "正しい金額を入力してください！", "error");
                         return;
                     }
                     var ss = formatter(curValue);
@@ -73,7 +72,7 @@
                 var curValue=$(this).val();
                 var amtreg=/^([1-9]\d{0,9}|0)([.]?|(\.\d{1,2})?)$/;
                 if(!amtreg.test(curValue)){
-                    alert("正しい金額を入力してください！");
+                    swal("OMG!", "正しい金額を入力してください！", "error");
                     return;
                 }
                 var ss = formatter(curValue);
