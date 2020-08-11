@@ -28,20 +28,16 @@
                     var unValue=$(this).val();
                     var uu = unFormatter(unValue);
                     $(this).val(uu);
-                    $(this).css('background-color', 'pink');
                   });
                 $("#"+duty_id).blur(function() {
                     var curValue=$(this).val();
                     var amtreg=/^([1-9]\d{0,9}|0)([.]?|(\.\d{1,2})?)$/;
                     if(!amtreg.test(curValue)){
                         swal("OMG!", "正しい金額を入力してください！", "error");
-                        saveBtn.hide();
                         return;
                     }
                     var ss = formatter(curValue);
-                    saveBtn.show();
                     $(this).val(ss);
-                    $(this).css('background-color', '#ffc');
                   });
 
              }
@@ -69,7 +65,6 @@
                 var unValue=$(this).val();
                 var uu = unFormatter(unValue);
                 $(this).val(uu);
-                $(this).css('background-color', 'pink');
               });
 
             $("#"+duty_nextId).blur(function() {
@@ -77,13 +72,10 @@
                 var amtreg=/^([1-9]\d{0,9}|0)([.]?|(\.\d{1,2})?)$/;
                 if(!amtreg.test(curValue)){
                     swal("OMG!", "正しい金額を入力してください！", "error");
-                    saveBtn.hide();
                     return;
                 }
                 var ss = formatter(curValue);
-                saveBtn.show();
                 $(this).val(ss);
-                $(this).css('background-color', '#ffc');
               });
             next = next + 1;
         });
