@@ -373,8 +373,11 @@ def makeExcel(fileName, counts, attendance_YM_From, user_Con):
         # 6列を循环
         column += 6
     # 削除行列を循环：6列を循环を削除する
+    del_cell.sort(key=None, reverse=True)
     for cell in del_cell:
+        cell += 5
         for i in range(6):
             sheet.delete_cols(cell)
+            cell -= 1
     # save
     book.save(fileName)
