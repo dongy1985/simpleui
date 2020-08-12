@@ -31,11 +31,6 @@
                 // 金額テキストボックスにフォーカスアウト時、金額のフォーマット eg:9000→9,000
                 $("#"+duty_id).blur(function() {
                     var curValue=$(this).val();
-                    var amtreg=/^([1-9]\d{0,9}|0)([.]?|(\.\d{1,2})?)$/;
-                    if(!amtreg.test(curValue)){
-                        swal("OMG!", "正しい金額を入力してください！", "error");
-                        return;
-                    }
                     var ss = formatter(curValue);
                     $(this).val(ss);
                   });
@@ -59,11 +54,6 @@
             // 金額テキストボックスにフォーカスアウト時、金額のフォーマット eg:9000→9,000
             $("#"+duty_nextId).blur(function() {
                 var curValue=$(this).val();
-                var amtreg=/^([1-9]\d{0,9}|0)([.]?|(\.\d{1,2})?)$/;
-                if(!amtreg.test(curValue)){
-                    swal("OMG!", "正しい金額を入力してください！", "error");
-                    return;
-                }
                 var ss = formatter(curValue);
                 $(this).val(ss);
               });

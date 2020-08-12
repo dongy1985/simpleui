@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.contrib.auth.models import User
+from django.core import validators
 from django.db import models
 from django.utils import timezone
 from common.const import const
@@ -46,7 +47,7 @@ class Dutydetail(models.Model):
     # 終了区間
     trafficTo = models.CharField(verbose_name='終了区間', max_length=12, default='')
     # 定期券運賃(1ヶ月):交通金額明細
-    trafficAmount = models.CharField(verbose_name='金額', max_length=10, default='')
+    trafficAmount = models.CharField(verbose_name='金額', max_length=10, default='', validators=[validators.RegexValidator("^\d{1,3}(,\d{3})*$", message='正しい金額を入力してください！')])
 
     class Meta:
         verbose_name = "通勤手当明細"
@@ -224,7 +225,7 @@ class ExpenseReturnDetail(models.Model):
     # 用途
     detail_text = models.CharField(max_length=180, verbose_name='用途')
     # 単一金額
-    price = models.CharField(verbose_name='単一金額', max_length=10, default='')
+    price = models.CharField(verbose_name='単一金額', max_length=10, default='', validators=[validators.RegexValidator("^\d{1,3}(,\d{3})*$", message='正しい金額を入力してください！')])
     # 使用日付
     usedate = models.DateField(verbose_name='使用日付')
 
