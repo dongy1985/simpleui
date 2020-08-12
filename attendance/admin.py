@@ -494,7 +494,7 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
 
     export.short_description = ' 導出'
     export.type = 'primary'
-    export.confirm = '導出してもよろしいですか？'
+    # export.confirm = '導出してもよろしいですか？'
     export.icon = 'el-icon-document-copy'
     export.allowed_permissions = ('export_dutystatistics',)
 
