@@ -47,7 +47,8 @@ class Dutydetail(models.Model):
     # 終了区間
     trafficTo = models.CharField(verbose_name='終了区間', max_length=12, default='')
     # 定期券運賃(1ヶ月):交通金額明細
-    trafficAmount = models.CharField(verbose_name='金額', max_length=10, default='', validators=[validators.RegexValidator("^\d{1,3}(,\d{3})*$", message='正しい金額を入力してください！')])
+    trafficAmount = models.CharField(verbose_name='金額', max_length=10, default='',
+                     validators=[validators.RegexValidator("^\d{1,3}(,\d{3})*$", message='正しい金額を入力してください！')])
 
     class Meta:
         verbose_name = "通勤手当明細"
@@ -71,12 +72,15 @@ class Employee(models.Model):
     # メールアドレス
     email = models.EmailField(max_length=120, verbose_name='メールアドレス')
     # 自宅郵便番号
-    zipCode = models.CharField(verbose_name='自宅郵便番号', max_length=7, null=False, blank=False,
-                               help_text='自宅郵便番号を7桁入力してください.例：1010031')
+    zipCode = models.CharField(verbose_name='自宅郵便番号', max_length=8, null=False, blank=False,
+               validators=[validators.RegexValidator("^[0-9]{3}-[0-9]{4}$", message='正しい郵便番号を入力してください！')],
+               help_text='自宅郵便番号を7桁半角数字で入力してください.例：101-0031')
     # 住所
     homeAddr = models.TextField(max_length=360, verbose_name='住所')
     # 電話番号
-    phone = models.CharField(max_length=11, verbose_name='電話番号')
+    phone = models.CharField(max_length=13, verbose_name='電話番号',
+            validators=[validators.RegexValidator("^0\d{2,3}-\d{4}-\d{4}$", message='正しい電話番号を入力してください！')],
+            help_text='自宅郵便番号を11桁半角数字で入力してください.例：070-2100-9009')
     # 在留カード番号
     retention_code = models.CharField(max_length=12, verbose_name='在留カード', null=True, blank=True)
     # 在留カード期限
@@ -225,7 +229,8 @@ class ExpenseReturnDetail(models.Model):
     # 用途
     detail_text = models.CharField(max_length=180, verbose_name='用途')
     # 単一金額
-    price = models.CharField(verbose_name='単一金額', max_length=10, default='', validators=[validators.RegexValidator("^\d{1,3}(,\d{3})*$", message='正しい金額を入力してください！')])
+    price = models.CharField(verbose_name='単一金額', max_length=10, default='',
+                 validators=[validators.RegexValidator("^\d{1,3}(,\d{3})*$", message='正しい金額を入力してください！')])
     # 使用日付
     usedate = models.DateField(verbose_name='使用日付')
 
