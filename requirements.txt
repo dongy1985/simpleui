@@ -9,3 +9,4 @@ Pygments
 openpyxl
 python-dateutil
 apscheduler
+django-apscheduler
