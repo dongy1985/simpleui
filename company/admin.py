@@ -418,7 +418,7 @@ class AssetLendAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if change == False:
             obj.user_id = request.user.id
-            obj.user_name = User.objects.get(id=request.user.id).last_name + User.objects.get(id=request.user.id).first_name
+            obj.user_name = Employee.objects.get(user_id=request.user.id).name
         obj.asset_code = AssetManage.objects.get(id=obj.asset).asset
         obj.type = AssetManage.objects.get(id=obj.asset).type
         obj.name = AssetManage.objects.get(id=obj.asset).name
