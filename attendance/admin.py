@@ -18,6 +18,7 @@ from django.db.models import Q
 from wsgiref.util import FileWrapper
 from datetime import date, timedelta
 from attendance.models import *
+from attendance.form import *
 from common.models import *
 from company.models import *
 from import_export import resources
@@ -30,6 +31,7 @@ from common.const import const
 
 @admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
+    form = AttendanceAdminForm
     # actions
     actions = ['cancel_button', 'commit_button', 'confirm_button', 'export', ]
     # display
@@ -73,27 +75,8 @@ class AttendanceAdmin(admin.ModelAdmin):
         float_rest = float(obj.rest)
         #休憩時間の制御
         sumTime3 = sumTime2 - float_rest
-        if sumTime3 < 0:
-            messages.set_level(request, messages.ERROR)
-            messages.error(request, '休憩時間を修正してください')
-            return
-        else:
-            obj.working_time = sumTime3
-
-
-
-        # unique_together = Attendance.objects.filter(
-        #             (Q(user_id=obj.user_id)
-        #               &Q(date=obj.date))
-        #         )
-        # super().save_model(request, obj, form, change)
-        # if len(unique_together) != 0:
-        #     messages.add_message(request, messages.ERROR, 'XXXXXXX')
-        #     return
-        # else:
-        #     super().save_model(request, obj, form, change)
-        #     return
-        # # save
+        obj.working_time = sumTime3
+        
         try:
             with transaction.atomic():
                 super().save_model(request, obj, form, change)
