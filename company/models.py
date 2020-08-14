@@ -205,7 +205,7 @@ class ExpenseReturn(models.Model):
     amount = models.CharField(max_length=30, verbose_name='総金額', default='')
     # 申请状態
     status_choices = CodeMst.objects.filter(cd=const.WORK_TYPE).values_list('subCd', 'subNm').order_by('subCd')
-    status = models.CharField(max_length=3, choices=status_choices, verbose_name='申请状態',
+    status = models.CharField(max_length=3, choices=status_choices, verbose_name='申請状態',
                               default=const.WORK_TYPE_SMALL_0)
     # 備考
     comment = models.CharField(max_length=180, verbose_name='備考')
@@ -235,8 +235,8 @@ class ExpenseReturnDetail(models.Model):
     usedate = models.DateField(verbose_name='使用日付')
 
     class Meta:
-        verbose_name = "项目明细"
-        verbose_name_plural = "项目明细"
+        verbose_name = "立替金項目明細"
+        verbose_name_plural = "立替金項目明細"
 
     def __str__(self):
         return self.detail_type
