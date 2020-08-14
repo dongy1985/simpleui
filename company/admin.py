@@ -160,14 +160,20 @@ class EmployeeAdmin(admin.ModelAdmin):
     fieldsets = [(None, {
         'fields': ['name', 'empNo', 'gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'retention_code',
                    'retention_limit', 'user', 'empSts']})]
-    list_display = ('name', 'empNo', 'email', 'phone')
+
+    # 要显示的字段
+    def changelist_view(self, request, extra_context=None):
+        if request.user.is_superuser:
+            self.list_display = ['name', 'empNo', 'email', 'phone']
+        else:
+            self.list_display = ('name', 'empNo', 'email', 'user_id', )
+        return super(EmployeeAdmin, self).changelist_view(request=request, extra_context=None)
+
     search_fields = ('name', 'empNo')
     list_per_page = const.LIST_PER_PAGE
     raw_id_fields = ('user',)
     list_filter = ('empSts',)
     ordering = ('-empNo',)
-
-    list_display_links = ('name',)
 
 
 # 立替金admin
