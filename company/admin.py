@@ -175,6 +175,15 @@ class EmployeeAdmin(admin.ModelAdmin):
     list_filter = ('empSts',)
     ordering = ('-empNo',)
 
+    def has_add_permission(self, request):
+        opts = self.opts
+        codename = get_permission_codename('add', opts)
+        query = Employee.objects.filter(user_id=request.user.id)
+        if query.count() != 0 and request.user.is_superuser == False:
+            return False
+        else:
+            return request.user.has_perm("%s.%s" % (opts.app_label, codename))
+
 
 # 立替金admin
 class ExpenseReturnDetailInline(admin.TabularInline):
