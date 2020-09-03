@@ -108,7 +108,9 @@ class Employee(models.Model):
 # 資産管理
 class AssetManage(models.Model):
     # 資産番号
-    asset = models.CharField(unique=True, max_length=const.NAME_LENGTH, verbose_name='資産番号')
+    asset = models.CharField(unique=True, max_length=const.NAME_LENGTH, verbose_name='資産番号',
+    validators=[validators.RegexValidator("^[A-Za-z0-9]+$", message='半角英数字で入力してください！')],
+                             help_text='半角英数字で入力してください.例：A001a')
 
     # 分類
     type = models.CharField(max_length=const.NAME_LENGTH, verbose_name='分類')
