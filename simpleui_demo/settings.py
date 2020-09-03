@@ -45,8 +45,10 @@ INSTALLED_APPS = [
     'common',
     # 勤務管理,勤務統計
     'attendance',
-    # # 会社管理（社員、資産）
+    # 会社管理（社員、資産）
     'company',
+    # 障害管理
+    'obstacle',
 ]
 
 MIDDLEWARE = [
