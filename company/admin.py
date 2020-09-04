@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth import get_permission_codename
 from django.contrib import admin, messages
+
+from attendance.models import Attendance, DutyStatistics
 from common.const import const
 from common.custom_filter import DateFieldFilter
 from common.models import CodeMst
@@ -185,6 +187,30 @@ class EmployeeAdmin(admin.ModelAdmin):
         else:
             return request.user.has_perm("%s.%s" % (opts.app_label, codename))
 
+    def save_model(self, request, obj, form, change):
+        if change:
+            # 立替金
+            expenRe = ExpenseReturn.objects.filter(user_id=obj.user_id)
+            if expenRe.count() != 0:
+                expenRe.update(applyer=obj.name)
+            # 通勤手当
+            applyDuty = ApplyDutyAmount.objects.filter(user_id=obj.user_id)
+            if applyDuty.count() != 0:
+                applyDuty.update(applyName=obj.name)
+            # 資産申請管理
+            assetLend = AssetLend.objects.filter(user_id=obj.user_id)
+            if assetLend.count() != 0:
+                assetLend.update(user_name=obj.name)
+            # 勤務管理
+            attend = Attendance.objects.filter(user_id=obj.user_id)
+            if attend.count() != 0:
+                attend.update(name=obj.name)
+            # 勤務統計
+            dutySta = DutyStatistics.objects.filter(empNo=obj.empNo)
+            if dutySta.count() != 0:
+                dutySta.update(name=obj.name)
+        super().save_model(request, obj, form, change)
+
 
 # 立替金admin
 class ExpenseReturnDetailInline(admin.TabularInline):
@@ -241,7 +267,7 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
     # ユーザーマッチ
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        if request.user.is_superuser or request.user.has_perm('company.commit_button_expensereturn'):
+        if request.user.is_superuser or request.user.has_perm('company.confirm_button_expensereturn'):
             return qs
         return qs.filter(user_id=request.user.id)
 
@@ -280,8 +306,15 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
 
     # 取消
     def cancel_button(self, request, queryset):
-        queryset.update(status=const.WORK_TYPE_SMALL_0)
-
+        for obj in queryset:
+            if request.user.is_superuser or request.user.has_perm('company.confirm_button_expensereturn'):
+                queryset.update(status=const.WORK_TYPE_SMALL_0)
+            else:
+                if obj.status == const.WORK_TYPE_SMALL_1:
+                    queryset.update(status=const.WORK_TYPE_SMALL_0)
+                else:
+                    messages.add_message(request, messages.ERROR, '未提出を選択してください')
+                    return
     cancel_button.short_description = ' 取消'
     cancel_button.icon = 'fas fa-check-circle'
     cancel_button.type = 'warning'
