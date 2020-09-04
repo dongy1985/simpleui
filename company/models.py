@@ -110,10 +110,10 @@ class AssetManage(models.Model):
     # 資産番号
     asset = models.CharField(unique=True, max_length=const.NAME_LENGTH, verbose_name='資産番号',
     validators=[validators.RegexValidator("^[A-Za-z0-9]+$", message='半角英数字で入力してください！')],
-                             help_text='半角英数字で入力してください.例：A001a')
-
+                             help_text='半角英数字で入力してください')
     # 分類
-    type = models.CharField(max_length=const.NAME_LENGTH, verbose_name='分類')
+    type_choices = CodeMst.objects.filter(cd=const.ASSET_TYPE).values_list('subCd', 'subNm').order_by('subCd')
+    type = models.CharField(max_length=const.NAME_LENGTH, choices=type_choices, verbose_name='分類', default=const.ASSET_DEF)
 
     # 名称
     name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='名称')

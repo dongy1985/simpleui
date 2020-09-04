@@ -3,6 +3,7 @@ from django.contrib.auth import get_permission_codename
 from django.contrib import admin, messages
 from common.const import const
 from common.custom_filter import DateFieldFilter
+from common.models import CodeMst
 from company.models import Dutydetail, ExpenseReturn, ExpenseReturnDetail, ApplyDutyAmount, Employee, AssetManage, \
     AssetLend, WorkSiteDetail, WorkSite
 import time
@@ -307,6 +308,13 @@ class AssetManageAdmin(admin.ModelAdmin):
 
     actions_on_top = True
 
+    def save_model(self, request, obj, form, change):
+        if change:
+            query = AssetLend.objects.filter(asset_id=obj.id)
+            if query.count() != 0:
+                subNm = CodeMst.objects.get(cd=const.ASSET_TYPE, subCd=obj.type).subNm
+                query.update(asset_code=obj.asset, type=subNm, name=obj.name)
+        super().save_model(request, obj, form, change)
 
 # 資産貸出申請
 @admin.register(AssetLend)
@@ -435,7 +443,8 @@ class AssetLendAdmin(admin.ModelAdmin):
             obj.user_id = request.user.id
             obj.user_name = Employee.objects.get(user_id=request.user.id).name
         obj.asset_code = AssetManage.objects.get(id=obj.asset).asset
-        obj.type = AssetManage.objects.get(id=obj.asset).type
+        subCd = AssetManage.objects.get(id=obj.asset).type
+        obj.type = CodeMst.objects.get(cd=const.ASSET_TYPE, subCd=subCd).subNm
         obj.name = AssetManage.objects.get(id=obj.asset).name
         super().save_model(request, obj, form, change, )
 

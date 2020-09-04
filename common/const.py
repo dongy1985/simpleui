@@ -29,6 +29,8 @@ const.BIG_STATUS = '006'
 const.DEL_STATUS_CD = '007'
 # 大分類:テンプレート分類
 const.TEMPLATE_TYPE = '008'
+# 資産管理:分類
+const.ASSET_TYPE = '009'
 
 # 小分類:開始時刻DEF
 const.DEF_STARTTIME = '09:00'
@@ -92,6 +94,9 @@ const.CRD_DIV_F = '2'
 const.TPL_XLS = '0'
 
 # 資産管理用
+# 分類デフォルト
+const.ASSET_DEF = '0'
+
 # CharField 名前の長さ
 const.NAME_LENGTH = 20
 
