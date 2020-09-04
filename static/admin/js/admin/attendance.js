@@ -129,7 +129,7 @@
         });
 
         $(".actions button[data-name='export']").bind('click', function(e){
-            setTimeout("window.location.reload()",1000);
+            setTimeout("window.location.reload()",3000);
             // location.reload([false]) 
 
         });
