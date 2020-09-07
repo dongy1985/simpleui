@@ -716,7 +716,10 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
                 messages.add_message(request, messages.ERROR, '未提出を選んでください！')
                 return
         queryset.update(status=const.WORK_TYPE_SMALL_1)
-        print(111)
+        # mail
+        mailUtil.sendmailExpRen(const.MAIL_KBN_COMMIT, queryset)
+        messages.add_message(request, messages.SUCCESS, '提出済')
+
     commit_button.short_description = ' 提出'
     commit_button.icon = 'fas fa-check-circle'
     commit_button.type = 'success'
@@ -728,6 +731,9 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
                 messages.add_message(request, messages.ERROR, '提出済を選んでください！')
                 return
         queryset.update(status=const.WORK_TYPE_SMALL_2)
+        # mail
+        mailUtil.sendmailExpRen(const.MAIL_KBN_CONFIRM, queryset)
+        messages.add_message(request, messages.SUCCESS, '承認済')
 
     confirm_button.short_description = ' 承認'
     confirm_button.icon = 'fas fa-check-circle'
@@ -753,6 +759,11 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
                 else:
                     messages.add_message(request, messages.ERROR, '未提出を選択してください')
                     return
+        # mail
+        if request.user.is_superuser or request.user.has_perm('company.confirm_button_expensereturn'):
+            mailUtil.sendmailExpRen(const.MAIL_KBN_CANCEL, queryset)
+        messages.add_message(request, messages.SUCCESS, '取消済')
+
     cancel_button.short_description = ' 取消'
     cancel_button.icon = 'fas fa-check-circle'
     cancel_button.type = 'warning'
