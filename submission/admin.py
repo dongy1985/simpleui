@@ -705,7 +705,7 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
     # ユーザーマッチ
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        if request.user.is_superuser or request.user.has_perm('company.confirm_button_expensereturn'):
+        if request.user.is_superuser or request.user.has_perm('submission.confirm_button_expensereturn'):
             return qs
         return qs.filter(user_id=request.user.id)
 
@@ -751,7 +751,7 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
     # 取消
     def cancel_button(self, request, queryset):
         for obj in queryset:
-            if request.user.is_superuser or request.user.has_perm('company.confirm_button_expensereturn'):
+            if request.user.is_superuser or request.user.has_perm('submission.confirm_button_expensereturn'):
                 queryset.update(status=const.WORK_TYPE_SMALL_0)
             else:
                 if obj.status == const.WORK_TYPE_SMALL_1:
@@ -760,7 +760,7 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
                     messages.add_message(request, messages.ERROR, '未提出を選択してください')
                     return
         # mail
-        if request.user.is_superuser or request.user.has_perm('company.confirm_button_expensereturn'):
+        if request.user.is_superuser or request.user.has_perm('submission.confirm_button_expensereturn'):
             mailUtil.sendmailExpRen(const.MAIL_KBN_CANCEL, queryset)
         messages.add_message(request, messages.SUCCESS, '取消済')
 
