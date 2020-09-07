@@ -539,6 +539,9 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
                 messages.add_message(request, messages.ERROR, '未提出記録を選択してください。')
                 return
         queryset.update(trafficStatus=const.WORK_TYPE_SMALL_1)
+        # mail
+        mailUtil.sendmailDutyAmount(const.MAIL_KBN_COMMIT, queryset)
+        messages.add_message(request, messages.SUCCESS, '提出済')
 
     commit_button.short_description = '提出'
     commit_button.type = 'success'
@@ -569,6 +572,9 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
                 messages.add_message(request, messages.ERROR, '提出済の記録を選択してください。')
                 return
         queryset.update(trafficStatus=const.WORK_TYPE_SMALL_2)
+        # mail
+        mailUtil.sendmailDutyAmount(const.MAIL_KBN_CONFIRM, queryset)
+        messages.add_message(request, messages.SUCCESS, '承認済')
 
     confirm_button.short_description = '承認'
     confirm_button.type = 'success'
@@ -593,6 +599,11 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
                 else:
                     messages.add_message(request, messages.ERROR, '提出記録を選択してください')
                     return
+
+        # mail
+        if request.user.is_superuser or request.user.has_perm('submission.confirm_button_applydutyamount'):
+            mailUtil.sendmailDutyAmount(const.MAIL_KBN_CANCEL, queryset)
+        messages.add_message(request, messages.SUCCESS, '取消済')
 
     cancel_button.short_description = '取消'
     cancel_button.type = 'warning'
