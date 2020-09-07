@@ -164,7 +164,7 @@ def send_expRen(mailKbn, employe_name, employe_mail, user_id, workDate):
     print('success    ' + to_addr)
 
 def chooseKbn_expRen(mailKbn, employe_name, employe_mail, user_id, workDate):
-    workDate=workDate.strftime('%Y-%m')
+
     if mailKbn == const.MAIL_KBN_COMMIT:
         # to_addr
         perm = Permission.objects.get(codename='confirm_button_expensereturn')
@@ -178,15 +178,15 @@ def chooseKbn_expRen(mailKbn, employe_name, employe_mail, user_id, workDate):
         # main
         main = '承認者さん、お疲れ様です。\n\n' + employe_name +'立替金を提出しました、ご確認お願い致します。\n'
         # Subject
-        Subject = employe_name + 'の' + workDate +'の立替金が提出しました'
+        Subject = employe_name + 'の立替金が提出しました'
         return (to_addr, main, Subject)
     elif mailKbn == const.MAIL_KBN_CANCEL:
         to_addr = employe_mail
         main = employe_name + 'さん、お疲れ様です。\n\n立替金が取消しました、ご確認お願い致します。\n'
-        Subject = employe_name + 'の' + workDate +'の立替金が取消しました'
+        Subject = employe_name + 'の立替金が取消しました'
         return (to_addr, main, Subject)
     elif mailKbn == const.MAIL_KBN_CONFIRM:
         to_addr = employe_mail
         main = employe_name + 'さん、お疲れ様です。\n\n立替金が承認しました、ご確認お願い致します。\n'
-        Subject = employe_name + 'の' + workDate + 'の立替金が承認しました'
+        Subject = employe_name + 'の立替金が承認しました'
         return (to_addr, main, Subject)
