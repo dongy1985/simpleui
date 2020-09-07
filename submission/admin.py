@@ -92,7 +92,7 @@ class AttendanceAdmin(admin.ModelAdmin):
 
     # user filter
     def get_queryset(self, request):
-        if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
+        if request.user.is_superuser or request.user.has_perm('submission.confirm_button_attendance'):
             qs = super().get_queryset(request)
             return qs
         else:
@@ -117,7 +117,7 @@ class AttendanceAdmin(admin.ModelAdmin):
     commit_button.allowed_permissions = ('commit_button_attendance',)
 
     def has_commit_button_attendance_permission(self, request):
-        # if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
+        # if request.user.is_superuser or request.user.has_perm('submission.confirm_button_attendance'):
         if request.user.is_superuser :
             return False
         else:
@@ -128,7 +128,7 @@ class AttendanceAdmin(admin.ModelAdmin):
     # cancel
     def cancel_button(self, request, queryset):
         for obj in queryset:
-            if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
+            if request.user.is_superuser or request.user.has_perm('submission.confirm_button_attendance'):
                 queryset.update(status=const.WORK_TYPE_SMALL_0)
             else:
                 if obj.status == const.WORK_TYPE_SMALL_1:
@@ -138,7 +138,7 @@ class AttendanceAdmin(admin.ModelAdmin):
                     return
 
         # mail
-        if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
+        if request.user.is_superuser or request.user.has_perm('submission.confirm_button_attendance'):
             mailUtil.sendmail(const.MAIL_KBN_CANCEL, queryset)
         messages.add_message(request, messages.SUCCESS, '取消済')
 
@@ -555,7 +555,7 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
 
     # 該当ユーザーのレコードをフィルター
     def get_queryset(self, request):
-        if request.user.is_superuser or request.user.has_perm('company.confirm_button_applydutyamount'):
+        if request.user.is_superuser or request.user.has_perm('submission.confirm_button_applydutyamount'):
             qs = super().get_queryset(request)
             return qs
         else:
@@ -585,7 +585,7 @@ class ApplyDutyAmountAdmin(admin.ModelAdmin):
     # cancelボタン
     def cancel_button(self, request, queryset):
         for obj in queryset:
-            if request.user.is_superuser or request.user.has_perm('company.confirm_button_applydutyamount'):
+            if request.user.is_superuser or request.user.has_perm('submission.confirm_button_applydutyamount'):
                 queryset.update(trafficStatus=const.WORK_TYPE_SMALL_0)
             else:
                 if obj.trafficStatus == const.WORK_TYPE_SMALL_1:

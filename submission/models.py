@@ -37,7 +37,7 @@ class Attendance(models.Model):
 
 
     class Meta:
-        verbose_name = "各種申込"
+        verbose_name = "勤務提出"
         verbose_name_plural = "勤務提出"
         unique_together = ('user_id', 'date')
         permissions = (
