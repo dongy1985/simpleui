@@ -716,7 +716,7 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
                 messages.add_message(request, messages.ERROR, '未提出を選んでください！')
                 return
         queryset.update(status=const.WORK_TYPE_SMALL_1)
-
+        print(111)
     commit_button.short_description = ' 提出'
     commit_button.icon = 'fas fa-check-circle'
     commit_button.type = 'success'
