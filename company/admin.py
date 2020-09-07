@@ -134,7 +134,7 @@ class WorkSiteAdmin(admin.ModelAdmin):
             qs = super().get_queryset(request)
             return qs
         # 現場管理者
-        elif request.user.has_perm('attendance.confirm_button_attendance'):
+        elif request.user.has_perm('company.confirm_button_attendance'):
             tempid = Employee.objects.get(user_id=request.user.id).id
             qs = super().get_queryset(request)
             return qs.filter(manager_id=tempid)
