@@ -59,7 +59,7 @@ class EmployeeAdmin(admin.ModelAdmin):
             if assetLend.count() != 0:
                 assetLend.update(user_name=obj.name)
             # 勤務管理
-            attend = Submission.objects.filter(user_id=obj.user_id)
+            attend = Attendance.objects.filter(user_id=obj.user_id)
             if attend.count() != 0:
                 attend.update(name=obj.name)
             # 勤務統計
@@ -134,7 +134,7 @@ class WorkSiteAdmin(admin.ModelAdmin):
             qs = super().get_queryset(request)
             return qs
         # 現場管理者
-        elif request.user.has_perm('submission.confirm_button_submission'):
+        elif request.user.has_perm('attendance.confirm_button_attendance'):
             tempid = Employee.objects.get(user_id=request.user.id).id
             qs = super().get_queryset(request)
             return qs.filter(manager_id=tempid)

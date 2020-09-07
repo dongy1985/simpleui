@@ -133,7 +133,7 @@ def mkExcel(queryset, folder_name):
 def exportExcel(folder_name, datFrom):
     # DBから該当月度のデータ取得
     temp_queryset = DutyStatistics.objects.filter(
-        Q(submission_YM__startswith=datFrom)
+        Q(attendance_YM__startswith=datFrom)
     )
     # 月度単位の集計表templateの作成
     fileName = copyExle(folder_name, datFrom)
@@ -176,7 +176,7 @@ def mkExl(queryset, fileName, datFrom):
         # 実働時間
         aggWorkTime = obj.working_time
         # 出勤日数
-        aggAttendCount = obj.submission_count
+        aggAttendCount = obj.attendance_count
         # 欠勤日数
         aggAbsCount = obj.absence_count
         # 年休日数
@@ -214,18 +214,18 @@ def mkExl(queryset, fileName, datFrom):
 
 
 # 年度単位の集計表(excel)の導出
-def exportYearExcel(folder_name, submission_YM_From, submission_YM_To, queryset):
+def exportYearExcel(folder_name, attendance_YM_From, attendance_YM_To, queryset):
     # 統計年月開始年
-    submission_YM_From_Y = submission_YM_From[0:4]
+    attendance_YM_From_Y = attendance_YM_From[0:4]
     # 統計年月開始月
-    submission_YM_From_M = submission_YM_From[5:7]
+    attendance_YM_From_M = attendance_YM_From[5:7]
     # 統計年月終了年
-    submission_YM_To_Y = submission_YM_To[0:4]
+    attendance_YM_To_Y = attendance_YM_To[0:4]
     # 統計年月終了月
-    submission_YM_To_M = submission_YM_To[5:7]
+    attendance_YM_To_M = attendance_YM_To[5:7]
     # 統計月数：統計年月開始から、統計年月終了まで、何か月
-    counts = (int(submission_YM_To_Y) - int(submission_YM_From_Y)) * 12 + (
-                int(submission_YM_To_M) - int(submission_YM_From_M))
+    counts = (int(attendance_YM_To_Y) - int(attendance_YM_From_Y)) * 12 + (
+                int(attendance_YM_To_M) - int(attendance_YM_From_M))
     # ファイルの名
     fileName = copyExcel(folder_name, const.SHEET_YEAR)
     # 統計期間のユーザー数
@@ -237,7 +237,7 @@ def exportYearExcel(folder_name, submission_YM_From, submission_YM_To, queryset)
         if user not in user_Con:
             user_Con.append(user)
     # 【年度単位の集計表dataの作成】を呼び出し
-    makeExcel(fileName, counts, submission_YM_From, user_Con)
+    makeExcel(fileName, counts, attendance_YM_From, user_Con)
     return fileName
 
 
@@ -251,7 +251,7 @@ def copyExcel(folder_name, userName):
 
 
 # 年度単位の集計表dataの作成
-def makeExcel(fileName, counts, submission_YM_From, user_Con):
+def makeExcel(fileName, counts, attendance_YM_From, user_Con):
     # コピー先ファイル名の取得
     book = openpyxl.load_workbook(fileName)
     # コピー先シート名の取得
@@ -287,30 +287,30 @@ def makeExcel(fileName, counts, submission_YM_From, user_Con):
     del_column = []
     for con in range(len(user_Con)):
         # 統計年月開始年
-        submission_YM_From_Y = int(submission_YM_From[0:4])
+        attendance_YM_From_Y = int(attendance_YM_From[0:4])
         # 統計年月開始月
-        submission_YM_From_M = int(submission_YM_From[5:7])
+        attendance_YM_From_M = int(attendance_YM_From[5:7])
         count = 0
         while count <= counts:
-            if submission_YM_From_M <= 12:
-                if submission_YM_From_M < 10:
+            if attendance_YM_From_M <= 12:
+                if attendance_YM_From_M < 10:
                     temp_queryset = DutyStatistics.objects.filter(
-                        Q(submission_YM__startswith=(str(submission_YM_From_Y) + '-0' + str(submission_YM_From_M)))
+                        Q(attendance_YM__startswith=(str(attendance_YM_From_Y) + '-0' + str(attendance_YM_From_M)))
                         & Q(name=str(user_Con[con]))
                     )
                 else:
                     temp_queryset = DutyStatistics.objects.filter(
-                        Q(submission_YM__startswith=(str(submission_YM_From_Y) + '-' + str(submission_YM_From_M)))
+                        Q(attendance_YM__startswith=(str(attendance_YM_From_Y) + '-' + str(attendance_YM_From_M)))
                         & Q(name=str(user_Con[con]))
                     )
-                submission_YM_From_M = submission_YM_From_M + 1
+                attendance_YM_From_M = attendance_YM_From_M + 1
             else:
-                submission_YM_From_Y = submission_YM_From_Y + 1
+                attendance_YM_From_Y = attendance_YM_From_Y + 1
                 temp_queryset = DutyStatistics.objects.filter(
-                    Q(submission_YM__startswith=(str(submission_YM_From_Y) + '-01'))
+                    Q(attendance_YM__startswith=(str(attendance_YM_From_Y) + '-01'))
                     & Q(name=str(user_Con[con]))
                 )
-                submission_YM_From_M = 2
+                attendance_YM_From_M = 2
             # write data
             for obj in temp_queryset:
                 # 社員番号
@@ -320,7 +320,7 @@ def makeExcel(fileName, counts, submission_YM_From, user_Con):
                 # 実働時間
                 aggWorkTime = obj.working_time
                 # 出勤日数
-                aggAttendCount = obj.submission_count
+                aggAttendCount = obj.attendance_count
                 # 欠勤日数
                 aggAbsCount = obj.absence_count
                 # 年休日数
@@ -330,7 +330,7 @@ def makeExcel(fileName, counts, submission_YM_From, user_Con):
                 # 遅早退日数
                 aggLateCount = obj.late_count
                 # 統計年月
-                objMonth = obj.submission_YM.strftime('%Y-%m')
+                objMonth = obj.attendance_YM.strftime('%Y-%m')
 
                 # write data
                 # 報告月

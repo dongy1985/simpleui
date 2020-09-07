@@ -11,7 +11,7 @@ from common.models import *
 from company.models import *
 import time
 
-class Submission(models.Model):
+class Attendance(models.Model):
     # 社員名前
     name = models.CharField('社員名前', max_length=20, default=0) 
     # 出勤日付
@@ -41,9 +41,9 @@ class Submission(models.Model):
         verbose_name_plural = "勤務提出"
         unique_together = ('user_id', 'date')
         permissions = (
-            ('commit_button_submission', 'Can 提出'),
-            ('confirm_button_submission', 'Can 承認'),
-            ('export_submission', 'Can エクスポート'),
+            ('commit_button_attendance', 'Can 提出'),
+            ('confirm_button_attendance', 'Can 承認'),
+            ('export_attendance', 'Can エクスポート'),
         )
 
 # 勤務統計モデル
@@ -53,11 +53,11 @@ class DutyStatistics(models.Model):
     # 社員名前
     name = models.CharField(verbose_name='社員名前', max_length=20, default=0)
     # 統計年月
-    submission_YM = models.DateField(verbose_name='統計年月')
+    attendance_YM = models.DateField(verbose_name='統計年月')
     # 実働時間
     working_time = models.DecimalField(verbose_name='実働時間', max_digits=4, decimal_places=1)
     # 出勤日数
-    submission_count = models.IntegerField(verbose_name='出勤')
+    attendance_count = models.IntegerField(verbose_name='出勤')
     # 欠勤
     absence_count = models.IntegerField(verbose_name='欠勤')
     # 年休

@@ -32,9 +32,9 @@ from common import mailUtil
 from common.const import const
 from django.db.models import Q
 
-@admin.register(Submission)
-class SubmissionAdmin(admin.ModelAdmin):
-    form = SubmissionAdminForm
+@admin.register(Attendance)
+class AttendanceAdmin(admin.ModelAdmin):
+    form = AttendanceAdminForm
     # actions
     actions = ['cancel_button', 'commit_button', 'confirm_button', 'export', ]
     # display
@@ -92,7 +92,7 @@ class SubmissionAdmin(admin.ModelAdmin):
 
     # user filter
     def get_queryset(self, request):
-        if request.user.is_superuser or request.user.has_perm('submission.confirm_button_submission'):
+        if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
             qs = super().get_queryset(request)
             return qs
         else:
@@ -114,10 +114,10 @@ class SubmissionAdmin(admin.ModelAdmin):
     commit_button.type = 'success'
     commit_button.confirm = '提出よろしですか？'
     commit_button.icon = 'fas fa-user-check'
-    commit_button.allowed_permissions = ('commit_button_submission',)
+    commit_button.allowed_permissions = ('commit_button_attendance',)
 
-    def has_commit_button_submission_permission(self, request):
-        # if request.user.is_superuser or request.user.has_perm('submission.confirm_button_submission'):
+    def has_commit_button_attendance_permission(self, request):
+        # if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
         if request.user.is_superuser :
             return False
         else:
@@ -128,7 +128,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     # cancel
     def cancel_button(self, request, queryset):
         for obj in queryset:
-            if request.user.is_superuser or request.user.has_perm('submission.confirm_button_submission'):
+            if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
                 queryset.update(status=const.WORK_TYPE_SMALL_0)
             else:
                 if obj.status == const.WORK_TYPE_SMALL_1:
@@ -138,7 +138,7 @@ class SubmissionAdmin(admin.ModelAdmin):
                     return
 
         # mail
-        if request.user.is_superuser or request.user.has_perm('submission.confirm_button_submission'):
+        if request.user.is_superuser or request.user.has_perm('attendance.confirm_button_attendance'):
             mailUtil.sendmail(const.MAIL_KBN_CANCEL, queryset)
         messages.add_message(request, messages.SUCCESS, '取消済')
 
@@ -179,14 +179,14 @@ class SubmissionAdmin(admin.ModelAdmin):
     confirm_button.type = 'success'
     confirm_button.confirm = '承認よろしですか？'
     confirm_button.icon = 'fas fa-user-check'
-    confirm_button.allowed_permissions = ('confirm_button_submission',)
+    confirm_button.allowed_permissions = ('confirm_button_attendance',)
     confirm_button.short_description = ' 承認'
     confirm_button.type = 'success'
     confirm_button.confirm = '承認よろしですか？'
     confirm_button.icon = 'fas fa-user-check'
-    confirm_button.allowed_permissions = ('confirm_button_submission',)
+    confirm_button.allowed_permissions = ('confirm_button_attendance',)
 
-    def has_confirm_button_submission_permission(self, request):
+    def has_confirm_button_attendance_permission(self, request):
         opts = self.opts
         codename = get_permission_codename('confirm_button', opts)
         return request.user.has_perm('%s.%s' % (opts.app_label, codename))
@@ -207,7 +207,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     def export(self, request, queryset):
         expErrList=[]
         # queryset筛选
-        temp_queryset = SubmissionAdmin.querysetFilter(self, queryset, expErrList)
+        temp_queryset = AttendanceAdmin.querysetFilter(self, queryset, expErrList)
 
         # mkDir
         folder_name = datetime.now().strftime("%Y-%m-%d_%H%M%S")
@@ -238,7 +238,7 @@ class SubmissionAdmin(admin.ModelAdmin):
                     temp_zip.write(os.path.join(dirpath, filename),fpath+filename)
             temp_zip.close()
             fread = open(temp_zip.filename, "rb")
-            response = HttpResponse(fread, content_type='submission/zip', status=200)
+            response = HttpResponse(fread, content_type='attendance/zip', status=200)
             response['Content-Disposition'] = 'attachment;filename="{0}"'.format(folder_name+".zip")
             fread.close()
             # tempDel
@@ -261,10 +261,10 @@ class SubmissionAdmin(admin.ModelAdmin):
     export.short_description = ' 導出'
     export.type = 'primary'
     export.icon = 'el-icon-document-copy'
-    export.allowed_permissions = ('export_submission',)
+    export.allowed_permissions = ('export_attendance',)
 
 
-    def has_export_submission_permission(self, request):
+    def has_export_attendance_permission(self, request):
         opts = self.opts
         codename = get_permission_codename('export', opts)
         return request.user.has_perm('%s.%s' % (opts.app_label, codename))
@@ -275,14 +275,14 @@ class SubmissionAdmin(admin.ModelAdmin):
         valueYear = int(valueYM[0:4])
         valueMonth = int(valueYM[5:])
         # 社員名と勤務年月と承認済を条件として,勤怠表からデータ記録をフィルターする　　
-        queryset = Submission.objects.filter(name=keyname, date__year=valueYear, date__month=valueMonth,
+        queryset = Attendance.objects.filter(name=keyname, date__year=valueYear, date__month=valueMonth,
                                              status=const.WORK_TYPE_SMALL_2).order_by('name')
         #valueYM型の勤務年月をフォーマットし、勤務統計の統計年月初期値を何年何月1日に設定する
-        submission_YM = datetime.strptime(valueYM, '%Y-%m')
+        attendance_YM = datetime.strptime(valueYM, '%Y-%m')
         # 実働時間初期値
         working_time = 0
         # 出勤日数初期値
-        submission_count = 0
+        attendance_count = 0
         # 欠勤初期値
         absence_count = 0
         # 年休初期値
@@ -298,7 +298,7 @@ class SubmissionAdmin(admin.ModelAdmin):
             working_time = working_time + obj.working_time
             # 出勤日数統計
             if obj.duty == dutymast[0][0]:
-                submission_count = submission_count + 1
+                attendance_count = attendance_count + 1
             # 欠勤統計
             if obj.duty == dutymast[4][0]:
                 absence_count = absence_count + 1
@@ -314,16 +314,16 @@ class SubmissionAdmin(admin.ModelAdmin):
         # 社員ナンバー取得
         empNo = Employee.objects.get(name=keyname).empNo
         # 該当社員の勤務年月のデータ記録をクエリする
-        dutyQuery = DutyStatistics.objects.filter(empNo=empNo, name=keyname, submission_YM__year=submission_YM.year,
-                                                              submission_YM__month=submission_YM.month)
+        dutyQuery = DutyStatistics.objects.filter(empNo=empNo, name=keyname, attendance_YM__year=attendance_YM.year,
+                                                              attendance_YM__month=attendance_YM.month)
         # データ記録のクエリ結果有り無しを確認する、無ければデータ登録
         if dutyQuery.count() == 0:
-            DutyStatistics.objects.create(empNo=empNo, name=keyname, submission_YM=submission_YM,
-                    working_time=working_time, submission_count=submission_count, absence_count=absence_count,
+            DutyStatistics.objects.create(empNo=empNo, name=keyname, attendance_YM=attendance_YM,
+                    working_time=working_time, attendance_count=attendance_count, absence_count=absence_count,
                     annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
         # データ記録のクエリ結果あれば、データ更新
         else:
-            dutyQuery.update(working_time=working_time, submission_count=submission_count,
+            dutyQuery.update(working_time=working_time, attendance_count=attendance_count,
                     absence_count=absence_count, annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
 
     # 勤務削除データ抽出
@@ -353,14 +353,14 @@ class SubmissionAdmin(admin.ModelAdmin):
         valueYear = int(valueYM[0:4])
         valueMonth = int(valueYM[5:])
         # 社員名と勤務年月と承認済を条件として,勤怠表からデータ記録をフィルターする　　
-        queryset = Submission.objects.filter(name=keyname, date__year=valueYear, date__month=valueMonth,
+        queryset = Attendance.objects.filter(name=keyname, date__year=valueYear, date__month=valueMonth,
                                              status=const.WORK_TYPE_SMALL_2).order_by('name')
         #valueYM型の勤務年月をフォーマットし、勤務統計の統計年月初期値を何年何月1日に設定する
-        submission_YM = datetime.strptime(valueYM, '%Y-%m')
+        attendance_YM = datetime.strptime(valueYM, '%Y-%m')
         # 実働時間初期値
         working_time = 0
         # 出勤日数初期値
-        submission_count = 0
+        attendance_count = 0
         # 欠勤初期値
         absence_count = 0
         # 年休初期値
@@ -376,7 +376,7 @@ class SubmissionAdmin(admin.ModelAdmin):
             working_time = working_time + obj.working_time
             # 出勤日数統計
             if obj.duty == dutymast[0][0]:
-                submission_count = submission_count + 1
+                attendance_count = attendance_count + 1
             # 欠勤統計
             if obj.duty == dutymast[4][0]:
                 absence_count = absence_count + 1
@@ -392,17 +392,17 @@ class SubmissionAdmin(admin.ModelAdmin):
         # 社員ナンバー取得
         empNo = Employee.objects.get(name=keyname).empNo
         # 該当社員の勤務年月のデータ記録をクエリする
-        dutyQuery = DutyStatistics.objects.filter(empNo=empNo, name=keyname, submission_YM__year=submission_YM.year,
-                                                              submission_YM__month=submission_YM.month)
+        dutyQuery = DutyStatistics.objects.filter(empNo=empNo, name=keyname, attendance_YM__year=attendance_YM.year,
+                                                              attendance_YM__month=attendance_YM.month)
         # データ記録のクエリ結果有り無しを確認する、無ければリターンする
         if dutyQuery.count() == 0:
             return
         # 勤務表から出勤日数,欠勤回数,年休回数,休出回数,遅早退回数が無ければ、そのデータ履歴記録を削除する
-        elif submission_count == 0 and absence_count == 0 and annual_leave == 0 and rest_count == 0 and late_count == 0:
+        elif attendance_count == 0 and absence_count == 0 and annual_leave == 0 and rest_count == 0 and late_count == 0:
             dutyQuery.delete()
         # データ記録のクエリ結果あれば、データ更新
         else:
-            dutyQuery.update(working_time=working_time, submission_count=submission_count,
+            dutyQuery.update(working_time=working_time, attendance_count=attendance_count,
                     absence_count=absence_count, annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
 
     # 勤務削除単一モデル統計実行
@@ -413,7 +413,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         super().delete_model(request, obj)
 
     class Media:
-        js = ('admin/js/admin/submission.js',)
+        js = ('admin/js/admin/attendance.js',)
 
 
 
@@ -421,11 +421,11 @@ class SubmissionAdmin(admin.ModelAdmin):
 @admin.register(DutyStatistics)
 class DutyStatisticsAdmin(admin.ModelAdmin):
     list_display = (
-    'empNo', 'name', 'submission_YM', 'working_time', 'submission_count', 'absence_count', 'annual_leave', 'rest_count',
+    'empNo', 'name', 'attendance_YM', 'working_time', 'attendance_count', 'absence_count', 'annual_leave', 'rest_count',
     'late_count')
     list_per_page = const.LIST_PER_PAGE
-    list_filter = (('submission_YM', DutyDateFieldFilter),)
-    ordering = ('-submission_YM',)
+    list_filter = (('attendance_YM', DutyDateFieldFilter),)
+    ordering = ('-attendance_YM',)
     actions = ['export', ]
     def has_add_permission(self, request):
         return False
@@ -437,28 +437,28 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
     def export(self, request, queryset):
 
         # 統計年月の入力をチェック
-        if request.GET.__contains__('submission_YM__gte'):
+        if request.GET.__contains__('attendance_YM__gte'):
             # mkDir
             folder_name = datetime.now().strftime("%Y-%m-%d_%H%M%S")
             if os.path.isdir(const.DIR):
                 os.mkdir(os.path.join(const.DIR, folder_name))
             # 統計年月開始を取得
-            submission_YM_From = request.GET.get('submission_YM__gte')[0:7]
+            attendance_YM_From = request.GET.get('attendance_YM__gte')[0:7]
             # 統計年月終了を取得
-            submission_YM_To = request.GET.get('submission_YM__lt')[0:7]
+            attendance_YM_To = request.GET.get('attendance_YM__lt')[0:7]
             # 月度単位または年度単位の判断
-            if submission_YM_From == submission_YM_To:
+            if attendance_YM_From == attendance_YM_To:
                 # 月度単位の集計表(excel)の導出
-                filename = fileUtil.exportExcel(folder_name, submission_YM_From)
+                filename = fileUtil.exportExcel(folder_name, attendance_YM_From)
                 messages.add_message(request, messages.SUCCESS, '導出しました')
             else:
                 # 年度単位の集計表(excel)の導出
-                filename = fileUtil.exportYearExcel(folder_name, submission_YM_From, submission_YM_To, queryset)
+                filename = fileUtil.exportYearExcel(folder_name, attendance_YM_From, attendance_YM_To, queryset)
                 messages.add_message(request, messages.SUCCESS, '導出しました')
             # ファイルをダウンロード
             fread = open(filename, "rb")
             outputName = filename[25:46]
-            response = HttpResponse(fread, content_type='submission/vnd.ms-excel')
+            response = HttpResponse(fread, content_type='attendance/vnd.ms-excel')
             response['Content-Disposition'] = 'attachment; filename="{fn}"'.format(fn=urllib.parse.quote(outputName))
             fread.close()
             # サバのフォルダーを削除する

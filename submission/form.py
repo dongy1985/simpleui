@@ -4,7 +4,7 @@ from django import forms
 from .models import *
 from datetime import *
 
-class SubmissionAdminForm(forms.ModelForm):
+class AttendanceAdminForm(forms.ModelForm):
     def clean(self):
         start_time = self.cleaned_data.get('start_time')
         end_time = self.cleaned_data.get('end_time')
