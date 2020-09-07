@@ -26,7 +26,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*', ]
 
-# Application definition
+# Submission definition
 
 INSTALLED_APPS = [
     'simpleui',
@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     # 共通管理（コード、ファイル管理等）
     'common',
     # 勤務管理,勤務統計
-    'attendance',
+    'submission',
     # 会社管理（社員、資産）
     'company',
     # 障害管理
@@ -182,19 +182,19 @@ SIMPLEUI_CONFIG = {
 SIMPLEUI_ICON = {
     '系统管理': 'fab fa-apple',
     '员工管理': 'fas fa-user-tie',
-    '勤務': 'el-icon-suitcase',
-    '勤務管理': 'el-icon-notebook-1',
+    '各種申込': 'el-icon-suitcase',
+    '勤務提出': 'el-icon-notebook-1',
     '勤務統計': 'el-icon-document',
-    '会社管理': 'el-icon-s-custom',
+    '会社情報': 'el-icon-s-custom',
     '社員情報': 'el-icon-user-solid',
     '立替金': 'el-icon-edit',
-    '資産借出申請': 'el-icon-s-unfold',
-    '資産管理': 'el-icon-s-claim',
+    '資産貸出': 'el-icon-s-unfold',
+    '資産情報': 'el-icon-s-claim',
     '通勤手当': 'el-icon-edit',
-    '共通管理': 'el-icon-notebook-1',
+    'システム設定': 'el-icon-notebook-1',
     'コード管理': 'el-icon-notebook-2',
     '座標管理': 'el-icon-notebook-2',
-    '現場管理': 'el-icon-suitcase',
+    '現場情報': 'el-icon-suitcase',
 }
 
 # 指定simpleui 是否以脱机模式加载静态资源，为True的时候将默认从本地读取所有资源，即使没有联网一样可以。适合内网项目

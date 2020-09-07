@@ -57,7 +57,7 @@ def chooseKbn(mailKbn, employe_name, employe_mail, user_id, workDate):
 
     if mailKbn == const.MAIL_KBN_COMMIT:
         # to_addr
-        # perm = Permission.objects.get(codename='confirm_button_attendance') 
+        # perm = Permission.objects.get(codename='confirm_button_submission')
         # users = User.objects.filter(Q(user_permissions=perm) | Q(is_superuser=True)).distinct() 
         users = User.objects.filter(Q(is_superuser=True)).distinct()
         to_addr = ''

@@ -31,8 +31,8 @@ class Obstacle(models.Model):
         ('15', '勤務統計　画面'),
     )
     objectName = models.CharField(max_length=3, choices=object_choices, verbose_name='障害対象機能')
-    # 障害內容
-    contents = models.TextField(max_length=300, verbose_name='內容')
+    # 障害内容
+    contents = models.TextField(max_length=300, verbose_name='内容')
     # 対応状態
     status_choices = (
         ('0', '起票中'),
@@ -48,8 +48,8 @@ class Obstacle(models.Model):
         ('3', '陳思達'),
     )
     fixUser = models.CharField(verbose_name="対応者", choices=fixUser_choices, max_length=1, default=0)
-    # 対応內容
-    fixContents = models.TextField(max_length=300, blank=True, null=True, verbose_name='対応內容')
+    # 対応内容
+    fixContents = models.TextField(max_length=300, blank=True, null=True, verbose_name='対応内容')
     # 対応日付
     fixTime = models.DateTimeField(verbose_name='対応日付', auto_now=True)
 
@@ -63,5 +63,5 @@ class Obstacle(models.Model):
         else:
             return str(self.contents)
     short_contents.allow_tags = True
-    short_contents.short_description = '障害內容'
+    short_contents.short_description = '障害内容'
 
