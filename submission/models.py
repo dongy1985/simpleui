@@ -185,7 +185,8 @@ class AssetLend(models.Model):
         verbose_name = "資産貸出"
         verbose_name_plural = "資産貸出"
         permissions = (
-            ("apply_assetlend", "Can apply 資産貸出"),
+            ("manage_assetlend", "Can manage 資産貸出"),
+            ("commit_assetlend", "Can 提出"),
         )
 
     def __int__(self):
@@ -226,7 +227,7 @@ class ExpenseReturnDetail(models.Model):
     # 用途
     detail_text = models.CharField(max_length=180, verbose_name='用途')
     # 単一金額
-    price = models.CharField(verbose_name='単一金額', max_length=10, default='',
+    price = models.CharField(verbose_name='金額', max_length=10, default='',
                  validators=[validators.RegexValidator("^\d{1,3}(,\d{3})*$", message='正しい金額を入力してください！')])
     # 使用日付
     usedate = models.DateField(verbose_name='使用日付')

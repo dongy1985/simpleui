@@ -6,9 +6,9 @@ class _const:
     class ConstCaseError(ConstError):
         pass
     def __setattr__(self, name, value):
-        if name in self.__dict__: 
+        if name in self.__dict__:
             raise self.ConstError("Can't change const {0}".format(name))
-        if not name.isupper(): 
+        if not name.isupper():
             raise self.ConstCaseError("const name {0} is not all uppercase".format(name))
         self.__dict__[name] = value
 
@@ -69,6 +69,12 @@ const.ADMIN_MAIL_PAS = 'testTest0917'
 const.MAIL_KBN_COMMIT = '1'
 const.MAIL_KBN_CANCEL = '2'
 const.MAIL_KBN_CONFIRM = '3'
+# メール区分資産: 拒否
+const.MAIL_KBN_REJECT = '4'
+# メール区分資産: 貸出
+const.MAIL_LEND_OUT = '5'
+# メール区分資産: 返却
+const.MAIL_LEND_BACK = '6'
 # 性别デフォルト
 const.GENDER_DEF = '0'
 const.EMPLOYEE_DEF = '0'
@@ -104,7 +110,7 @@ const.NAME_LENGTH = 20
 const.TEXT_LENGTH = 128
 
 # 申請借出状態default
-const.LEND_STATUS = '0'
+const.LEND_STATUS = '5'
 
 # 資産合計明細extra
 const.EXTRA = 1
@@ -118,20 +124,24 @@ const.LEND_OK = 1
 # 資産状態 借出可否 否
 const.LEND_NG = 0
 
-# 資産借出申請 状態 申請提出済
+# 資産借出申請 状態 申請済
 const.LEND_REQUEST = '0'
 
-# 資産借出申請 状態 申請承認済
+# 資産借出申請 状態 承認済
 const.LEND_APPLY = '1'
 
-# 資産借出申請 状態 借出済
+# 資産借出申請 状態 貸出済
 const.LEND_OUT = '2'
 
 # 資産借出申請 状態 返却済
 const.LEND_BACK = '3'
 
-# 資産借出申請 状態 返却済
+# 資産借出申請 状態 拒否
 const.LEND_DENY = '4'
+
+# 資産借出申請 状態 未提出
+const.LEND_NOTCOMMIT = '5'
+
 
 # 備考
 const.DEF_COMMENT = ' '
