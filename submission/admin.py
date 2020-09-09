@@ -820,7 +820,7 @@ class AssetLendAdmin(admin.ModelAdmin):
             if obj.lend_status != const.LEND_NOTCOMMIT:
                 messages.add_message(request, messages.ERROR, '未提出を選んでください！')
                 return
-        queryset.update(lend_status=const.LEND_REQUEST)
+        queryset.update(lend_status=const.LEND_REQUEST, apply_time=time.strftime("%Y-%m-%d", time.localtime()))
         # mail
         mailUtil.sendmailAsset(const.MAIL_KBN_COMMIT, queryset)
         messages.add_message(request, messages.SUCCESS, '提出済')
@@ -924,6 +924,15 @@ class AssetLendAdmin(admin.ModelAdmin):
         obj.type = CodeMst.objects.get(cd=const.ASSET_TYPE, subCd=subCd).subNm
         obj.name = AssetManage.objects.get(id=obj.asset_id).name
         super().save_model(request, obj, form, change)
+        # try:
+        #     with transaction.atomic():
+        #         super().save_model(request, obj, form, change)
+        #         return
+        # except:
+        #     messages.set_level(request, messages.ERROR)
+        #     temp_errMsg = str(obj.asset_code) + 'の貸出記録は既に存在します，修正してください。'
+        #     messages.error(request, temp_errMsg)
+        #     return
 
 
     # 名前マッチ

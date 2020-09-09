@@ -153,7 +153,7 @@ class AssetLend(models.Model):
     user_name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='貸出対象')
 
     # 申請提出日付
-    apply_time = models.DateField(verbose_name='申請提出日', default=time.strftime("%Y-%m-%d"))
+    apply_time = models.DateField(verbose_name='申請提出日', null=True, blank=True)
 
     # 貸出予定日
     lend_time = models.DateField(verbose_name='貸出予定日', default=time.strftime("%Y-%m-%d"))
@@ -184,6 +184,7 @@ class AssetLend(models.Model):
     class Meta:
         verbose_name = "資産貸出"
         verbose_name_plural = "資産貸出"
+        # unique_together = ('asset', 'user_name')
         permissions = (
             ("manage_assetlend", "Can manage 資産貸出"),
             ("commit_assetlend", "Can 提出"),
