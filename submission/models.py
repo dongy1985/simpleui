@@ -153,7 +153,7 @@ class AssetLend(models.Model):
     user_name = models.CharField(max_length=const.NAME_LENGTH, verbose_name='貸出対象')
 
     # 申請提出日付
-    apply_time = models.DateField(verbose_name='申請提出日', default=time.strftime("%Y-%m-%d"))
+    apply_time = models.DateField(verbose_name='申請提出日', null=True, blank=True)
 
     # 貸出予定日
     lend_time = models.DateField(verbose_name='貸出予定日', default=time.strftime("%Y-%m-%d"))
@@ -184,8 +184,10 @@ class AssetLend(models.Model):
     class Meta:
         verbose_name = "資産貸出"
         verbose_name_plural = "資産貸出"
+        # unique_together = ('asset', 'user_name')
         permissions = (
-            ("apply_assetlend", "Can apply 資産貸出"),
+            ("manage_assetlend", "Can manage 資産貸出"),
+            ("commit_assetlend", "Can 提出"),
         )
 
     def __int__(self):
@@ -226,7 +228,7 @@ class ExpenseReturnDetail(models.Model):
     # 用途
     detail_text = models.CharField(max_length=180, verbose_name='用途')
     # 単一金額
-    price = models.CharField(verbose_name='単一金額', max_length=10, default='',
+    price = models.CharField(verbose_name='金額', max_length=10, default='',
                  validators=[validators.RegexValidator("^\d{1,3}(,\d{3})*$", message='正しい金額を入力してください！')])
     # 使用日付
     usedate = models.DateField(verbose_name='使用日付')

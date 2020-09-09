@@ -79,7 +79,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         #休憩時間の制御
         sumTime3 = sumTime2 - float_rest
         obj.working_time = sumTime3
-        
+
         try:
             with transaction.atomic():
                 super().save_model(request, obj, form, change)
@@ -127,7 +127,17 @@ class AttendanceAdmin(admin.ModelAdmin):
 
     # cancel
     def cancel_button(self, request, queryset):
+        tempId = ''
+        # 統計リスト定義
+        querysetslist = []
         for obj in queryset:
+            querysetsdir = {}
+            # 社員名をキーとして、勤務日付の年月をバリューとして、ディクショナリーに格納する
+            querysetsdir[obj.name] = obj.date.strftime('%Y-%m')
+            # 社員名または勤務日付の年月が違うディクショナリーを統計リストに格納する
+            if querysetsdir not in querysetslist:
+                querysetslist.append(querysetsdir)
+
             if request.user.is_superuser or request.user.has_perm('submission.confirm_button_attendance'):
                 queryset.update(status=const.WORK_TYPE_SMALL_0)
             else:
@@ -141,6 +151,15 @@ class AttendanceAdmin(admin.ModelAdmin):
         if request.user.is_superuser or request.user.has_perm('submission.confirm_button_attendance'):
             mailUtil.sendmail(const.MAIL_KBN_CANCEL, queryset)
         messages.add_message(request, messages.SUCCESS, '取消済')
+
+        # 統計リストを繰り返し処理、
+        index = 0
+        while index < len(querysetslist):
+            # ディクショナリー毎に社員名、勤務日付の年月の値を統計実行メソッドに渡す
+            for keyname in querysetslist[index]:
+                valueYM = querysetslist[index][keyname]
+                self.dutyCompute(keyname, valueYM)
+            index += 1
 
     cancel_button.short_description = ' 取消'
     cancel_button.type = 'warning'
@@ -320,6 +339,9 @@ class AttendanceAdmin(admin.ModelAdmin):
         else:
             dutyQuery.update(working_time=working_time, attendance_count=attendance_count,
                     absence_count=absence_count, annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
+        # データ削除
+        if working_time == 0 or working_time == 0.0:
+            self.delCompute(keyname, valueYM)
 
     # 勤務削除データ抽出
     def delete_queryset(self, request, queryset):
@@ -393,7 +415,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         if dutyQuery.count() == 0:
             return
         # 勤務表から出勤日数,欠勤回数,年休回数,休出回数,遅早退回数が無ければ、そのデータ履歴記録を削除する
-        elif attendance_count == 0 and absence_count == 0 and annual_leave == 0 and rest_count == 0 and late_count == 0:
+        elif (attendance_count == 0 and absence_count == 0 and annual_leave == 0 and rest_count == 0 and late_count == 0) or working_time == 0:
             dutyQuery.delete()
         # データ記録のクエリ結果あれば、データ更新
         else:
@@ -785,7 +807,7 @@ class AssetLendAdmin(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
         user = request.user
 
-        if self.has_apply_permission(request):
+        if self.has_manage_permission(request):
             self.list_display = ['asset_code', 'type', 'name', 'user_name', 'apply_time', 'lend_time', 'lend_truetime',
                                  'back_time',
                                  'back_truetime',
@@ -797,9 +819,6 @@ class AssetLendAdmin(admin.ModelAdmin):
                 'lend_reason', 'note', 'lend_status',)
         return super(AssetLendAdmin, self).changelist_view(request=request, extra_context=None)
 
-    # 需要搜索的字段
-    # search_fields = ('asset',)
-
     raw_id_fields = ('asset',)
     # filter
     list_filter = ('type', 'lend_status',)
@@ -810,45 +829,49 @@ class AssetLendAdmin(admin.ModelAdmin):
     actions_on_top = True
 
     # ボタン
-    actions = ['apply_request', 'apply_deny', 'apply_lend', 'apply_back', ]
+    actions = ['commit', 'apply_request', 'apply_deny', 'apply_lend', 'apply_back', 'cancel_button']
+
+    # 提出
+    def commit(self, request, queryset):
+        for obj in queryset:
+            if obj.lend_status != const.LEND_NOTCOMMIT:
+                messages.add_message(request, messages.ERROR, '未提出を選んでください！')
+                return
+        queryset.update(lend_status=const.LEND_REQUEST, apply_time=time.strftime("%Y-%m-%d", time.localtime()))
+        # mail
+        mailUtil.sendmailAsset(const.MAIL_KBN_COMMIT, queryset)
+        messages.add_message(request, messages.SUCCESS, '提出済')
+    commit.short_description = ' 提出'
+    commit.icon = 'fas fa-user-check'
+    commit.type = 'success'
 
     # 承認
     def apply_request(self, request, queryset):
         ids = request.POST.getlist('_selected_action')
         for id in ids:
-            AssetLend.objects.filter(id=id, lend_status=const.LEND_REQUEST).update(
-                lend_status=const.LEND_APPLY,
-            )
-        for obj in queryset:
-            AssetManage.objects.filter(id=obj.asset).update(
-                permission=const.LEND_NG,
-            )
+            AssetLend.objects.filter(id=id, lend_status=const.LEND_REQUEST).update(lend_status=const.LEND_APPLY)
+        # mail
+        mailUtil.sendmailAsset(const.MAIL_KBN_CONFIRM, queryset)
         messages.add_message(request, messages.SUCCESS, '申請承認完了')
 
     apply_request.short_description = '承認'
-
     apply_request.type = 'success'
-
     apply_request.icon = 'fas fa-user-check'
-
-    apply_request.allowed_permissions = ('apply',)
+    apply_request.allowed_permissions = ('manage',)
 
     # 拒否
     def apply_deny(self, request, queryset):
         ids = request.POST.getlist('_selected_action')
         for id in ids:
-            AssetLend.objects.filter(id=id, lend_status=const.LEND_REQUEST).update(
-                lend_status=const.LEND_DENY,
-            )
+            AssetLend.objects.filter(id=id, lend_status=const.LEND_REQUEST).update(lend_status=const.LEND_DENY)
+        # mail
+        mailUtil.sendmailAsset(const.MAIL_KBN_REJECT, queryset)
         messages.add_message(request, messages.SUCCESS, '申請拒否完了')
 
     apply_deny.short_description = '拒否'
-
     apply_deny.type = 'danger'
-
     apply_deny.icon = 'fas fa-user-check'
-
-    apply_deny.allowed_permissions = ('apply',)
+    apply_deny.allowed_permissions = ('manage',)
 
     # 貸出
     def apply_lend(self, request, queryset):
@@ -858,15 +881,14 @@ class AssetLendAdmin(admin.ModelAdmin):
                 lend_status=const.LEND_OUT,
                 lend_truetime=time.strftime("%Y-%m-%d", time.localtime()),
             )
+        # mail
+        mailUtil.sendmailAsset(const.MAIL_LEND_OUT, queryset)
         messages.add_message(request, messages.SUCCESS, '貸出完了')
 
     apply_lend.short_description = '貸出'
-
     apply_lend.type = 'info'
-
     apply_lend.icon = 'fas fa-user-check'
-
-    apply_lend.allowed_permissions = ('apply',)
+    apply_lend.allowed_permissions = ('manage',)
 
     # 返却
     def apply_back(self, request, queryset):
@@ -876,44 +898,65 @@ class AssetLendAdmin(admin.ModelAdmin):
                 lend_status=const.LEND_BACK,
                 back_truetime=time.strftime("%Y-%m-%d", time.localtime()),
             )
-        for obj in queryset:
-            AssetManage.objects.filter(id=obj.asset).update(
-                permission=const.LEND_OK,
-            )
+        # mail
+        mailUtil.sendmailAsset(const.MAIL_LEND_BACK, queryset)
         messages.add_message(request, messages.SUCCESS, '返却完了')
 
     apply_back.short_description = '返却'
-
     apply_back.type = 'info'
-
     apply_back.icon = 'fas fa-user-check'
+    apply_back.allowed_permissions = ('manage',)
 
-    apply_back.allowed_permissions = ('apply',)
+    # 取消
+    def cancel_button(self, request, queryset):
+        for obj in queryset:
+            if request.user.is_superuser or request.user.has_perm('submission.manage_assetlend'):
+                queryset.update(lend_status=const.LEND_NOTCOMMIT)
+            else:
+                if obj.lend_status == const.LEND_REQUEST:
+                    queryset.update(lend_status=const.LEND_NOTCOMMIT)
+                else:
+                    messages.add_message(request, messages.ERROR, '未提出を選択してください')
+                    return
+        # mail
+        if request.user.is_superuser or request.user.has_perm('submission.manage_assetlend'):
+            mailUtil.sendmailAsset(const.MAIL_KBN_CANCEL, queryset)
+    cancel_button.short_description = ' 取消'
+    cancel_button.icon = 'fas fa-check-circle'
+    cancel_button.type = 'warning'
 
     # 権限
-    def has_apply_permission(self, request):
+    def has_manage_permission(self, request):
         opts = self.opts
-        codename = get_permission_codename('apply', opts)
+        codename = get_permission_codename('manage', opts)
         return request.user.has_perm("%s.%s" % (opts.app_label, codename))
 
     # 保存
     def save_model(self, request, obj, form, change):
-        if change == False:
+        if not change:
             obj.user_id = request.user.id
             obj.user_name = Employee.objects.get(user_id=request.user.id).name
-        obj.asset_code = AssetManage.objects.get(id=obj.asset).asset
-        subCd = AssetManage.objects.get(id=obj.asset).type
+        obj.asset_code = AssetManage.objects.get(id=obj.asset_id).asset
+        subCd = AssetManage.objects.get(id=obj.asset_id).type
         obj.type = CodeMst.objects.get(cd=const.ASSET_TYPE, subCd=subCd).subNm
-        obj.name = AssetManage.objects.get(id=obj.asset).name
-        super().save_model(request, obj, form, change, )
+        obj.name = AssetManage.objects.get(id=obj.asset_id).name
+        super().save_model(request, obj, form, change)
+        # try:
+        #     with transaction.atomic():
+        #         super().save_model(request, obj, form, change)
+        #         return
+        # except:
+        #     messages.set_level(request, messages.ERROR)
+        #     temp_errMsg = str(obj.asset_code) + 'の貸出記録は既に存在します，修正してください。'
+        #     messages.error(request, temp_errMsg)
+        #     return
+
 
     # 名前マッチ
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
-        elif self.has_apply_permission(request):
+        elif self.has_manage_permission(request):
             return qs
         return qs.filter(user_id=request.user.id)
-
-
