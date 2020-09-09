@@ -79,7 +79,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         #休憩時間の制御
         sumTime3 = sumTime2 - float_rest
         obj.working_time = sumTime3
-        
+
         try:
             with transaction.atomic():
                 super().save_model(request, obj, form, change)
@@ -127,7 +127,17 @@ class AttendanceAdmin(admin.ModelAdmin):
 
     # cancel
     def cancel_button(self, request, queryset):
+        tempId = ''
+        # 統計リスト定義
+        querysetslist = []
         for obj in queryset:
+            querysetsdir = {}
+            # 社員名をキーとして、勤務日付の年月をバリューとして、ディクショナリーに格納する
+            querysetsdir[obj.name] = obj.date.strftime('%Y-%m')
+            # 社員名または勤務日付の年月が違うディクショナリーを統計リストに格納する
+            if querysetsdir not in querysetslist:
+                querysetslist.append(querysetsdir)
+
             if request.user.is_superuser or request.user.has_perm('submission.confirm_button_attendance'):
                 queryset.update(status=const.WORK_TYPE_SMALL_0)
             else:
@@ -141,6 +151,15 @@ class AttendanceAdmin(admin.ModelAdmin):
         if request.user.is_superuser or request.user.has_perm('submission.confirm_button_attendance'):
             mailUtil.sendmail(const.MAIL_KBN_CANCEL, queryset)
         messages.add_message(request, messages.SUCCESS, '取消済')
+
+        # 統計リストを繰り返し処理、
+        index = 0
+        while index < len(querysetslist):
+            # ディクショナリー毎に社員名、勤務日付の年月の値を統計実行メソッドに渡す
+            for keyname in querysetslist[index]:
+                valueYM = querysetslist[index][keyname]
+                self.dutyCompute(keyname, valueYM)
+            index += 1
 
     cancel_button.short_description = ' 取消'
     cancel_button.type = 'warning'
@@ -325,6 +344,9 @@ class AttendanceAdmin(admin.ModelAdmin):
         else:
             dutyQuery.update(working_time=working_time, attendance_count=attendance_count,
                     absence_count=absence_count, annual_leave=annual_leave, rest_count=rest_count, late_count=late_count)
+        # データ削除
+        if working_time == 0 or working_time == 0.0:
+            self.delCompute(keyname, valueYM)
 
     # 勤務削除データ抽出
     def delete_queryset(self, request, queryset):
@@ -398,7 +420,7 @@ class AttendanceAdmin(admin.ModelAdmin):
         if dutyQuery.count() == 0:
             return
         # 勤務表から出勤日数,欠勤回数,年休回数,休出回数,遅早退回数が無ければ、そのデータ履歴記録を削除する
-        elif attendance_count == 0 and absence_count == 0 and annual_leave == 0 and rest_count == 0 and late_count == 0:
+        elif (attendance_count == 0 and absence_count == 0 and annual_leave == 0 and rest_count == 0 and late_count == 0) or working_time == 0:
             dutyQuery.delete()
         # データ記録のクエリ結果あれば、データ更新
         else:
@@ -943,5 +965,3 @@ class AssetLendAdmin(admin.ModelAdmin):
         elif self.has_manage_permission(request):
             return qs
         return qs.filter(user_id=request.user.id)
-
-
