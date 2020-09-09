@@ -8,27 +8,27 @@ from company.models import *
 # 障害管理.
 class Obstacle(models.Model):
     # 提出者
-    user = models.ForeignKey(Employee, on_delete=models.SET_NULL, blank=False, null=True, verbose_name='提出者',
-                               db_index=True)
+    user = models.CharField(verbose_name="提出者", max_length=10, default=0)
     # 提出日付
     createTime = models.DateField('提出日付', default=timezone.now)
     # 障害対象機能_choices
     object_choices = (
-        ('1', '現場管理 画面'),
-        ('2', '現場管理 を追加/修正'),
+        ('1', '現場情報 画面'),
+        ('2', '現場情報 を追加/修正'),
         ('3', '社員情報 画面'),
         ('4', '社員情報 を追加/修正'),
-        ('5', '立替金　画面'),
+        ('5', '立替金 画面'),
         ('6', '立替金 を追加/修正'),
-        ('7', '資産管理　画面'),
-        ('8', '資産管理 を追加/修正'),
-        ('9', '資産貸出申請　画面'),
-        ('10', '資産貸出申請 を追加/修正'),
+        ('7', '資産情報 画面'),
+        ('8', '資産情報 を追加/修正'),
+        ('9', '資産貸出 画面'),
+        ('10', '資産貸出 を追加/修正'),
         ('11', '通勤手当　画面'),
         ('12', '通勤手当 を追加/修正'),
-        ('13', '勤務管理　画面'),
-        ('14', '勤務管理 を追加/修正'),
-        ('15', '勤務統計　画面'),
+        ('13', '勤務提出 画面'),
+        ('14', '勤務提出 を追加/修正'),
+        ('15', '勤務統計 画面'),
+        ('16', '障害管理 画面'),
     )
     objectName = models.CharField(max_length=3, choices=object_choices, verbose_name='障害対象機能')
     # 障害内容

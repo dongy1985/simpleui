@@ -11,6 +11,8 @@ class AttendanceAdminForm(forms.ModelForm):
         rest = self.cleaned_data.get('rest')
         
         # 実働時間计算
+        if end_time == None :
+            raise forms.ValidationError({'end_time':'24:00以降は翌日の時刻に入力してください、例：30:00->06:00'})
         temp_end_time = datetime.strptime(str(end_time),"%H:%M:%S")
         sumTime1 = temp_end_time - timedelta(hours=start_time.hour,minutes=start_time.minute,seconds=start_time.second)
         sum_hour = sumTime1.hour

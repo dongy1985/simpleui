@@ -36,7 +36,7 @@ from django.db.models import Q
 class AttendanceAdmin(admin.ModelAdmin):
     form = AttendanceAdminForm
     # actions
-    actions = ['cancel_button', 'commit_button', 'confirm_button', 'export', ]
+    actions = ['commit_button', 'confirm_button', 'cancel_button', 'export', ]
     # display
     list_display = ('name', 'date', 'duty', 'start_time', 'end_time', 'rest', 'working_time', 'contents', 'status')
     # list
@@ -175,11 +175,6 @@ class AttendanceAdmin(admin.ModelAdmin):
                 valueYM = querysetlist[index][keyname]
                 self.dutyCompute(keyname, valueYM)
             index += 1
-    confirm_button.short_description = ' 承認'
-    confirm_button.type = 'success'
-    confirm_button.confirm = '承認よろしですか？'
-    confirm_button.icon = 'fas fa-user-check'
-    confirm_button.allowed_permissions = ('confirm_button_attendance',)
     confirm_button.short_description = ' 承認'
     confirm_button.type = 'success'
     confirm_button.confirm = '承認よろしですか？'

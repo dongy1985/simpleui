@@ -117,7 +117,7 @@ class WorkSiteAdmin(admin.ModelAdmin):
     # ordering
     ordering = ('site_name', 'from_date')
     # 一ページ表示の数
-    list_per_page = 7
+    list_per_page = 30
     # 編集必要なレコード
     fieldsets = [(None, {'fields': ['project_name', 'site_name', 'site_number', 'manager', 'from_date', 'to_date']})]
     # リンク表示必要なレコード
