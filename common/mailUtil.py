@@ -168,7 +168,7 @@ def chooseKbn_expRen(mailKbn, employe_name, employe_mail, user_id, workDate):
     if mailKbn == const.MAIL_KBN_COMMIT:
         # to_addr
         perm = Permission.objects.get(codename='confirm_button_expensereturn')
-        users = User.objects.filter(Q(user_permissions=perm) | Q(is_superuser=True)).distinct()
+        users = User.objects.filter(Q(groups_permissions=perm) | Q(is_superuser=True)).distinct()
         # users = User.objects.filter(Q(is_superuser=True)).distinct()
         to_addr = ''
         # superuser
@@ -240,7 +240,7 @@ def chooseKbn_send_DutyAmount(mailKbn, employe_name, employe_mail, user_id, work
     if mailKbn == const.MAIL_KBN_COMMIT:
         # to_addr
         perm = Permission.objects.get(codename='confirm_button_applydutyamount')
-        users = User.objects.filter(Q(user_permissions=perm) | Q(is_superuser=True)).distinct()
+        users = User.objects.filter(Q(groups_permissions=perm) | Q(is_superuser=True)).distinct()
         # users = User.objects.filter(Q(is_superuser=True)).distinct()
         to_addr = ''
         # superuser
@@ -307,7 +307,7 @@ def chooseKbn_asset(mailKbn, employe_name, employe_mail, user_id):
     if mailKbn == const.MAIL_KBN_COMMIT:
         # to_addr
         perm = Permission.objects.get(codename='manage_assetlend')
-        users = User.objects.filter(Q(user_permissions=perm) | Q(is_superuser=True)).distinct()
+        users = User.objects.filter(Q(groups_permissions=perm) | Q(is_superuser=True)).distinct()
         # users = User.objects.filter(Q(is_superuser=True)).distinct()
         to_addr = ''
         # superuser
