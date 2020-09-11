@@ -276,7 +276,7 @@ def sendmailAsset(mailKbn, queryset):
             queryset = queryset.filter(
                 ~(Q(user_id=obj.user_id))
             )
-            return sendmailExpRen(mailKbn=mailKbn, queryset=queryset)
+            return sendmailAsset(mailKbn=mailKbn, queryset=queryset)
 
 
 def send_asset(mailKbn, employe_name, employe_mail, user_id):
