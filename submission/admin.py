@@ -529,6 +529,14 @@ class DutydetailInline(admin.TabularInline):
 @admin.register(ApplyDutyAmount)
 class ApplyDutyAmountAdmin(admin.ModelAdmin):
     inlines = [DutydetailInline, ]
+    form = ApplyDutyAmountAdminForm
+    def get_form(self, request, obj=None, **kwargs):
+        ModelForm = super(ApplyDutyAmountAdmin, self).get_form(request, obj, **kwargs)
+        class ModelFormMetaClass(ModelForm):
+            def __new__(cls, *args, **kwargs):
+                kwargs['request'] = request
+                return ModelForm(*args, **kwargs)
+        return ModelFormMetaClass
 
     list_display = ('applyName', 'applyDate', 'totalAmount', 'trafficStatus')
     list_per_page = 7
