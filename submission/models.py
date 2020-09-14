@@ -13,7 +13,7 @@ import time
 
 class Attendance(models.Model):
     # 社員名前
-    name = models.CharField('社員名前', max_length=20, default=0) 
+    name = models.CharField('社員名前', max_length=20, default=0)
     # 出勤日付
     date = models.DateField('出勤日付', default=timezone.now)
     # 出勤区分
@@ -127,6 +127,7 @@ class Dutydetail(models.Model):
     class Meta:
         verbose_name = "通勤手当明細"
         verbose_name_plural = "通勤手当明細"
+        unique_together = ('trafficMethod', 'trafficFrom', 'trafficTo', 'trafficAmount')
 
     def __str__(self):
         return self.trafficMethod
@@ -239,4 +240,3 @@ class ExpenseReturnDetail(models.Model):
 
     def __str__(self):
         return self.detail_type
-
