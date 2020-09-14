@@ -92,11 +92,42 @@ class AttendanceAdmin(admin.ModelAdmin):
 
     # user filter
     def get_queryset(self, request):
-        if request.user.is_superuser or request.user.has_perm('submission.confirm_button_attendance'):
+        if request.user.is_superuser :
             qs = super().get_queryset(request)
             return qs
+        elif request.user.has_perm('submission.confirm_button_attendance'):
+            qs = super().get_queryset(request)
+            temp = None
+            employeeId = Employee.objects.get(user_id=request.user.id).id
+            workSiteTemp = WorkSite.objects.filter(manager_id = employeeId)
+            for obj in workSiteTemp:
+                workSiteDetailTemp = WorkSiteDetail.objects.filter(manager_id = obj.id)
+                for objD in workSiteDetailTemp:
+                    userId = Employee.objects.get(id=objD.member_id).user_id
+                    qsTemp = qs.filter(user_id = userId)
+                    if temp == None :
+                        temp = qsTemp
+                    else:
+                        querysets = temp | qsTemp
+                        temp = querysets
+            return temp
         else:
             qs = super().get_queryset(request)
+            temp = None
+            employeeId = Employee.objects.get(user_id=request.user.id).id
+            if len(WorkSite.objects.filter(manager_id = employeeId)) != 0:
+                workSiteTemp = WorkSite.objects.filter(manager_id = employeeId)
+                for obj in workSiteTemp:
+                    workSiteDetailTemp = WorkSiteDetail.objects.filter(manager_id = obj.id)
+                    for objD in workSiteDetailTemp:
+                        userId = Employee.objects.get(id=objD.member_id).user_id
+                        qsTemp = qs.filter(user_id = userId)
+                        if temp == None :
+                            temp = qsTemp
+                        else:
+                            querysets = temp | qsTemp
+                            temp = querysets
+                return temp
             return qs.filter(user_id = request.user.id)
 
     # commit

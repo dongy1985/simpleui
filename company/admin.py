@@ -129,8 +129,14 @@ class WorkSiteAdmin(admin.ModelAdmin):
 
     # user filter
     def get_queryset(self, request):
+        # エス‐ピー
+        spUser = User.objects.filter(groups__name='エス‐ピー')
+        for obj in spUser:
+            if request.user.id == obj.id :
+                qs = super().get_queryset(request)
+                return qs
         # superuser
-        if request.user.is_superuser:
+        if request.user.is_superuser :
             qs = super().get_queryset(request)
             return qs
         # 現場管理者
