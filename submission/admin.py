@@ -827,6 +827,9 @@ class AssetLendAdmin(admin.ModelAdmin):
                 'lend_reason', 'note', 'lend_status',)
         return super(AssetLendAdmin, self).changelist_view(request=request, extra_context=None)
 
+    # 需要搜索的字段
+    search_fields = ('asset_code',)
+
     raw_id_fields = ('asset',)
     # filter
     list_filter = ('type', 'lend_status',)
@@ -845,7 +848,8 @@ class AssetLendAdmin(admin.ModelAdmin):
             if obj.lend_status != const.LEND_NOTCOMMIT:
                 messages.add_message(request, messages.ERROR, '未提出を選んでください！')
                 return
-        queryset.update(lend_status=const.LEND_REQUEST, apply_time=time.strftime("%Y-%m-%d", time.localtime()))
+            AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
+            queryset.update(lend_status=const.LEND_REQUEST, apply_time=time.strftime("%Y-%m-%d", time.localtime()))
         # mail
         mailUtil.sendmailAsset(const.MAIL_KBN_COMMIT, queryset)
         messages.add_message(request, messages.SUCCESS, '提出済')
@@ -858,6 +862,8 @@ class AssetLendAdmin(admin.ModelAdmin):
         ids = request.POST.getlist('_selected_action')
         for id in ids:
             AssetLend.objects.filter(id=id, lend_status=const.LEND_REQUEST).update(lend_status=const.LEND_APPLY)
+        for obj in queryset:
+            AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
         # mail
         mailUtil.sendmailAsset(const.MAIL_KBN_CONFIRM, queryset)
         messages.add_message(request, messages.SUCCESS, '申請承認完了')
@@ -872,6 +878,8 @@ class AssetLendAdmin(admin.ModelAdmin):
         ids = request.POST.getlist('_selected_action')
         for id in ids:
             AssetLend.objects.filter(id=id, lend_status=const.LEND_REQUEST).update(lend_status=const.LEND_DENY)
+        for obj in queryset:
+            AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_OK)
         # mail
         mailUtil.sendmailAsset(const.MAIL_KBN_REJECT, queryset)
         messages.add_message(request, messages.SUCCESS, '申請拒否完了')
@@ -889,6 +897,8 @@ class AssetLendAdmin(admin.ModelAdmin):
                 lend_status=const.LEND_OUT,
                 lend_truetime=time.strftime("%Y-%m-%d", time.localtime()),
             )
+        for obj in queryset:
+            AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
         # mail
         mailUtil.sendmailAsset(const.MAIL_LEND_OUT, queryset)
         messages.add_message(request, messages.SUCCESS, '貸出完了')
@@ -906,6 +916,8 @@ class AssetLendAdmin(admin.ModelAdmin):
                 lend_status=const.LEND_BACK,
                 back_truetime=time.strftime("%Y-%m-%d", time.localtime()),
             )
+        for obj in queryset:
+            AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_OK)
         # mail
         mailUtil.sendmailAsset(const.MAIL_LEND_BACK, queryset)
         messages.add_message(request, messages.SUCCESS, '返却完了')
@@ -917,14 +929,40 @@ class AssetLendAdmin(admin.ModelAdmin):
 
     # 取消
     def cancel_button(self, request, queryset):
+        qc = queryset.count()
         for obj in queryset:
+            query = AssetLend.objects.filter(asset_id=obj.asset_id)
+            status = obj.lend_status
+            count = query.filter(~(Q(lend_status=const.LEND_BACK) | Q(lend_status=const.LEND_DENY))).count()
             if request.user.is_superuser or request.user.has_perm('submission.manage_assetlend'):
-                queryset.update(lend_status=const.LEND_NOTCOMMIT)
+                if status == const.LEND_REQUEST or status == const.LEND_APPLY or status == const.LEND_OUT:
+                    if count == 0:
+                        queryset.update(lend_status=const.LEND_NOTCOMMIT)
+                        AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
+                    if count == 1:
+                        query.filter(lend_status=obj.lend_status).update(lend_status=const.LEND_NOTCOMMIT)
+                        AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
+                    else:
+                        messages.add_message(request, messages.ERROR, obj.asset_code +'が選ばれているため、取消できません!')
+                        continue
+                if status == const.LEND_BACK or status == const.LEND_DENY:
+                    new_query = queryset.filter(asset_id=obj.asset_id)
+                    new_count = new_query.filter(Q(lend_status=const.LEND_BACK) | Q(lend_status=const.LEND_DENY)).count()
+                    if count == 0 and new_count == 1 and qc != 1:
+                        new_query.filter(lend_status=obj.lend_status).update(lend_status=const.LEND_NOTCOMMIT)
+                        AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
+                    elif count == 0 and new_count == 1 and qc == 1:
+                        queryset.update(lend_status=const.LEND_NOTCOMMIT)
+                        AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
+                    else:
+                        messages.add_message(request, messages.ERROR, obj.asset_code + 'が複数の未提出になるため、取消できません!')
+                        continue
             else:
                 if obj.lend_status == const.LEND_REQUEST:
                     queryset.update(lend_status=const.LEND_NOTCOMMIT)
+                    AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
                 else:
-                    messages.add_message(request, messages.ERROR, '未提出を選択してください')
+                    messages.add_message(request, messages.ERROR, '申請済を選択してください')
                     return
         # mail
         if request.user.is_superuser or request.user.has_perm('submission.manage_assetlend'):
@@ -941,24 +979,39 @@ class AssetLendAdmin(admin.ModelAdmin):
 
     # 保存
     def save_model(self, request, obj, form, change):
-        if not change:
-            obj.user_id = request.user.id
-            obj.user_name = Employee.objects.get(user_id=request.user.id).name
         obj.asset_code = AssetManage.objects.get(id=obj.asset_id).asset
         subCd = AssetManage.objects.get(id=obj.asset_id).type
         obj.type = CodeMst.objects.get(cd=const.ASSET_TYPE, subCd=subCd).subNm
         obj.name = AssetManage.objects.get(id=obj.asset_id).name
-        super().save_model(request, obj, form, change)
-        # try:
-        #     with transaction.atomic():
-        #         super().save_model(request, obj, form, change)
-        #         return
-        # except:
-        #     messages.set_level(request, messages.ERROR)
-        #     temp_errMsg = str(obj.asset_code) + 'の貸出記録は既に存在します，修正してください。'
-        #     messages.error(request, temp_errMsg)
-        #     return
-
+        if not change:
+            obj.user_id = request.user.id
+            obj.user_name = Employee.objects.get(user_id=request.user.id).name
+            AssetManage.objects.filter(id=obj.asset_id).update(permission=const.LEND_NG)
+            super().save_model(request, obj, form, change)
+        else:
+            obj_query = AssetLend.objects.filter(asset_id=obj.asset_id)
+            dbcount = obj_query.filter(~(Q(lend_status__exact=const.LEND_BACK) | Q(lend_status__exact=const.LEND_DENY))).count()
+            asmanage = AssetManage.objects.filter(id=obj.asset_id)
+            asinit = AssetManage.objects.filter(id=form.initial['asset'])
+            if obj.asset_id == form.initial['asset']:
+                super().save_model(request, obj, form, change)
+            elif obj_query.count() == 0:
+                asinit.update(permission=const.LEND_OK)
+                asmanage.update(permission=const.LEND_NG)
+                super().save_model(request, obj, form, change)
+            elif obj_query.count() != 0 and dbcount == 0:
+                asinit.update(permission=const.LEND_OK)
+                asmanage.update(permission=const.LEND_NG)
+                super().save_model(request, obj, form, change)
+            elif obj_query.count() == 0 and AssetLend.objects.filter(asset_id=form.initial['asset']).count() == 0:
+                asinit.update(permission=const.LEND_OK)
+                asmanage.update(permission=const.LEND_NG)
+                super().save_model(request, obj, form, change)
+            else:
+                messages.set_level(request, messages.ERROR)
+                temp_errMsg = str(obj.asset_code) + '既に選ばれていました、別の資産番号を選んでください。'
+                messages.error(request, temp_errMsg)
+                return
 
     # 名前マッチ
     def get_queryset(self, request):
@@ -968,3 +1021,13 @@ class AssetLendAdmin(admin.ModelAdmin):
         elif self.has_manage_permission(request):
             return qs
         return qs.filter(user_id=request.user.id)
+
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            if obj.lend_status != const.LEND_DENY:
+                AssetManage.objects.filter(id=obj.asset_id).update(permission=const.LEND_OK)
+        super().delete_queryset(request, queryset)
+
+    def delete_model(self, request, obj):
+        AssetManage.objects.filter(id=obj.asset_id).update(permission=const.LEND_OK)
+        super().delete_model(request, obj)
