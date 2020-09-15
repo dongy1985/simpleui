@@ -26,7 +26,7 @@ class EmployeeAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             self.list_display = ['name', 'empNo', 'email', 'phone']
         else:
-            self.list_display = ('name', 'empNo', 'email', 'user_id', )
+            self.list_display = ('name', 'empNo', 'email',)
         return super(EmployeeAdmin, self).changelist_view(request=request, extra_context=None)
 
     search_fields = ('name', 'empNo')
@@ -38,11 +38,19 @@ class EmployeeAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         opts = self.opts
         codename = get_permission_codename('add', opts)
-        query = Employee.objects.filter(user_id=request.user.id)
-        if query.count() != 0 and request.user.is_superuser == False:
+        if request.user.has_perm('company.add_employee') == False and request.user.is_superuser == False:
             return False
         else:
             return request.user.has_perm("%s.%s" % (opts.app_label, codename))
+
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser or request.user.has_perm('company.add_employee'):
+            self.readonly_fields = []
+        else:
+            self.readonly_fields = ['name', 'empNo', 'email']
+        return self.readonly_fields
+
+    readonly_fields = ('name', 'empNo', 'email')
 
     def save_model(self, request, obj, form, change):
         if change:
@@ -67,6 +75,19 @@ class EmployeeAdmin(admin.ModelAdmin):
             if dutySta.count() != 0:
                 dutySta.update(name=obj.name)
         super().save_model(request, obj, form, change)
+
+    def get_fieldsets(self, request, obj=None):
+        return [(None, {'fields': self.get_fields(request, obj)})]
+
+    def get_form(self, request, obj=None, **kwargs):
+        self.exclude = []
+        if request.user.is_superuser or request.user.has_perm('company.add_employee'):
+            self.exclude = []
+        else:
+            self.exclude.extend(
+                ['gender', 'birthday', 'zipCode', 'homeAddr', 'phone', 'retention_code', 'retention_limit', 'user',
+                 'empSts'])
+        return super(EmployeeAdmin, self).get_form(request, obj, **kwargs)
 
 
 
