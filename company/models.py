@@ -122,6 +122,7 @@ class WorkSiteDetail(models.Model):
     class Meta:
         verbose_name = "メンバー"
         verbose_name_plural = "メンバー"
+        unique_together = ('manager', 'member')
 
     def __int__(self):
         return self.id
