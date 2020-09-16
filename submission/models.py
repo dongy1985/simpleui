@@ -137,6 +137,10 @@ class Dutydetail(models.Model):
         except ValidationError as e:
             raise ValidationError("この通勤手当明細は既に存在します、修正してください！")
 
+    def clean(self):
+        if self.trafficFrom == self.trafficTo:
+            raise ValidationError({'trafficFrom': '開始区間と終了区間は同じです!!'})
+
     def __str__(self):
         return self.trafficMethod
 
