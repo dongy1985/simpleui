@@ -197,7 +197,6 @@ class AssetLend(models.Model):
     class Meta:
         verbose_name = "資産貸出"
         verbose_name_plural = "資産貸出"
-        # unique_together = ('asset', 'user_name')
         permissions = (
             ("manage_assetlend", "Can manage 資産貸出"),
             ("commit_assetlend", "Can 提出"),
@@ -240,7 +239,7 @@ class ExpenseReturnDetail(models.Model):
     detail_type = models.CharField(max_length=30, verbose_name='費用項目')
     # 用途
     detail_text = models.CharField(max_length=180, verbose_name='用途')
-    # 単一金額
+    # 金額
     price = models.CharField(verbose_name='金額', max_length=10, default='',
                  validators=[validators.RegexValidator("^\d{1,3}(,\d{3})*$", message='正しい金額を入力してください！')])
     # 使用日付
@@ -249,6 +248,13 @@ class ExpenseReturnDetail(models.Model):
     class Meta:
         verbose_name = "立替金項目明細"
         verbose_name_plural = "立替金項目明細"
+        unique_together = ('expenseReturn', 'usedate', 'detail_type', 'detail_text', 'price')
+
+    def validate_unique(self, exclude=None):
+        try:
+            super(ExpenseReturnDetail, self).validate_unique()
+        except ValidationError as e:
+            raise ValidationError("この立替金項目明細は既に存在します、修正してください！")
 
     def __str__(self):
         return self.detail_type

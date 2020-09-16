@@ -727,6 +727,16 @@ class ExpenseReturnDetailInline(admin.TabularInline):
 @admin.register(ExpenseReturn)
 class ExpenseReturnAdmin(admin.ModelAdmin):
     inlines = [ExpenseReturnDetailInline, ]
+
+    form = ExpenseReturnAdminForm
+    def get_form(self, request, obj=None, **kwargs):
+        ModelForm = super(ExpenseReturnAdmin, self).get_form(request, obj, **kwargs)
+        class ModelFormMetaClass(ModelForm):
+            def __new__(cls, *args, **kwargs):
+                kwargs['request'] = request
+                return ModelForm(*args, **kwargs)
+        return ModelFormMetaClass
+
     fieldsets = [(None, {'fields': ['applydate', 'comment']})]
     list_display = ('applyer', 'applydate', 'amount', 'comment', 'status')
     search_fields = ('applyer',)
