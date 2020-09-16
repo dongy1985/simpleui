@@ -839,9 +839,14 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
 # 資産貸出申請
 @admin.register(AssetLend)
 class AssetLendAdmin(admin.ModelAdmin):
+    form = AssetLendAdminForm
+    def get_form(self, request, obj=None, **kwargs):
+        if kwargs['change'] == True:
+            AssetManage.objects.filter(id=obj.asset_id).update(permission=const.LEND_OK)
+        return super(AssetLendAdmin, self).get_form(request, obj, **kwargs)
+
     fieldsets = [(None, {'fields': ['asset', 'lend_time', 'back_time', 'lend_reason',
                                     'note', ]})]
-
     # 要显示的字段
     def changelist_view(self, request, extra_context=None):
         user = request.user
@@ -1025,6 +1030,7 @@ class AssetLendAdmin(admin.ModelAdmin):
             asmanage = AssetManage.objects.filter(id=obj.asset_id)
             asinit = AssetManage.objects.filter(id=form.initial['asset'])
             if obj.asset_id == form.initial['asset']:
+                asmanage.update(permission=const.LEND_NG)
                 super().save_model(request, obj, form, change)
             elif obj_query.count() == 0:
                 asinit.update(permission=const.LEND_OK)

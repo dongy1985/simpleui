@@ -52,3 +52,12 @@ class ApplyDutyAmountAdminForm(forms.ModelForm):
             return self.cleaned_data
         else:
             return self.cleaned_data
+
+# 資産貸出
+class AssetLendAdminForm(forms.ModelForm):
+    def clean(self):
+        lend_time = self.cleaned_data.get('lend_time')
+        back_time = self.cleaned_data.get('back_time')
+        if lend_time > back_time:
+            raise forms.ValidationError('貸出予定日は返却予定日より遅い，貸出予定日を修正してください。')
+        return self.cleaned_data

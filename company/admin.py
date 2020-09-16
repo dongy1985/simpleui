@@ -17,6 +17,19 @@ from django.db.models import Q
 # 社員admin
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
+    form = EmployeeAdminForm
+    def get_form(self, request, obj=None, **kwargs):
+        self.exclude = []
+        if request.user.is_superuser or request.user.has_perm('company.add_employee'):
+            self.exclude = []
+        elif obj.name == Employee.objects.get(user_id=request.user.id).name:
+            self.exclude = []
+        else:
+            self.exclude.extend(
+                ['gender', 'birthday', 'zipCode', 'homeAddr', 'phone', 'retention_code', 'retention_limit', 'user',
+                 'empSts'])
+        return super(EmployeeAdmin, self).get_form(request, obj, **kwargs)
+
     fieldsets = [(None, {
         'fields': ['name', 'empNo', 'gender', 'birthday', 'email', 'zipCode', 'homeAddr', 'phone', 'retention_code',
                    'retention_limit', 'user', 'empSts']})]
@@ -78,17 +91,6 @@ class EmployeeAdmin(admin.ModelAdmin):
 
     def get_fieldsets(self, request, obj=None):
         return [(None, {'fields': self.get_fields(request, obj)})]
-
-    def get_form(self, request, obj=None, **kwargs):
-        self.exclude = []
-        if request.user.is_superuser or request.user.has_perm('company.add_employee'):
-            self.exclude = []
-        else:
-            self.exclude.extend(
-                ['gender', 'birthday', 'zipCode', 'homeAddr', 'phone', 'retention_code', 'retention_limit', 'user',
-                 'empSts'])
-        return super(EmployeeAdmin, self).get_form(request, obj, **kwargs)
-
 
 
 # 資産情報
