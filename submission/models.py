@@ -127,7 +127,7 @@ class Dutydetail(models.Model):
     class Meta:
         verbose_name = "通勤手当明細"
         verbose_name_plural = "通勤手当明細"
-        unique_together = ('trafficMethod', 'trafficFrom', 'trafficTo', 'trafficAmount')
+        unique_together = ('apply_id', 'trafficMethod', 'trafficFrom', 'trafficTo', 'trafficAmount')
 
     def __str__(self):
         return self.trafficMethod
