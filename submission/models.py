@@ -10,6 +10,8 @@ from common.const import const
 from common.models import *
 from company.models import *
 import time
+from django.core.exceptions import ValidationError
+
 
 class Attendance(models.Model):
     # 社員名前
@@ -128,6 +130,12 @@ class Dutydetail(models.Model):
         verbose_name = "通勤手当明細"
         verbose_name_plural = "通勤手当明細"
         unique_together = ('apply_id', 'trafficMethod', 'trafficFrom', 'trafficTo', 'trafficAmount')
+
+    def validate_unique(self, exclude=None):
+        try:
+            super(Dutydetail, self).validate_unique()
+        except ValidationError as e:
+            raise ValidationError("この通勤手当明細は既に存在します、修正してください！")
 
     def __str__(self):
         return self.trafficMethod
