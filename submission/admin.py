@@ -846,7 +846,6 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
     cancel_button.icon = 'fas fa-check-circle'
     cancel_button.type = 'warning'
 
-
 # 資産貸出申請
 @admin.register(AssetLend)
 class AssetLendAdmin(admin.ModelAdmin):
@@ -991,36 +990,57 @@ class AssetLendAdmin(admin.ModelAdmin):
 
     # 取消
     def cancel_button(self, request, queryset):
+        # querysetの数をカウント
         qc = queryset.count()
+        # 繰り返し処理
         for obj in queryset:
+            # 該当資産番号の資産貸出記録を検索
             query = AssetLend.objects.filter(asset_id=obj.asset_id)
+            # 該当資産番号のステータス
             status = obj.lend_status
+            # 返却と拒否以外の該当資産番号の資産貸出記録をカウント
             count = query.filter(~(Q(lend_status=const.LEND_BACK) | Q(lend_status=const.LEND_DENY))).count()
+            # スーパーユーザーと管理権限を持つユーザー
             if request.user.is_superuser or request.user.has_perm('submission.manage_assetlend'):
+                # 該当記録のステータスは申請済、承認済、貸出済の場合
                 if status == const.LEND_REQUEST or status == const.LEND_APPLY or status == const.LEND_OUT:
+                    # 返却と拒否以外の該当資産番号の資産貸出記録はない場合
                     if count == 0:
+                        # 該当記録のステータスを未提出に変更し、貸出可否状態を貸出否に設定する
                         queryset.update(lend_status=const.LEND_NOTCOMMIT)
                         AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
+                    # 該当記録のステータスは申請済、承認済、貸出済いずれかの場合
                     if count == 1:
+                        # 該当記録のステータスを未提出に変更し、貸出可否状態を貸出否に設定する
                         query.filter(lend_status=obj.lend_status).update(lend_status=const.LEND_NOTCOMMIT)
                         AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
                     else:
                         messages.add_message(request, messages.ERROR, obj.asset_code +'が選ばれているため、取消できません!')
                         continue
+                # 該当記録のステータスは返却または拒否の場合
                 if status == const.LEND_BACK or status == const.LEND_DENY:
+                    # 選択される該当記録の資産番号の返却または拒否のquerysetをクエリする
                     new_query = queryset.filter(asset_id=obj.asset_id)
+                    # 該当資産番号の返却または拒否の数をカウント
                     new_count = new_query.filter(Q(lend_status=const.LEND_BACK) | Q(lend_status=const.LEND_DENY)).count()
+                    # 返却と拒否の資産貸出記録しかない、該当資産番号の返却または拒否の数は一つ、選択される数は複数の場合
                     if count == 0 and new_count == 1 and qc != 1:
+                        # 複数の記録のステータスを未提出に変更し、貸出可否状態を貸出否に設定する
                         new_query.filter(lend_status=obj.lend_status).update(lend_status=const.LEND_NOTCOMMIT)
                         AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
+                    # 返却と拒否の資産貸出記録しかない、該当資産番号の返却または拒否の数は一つ、選択される数は一つの場合
                     elif count == 0 and new_count == 1 and qc == 1:
+                        # 当該記録のステータスを未提出に変更し、貸出可否状態を貸出否に設定する
                         queryset.update(lend_status=const.LEND_NOTCOMMIT)
                         AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
                     else:
                         messages.add_message(request, messages.ERROR, obj.asset_code + 'が複数の未提出になるため、取消できません!')
                         continue
+            # 普通社員の場合、権限は申請済から未提出に変更するのみです
             else:
+                # 該当記録は申請済の場合
                 if obj.lend_status == const.LEND_REQUEST:
+                    # 当該記録のステータスを未提出に変更し、貸出可否状態を貸出否に設定する
                     queryset.update(lend_status=const.LEND_NOTCOMMIT)
                     AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
                 else:
@@ -1033,7 +1053,7 @@ class AssetLendAdmin(admin.ModelAdmin):
     cancel_button.icon = 'fas fa-check-circle'
     cancel_button.type = 'warning'
 
-    # 権限
+    # 管理権限
     def has_manage_permission(self, request):
         opts = self.opts
         codename = get_permission_codename('manage', opts)
@@ -1045,29 +1065,42 @@ class AssetLendAdmin(admin.ModelAdmin):
         subCd = AssetManage.objects.get(id=obj.asset_id).type
         obj.type = CodeMst.objects.get(cd=const.ASSET_TYPE, subCd=subCd).subNm
         obj.name = AssetManage.objects.get(id=obj.asset_id).name
+        # 新規追加
         if not change:
             obj.user_id = request.user.id
             obj.user_name = Employee.objects.get(user_id=request.user.id).name
             AssetManage.objects.filter(id=obj.asset_id).update(permission=const.LEND_NG)
             super().save_model(request, obj, form, change)
+        # 変更
         else:
             obj_query = AssetLend.objects.filter(asset_id=obj.asset_id)
             dbcount = obj_query.filter(~(Q(lend_status__exact=const.LEND_BACK) | Q(lend_status__exact=const.LEND_DENY))).count()
             asmanage = AssetManage.objects.filter(id=obj.asset_id)
+            # 変更元の資産番号の貸出記録
             asinit = AssetManage.objects.filter(id=form.initial['asset'])
+            # 変更後の資産番号と変更元の資産番号は一緒の場合
             if obj.asset_id == form.initial['asset']:
                 asmanage.update(permission=const.LEND_NG)
                 super().save_model(request, obj, form, change)
+            # 該当資産番号を持つ貸出記録がない場合
             elif obj_query.count() == 0:
+                # 変更元の資産番号の資産情報の貸出可否状態を貸出可に設定する
                 asinit.update(permission=const.LEND_OK)
+                # 該当資産番号の資産情報の貸出可否状態を貸出否に設定する
                 asmanage.update(permission=const.LEND_NG)
                 super().save_model(request, obj, form, change)
+            # 該当資産番号を持つ貸出記録が存在する場合、返却と拒否の資産貸出記録がない場合
             elif obj_query.count() != 0 and dbcount == 0:
+                # 変更元の資産番号の資産情報の貸出可否状態を貸出可に設定する
                 asinit.update(permission=const.LEND_OK)
+                # 該当資産番号の資産情報の貸出可否状態を貸出否に設定する
                 asmanage.update(permission=const.LEND_NG)
                 super().save_model(request, obj, form, change)
+            # 該当資産番号を持つ貸出記録がない場合、変更元の資産番号を持つ貸出記録がない場合
             elif obj_query.count() == 0 and AssetLend.objects.filter(asset_id=form.initial['asset']).count() == 0:
+                # 変更元の資産番号の資産情報の貸出可否状態を貸出可に設定する
                 asinit.update(permission=const.LEND_OK)
+                # 該当資産番号の資産情報の貸出可否状態を貸出否に設定する
                 asmanage.update(permission=const.LEND_NG)
                 super().save_model(request, obj, form, change)
             else:
@@ -1085,12 +1118,14 @@ class AssetLendAdmin(admin.ModelAdmin):
             return qs
         return qs.filter(user_id=request.user.id)
 
+    # 拒否以外の記録を削除する場合、貸出可否状態を貸出可に設定する
     def delete_queryset(self, request, queryset):
         for obj in queryset:
             if obj.lend_status != const.LEND_DENY:
                 AssetManage.objects.filter(id=obj.asset_id).update(permission=const.LEND_OK)
         super().delete_queryset(request, queryset)
 
+    # 未提出の記録を削除する場合、貸出可否状態を貸出可に設定する
     def delete_model(self, request, obj):
         AssetManage.objects.filter(id=obj.asset_id).update(permission=const.LEND_OK)
         super().delete_model(request, obj)

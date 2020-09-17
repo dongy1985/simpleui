@@ -78,13 +78,6 @@ class ExpenseReturnAdminForm(forms.ModelForm):
                 if applyDate == obj.applydate and applyName == obj.applyer:
                     raise forms.ValidationError(obj.applyer + 'さんの' + strDate + 'の立替金記録は既に存在します，修正してください。')
             return self.cleaned_data
-
-        elif "change" in vpath:
-            for obj in queryset:
-                strDate = applyDate.strftime("%Y年%m月%d日")
-                if applyDate == obj.applydate and applyName == obj.applyer:
-                    raise forms.ValidationError(obj.applyer + 'さんの' + strDate + 'の立替金記録は既に存在します，修正してください。')
-            return self.cleaned_data
         else:
             return self.cleaned_data
 
