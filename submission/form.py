@@ -61,18 +61,26 @@ class ApplyDutyAmountAdminForm(forms.ModelForm):
 
 # 立替金
 class ExpenseReturnAdminForm(forms.ModelForm):
+    # form側からrequestを取得
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(ExpenseReturnAdminForm, self).__init__(*args, **kwargs)
 
     def clean(self):
+        # requestのpathを取得
         vpath = self.request.path
+        # ログインユーザー取得
         user = self.request.user
+        # 申請日
         applyDate = self.cleaned_data.get('applydate')
+        # 申請者
         applyName = Employee.objects.get(user=user).name
-
+        # この申請者と申請日を持ったレコードがDBに存在するかをサーチ
         queryset = ExpenseReturn.objects.filter(applydate=applyDate, user=user).order_by('applydate')
+
+        # 取得されたrequestのpathによって「立替金を追加」画面（vpathにaddが含まれる場合）かどうかを判断
         if "add" in vpath:
+            # この申請者と申請日を持ったレコードがDBに存在する場合、重複チェックのエラーメッセージを表示
             for obj in queryset:
                 strDate = applyDate.strftime("%Y年%m月%d日")
                 if applyDate == obj.applydate and applyName == obj.applyer:

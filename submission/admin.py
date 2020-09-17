@@ -730,6 +730,7 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
     inlines = [ExpenseReturnDetailInline, ]
     # 立替金フォーム導入
     form = ExpenseReturnAdminForm
+    # requestをform側にセット
     def get_form(self, request, obj=None, **kwargs):
         ModelForm = super(ExpenseReturnAdmin, self).get_form(request, obj, **kwargs)
         class ModelFormMetaClass(ModelForm):
