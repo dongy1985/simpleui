@@ -129,14 +129,16 @@ class Dutydetail(models.Model):
     class Meta:
         verbose_name = "通勤手当明細"
         verbose_name_plural = "通勤手当明細"
-        unique_together = ('apply_id', 'trafficMethod', 'trafficFrom', 'trafficTo', 'trafficAmount')
+        # 通勤手当明細モデルの重複制御
+        unique_together = ('apply', 'trafficMethod', 'trafficFrom', 'trafficTo', 'trafficAmount')
 
+    # 重複エラーメッセージのオーバーロード
     def validate_unique(self, exclude=None):
         try:
             super(Dutydetail, self).validate_unique()
         except ValidationError as e:
             raise ValidationError("この通勤手当明細は既に存在します、修正してください！")
-
+    # 開始区間と終了区間の重複制御
     def clean(self):
         if self.trafficFrom == self.trafficTo:
             raise ValidationError({'trafficFrom': '開始区間と終了区間は同じです!!'})
