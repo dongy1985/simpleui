@@ -248,8 +248,10 @@ class ExpenseReturnDetail(models.Model):
     class Meta:
         verbose_name = "立替金項目明細"
         verbose_name_plural = "立替金項目明細"
+        # inlineモデルのユニーク制御
         unique_together = ('expenseReturn', 'usedate', 'detail_type', 'detail_text', 'price')
 
+    # inlineモデルはユニークではない場合、エラーメッセージ表示
     def validate_unique(self, exclude=None):
         try:
             super(ExpenseReturnDetail, self).validate_unique()
