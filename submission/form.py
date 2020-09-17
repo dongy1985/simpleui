@@ -61,13 +61,19 @@ class ExpenseReturnAdminForm(forms.ModelForm):
 
     def clean(self):
         vpath = self.request.path
+        user = self.request.user
+        applyDate = self.cleaned_data.get('applydate')
+        applyName = Employee.objects.get(user=user).name
+
+        queryset = ExpenseReturn.objects.filter(applydate=applyDate, user=user).order_by('applydate')
         if "add" in vpath:
-            user = self.request.user
-            applyDate = self.cleaned_data.get('applydate')
-            applyName = Employee.objects.get(user=user).name
+            for obj in queryset:
+                strDate = applyDate.strftime("%Y年%m月%d日")
+                if applyDate == obj.applydate and applyName == obj.applyer:
+                    raise forms.ValidationError(obj.applyer + 'さんの' + strDate + 'の立替金記録は既に存在します，修正してください。')
+            return self.cleaned_data
 
-            queryset = ExpenseReturn.objects.filter(applydate=applyDate, user=user).order_by('applydate')
-
+        elif "change" in vpath:
             for obj in queryset:
                 strDate = applyDate.strftime("%Y年%m月%d日")
                 if applyDate == obj.applydate and applyName == obj.applyer:
