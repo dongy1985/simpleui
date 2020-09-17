@@ -849,18 +849,21 @@ class ExpenseReturnAdmin(admin.ModelAdmin):
 # 資産貸出申請
 @admin.register(AssetLend)
 class AssetLendAdmin(admin.ModelAdmin):
+    # 資産貸出申請フォーム導入
     form = AssetLendAdminForm
+    # 一覧画面から資産番号リンククリック、get_formメソッドを使って変更画面へ遷移
     def get_form(self, request, obj=None, **kwargs):
+        # 変更画面に最初に該当資産番号の貸出可否状態を貸出可に設定して、該当資産番号の資産情報を更新する
         if kwargs['change'] == True:
             AssetManage.objects.filter(id=obj.asset_id).update(permission=const.LEND_OK)
         return super(AssetLendAdmin, self).get_form(request, obj, **kwargs)
 
     fieldsets = [(None, {'fields': ['asset', 'lend_time', 'back_time', 'lend_reason',
                                     'note', ]})]
-    # 要显示的字段
+
+    # 権限別で一覧画面のfieldset表示
     def changelist_view(self, request, extra_context=None):
         user = request.user
-
         if self.has_manage_permission(request):
             self.list_display = ['asset_code', 'type', 'name', 'user_name', 'apply_time', 'lend_time', 'lend_truetime',
                                  'back_time',
@@ -873,14 +876,14 @@ class AssetLendAdmin(admin.ModelAdmin):
                 'lend_reason', 'note', 'lend_status',)
         return super(AssetLendAdmin, self).changelist_view(request=request, extra_context=None)
 
-    # 需要搜索的字段
+    # 検索できるフィールド
     search_fields = ('asset_code',)
 
     raw_id_fields = ('asset',)
     # filter
     list_filter = ('type', 'lend_status',)
 
-    # 分页显示，一页的数量
+    # 一ページの数
     list_per_page = const.LIST_PER_PAGE
 
     actions_on_top = True
@@ -891,13 +894,17 @@ class AssetLendAdmin(admin.ModelAdmin):
     # 提出
     def commit(self, request, queryset):
         for obj in queryset:
+            # 未提出しかを選ばない
             if obj.lend_status != const.LEND_NOTCOMMIT:
                 messages.add_message(request, messages.ERROR, '未提出を選んでください！')
                 return
+            # 該当資産番号の貸出可否状態を貸出否に設定する
             AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
+            # 申請済状態を申請済に設定し、申請提出日付をデフォルト値のローカルタイムに設定する
             queryset.update(lend_status=const.LEND_REQUEST, apply_time=time.strftime("%Y-%m-%d", time.localtime()))
         # mail
         mailUtil.sendmailAsset(const.MAIL_KBN_COMMIT, queryset)
+        # メッセージ提示
         messages.add_message(request, messages.SUCCESS, '提出済')
     commit.short_description = ' 提出'
     commit.icon = 'fas fa-user-check'
@@ -906,8 +913,10 @@ class AssetLendAdmin(admin.ModelAdmin):
     # 承認
     def apply_request(self, request, queryset):
         ids = request.POST.getlist('_selected_action')
+        # 申請済状態を申請済から承認済に変更する
         for id in ids:
             AssetLend.objects.filter(id=id, lend_status=const.LEND_REQUEST).update(lend_status=const.LEND_APPLY)
+        # 貸出可否状態を貸出否に設定する
         for obj in queryset:
             AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
         # mail
@@ -922,8 +931,10 @@ class AssetLendAdmin(admin.ModelAdmin):
     # 拒否
     def apply_deny(self, request, queryset):
         ids = request.POST.getlist('_selected_action')
+        # 申請済状態を申請済から拒否に変更する
         for id in ids:
             AssetLend.objects.filter(id=id, lend_status=const.LEND_REQUEST).update(lend_status=const.LEND_DENY)
+        # 貸出可否状態を貸出可に設定する
         for obj in queryset:
             AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_OK)
         # mail
@@ -938,11 +949,13 @@ class AssetLendAdmin(admin.ModelAdmin):
     # 貸出
     def apply_lend(self, request, queryset):
         ids = request.POST.getlist('_selected_action')
+        # 申請済状態を承認済から貸出済に変更し、実際貸出日をデフォルト値のローカルタイムに設定する
         for id in ids:
             AssetLend.objects.filter(id=id, lend_status=const.LEND_APPLY).update(
                 lend_status=const.LEND_OUT,
                 lend_truetime=time.strftime("%Y-%m-%d", time.localtime()),
             )
+        # 貸出可否状態を貸出否に設定する
         for obj in queryset:
             AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_NG)
         # mail
@@ -957,11 +970,13 @@ class AssetLendAdmin(admin.ModelAdmin):
     # 返却
     def apply_back(self, request, queryset):
         ids = request.POST.getlist('_selected_action')
+        # 申請済状態を貸出済から返却済に変更し、実際返却日をデフォルト値のローカルタイムに設定する
         for id in ids:
             AssetLend.objects.filter(id=id, lend_status=const.LEND_OUT).update(
                 lend_status=const.LEND_BACK,
                 back_truetime=time.strftime("%Y-%m-%d", time.localtime()),
             )
+        # 貸出可否状態を貸出可に設定する
         for obj in queryset:
             AssetManage.objects.filter(id=obj.asset).update(permission=const.LEND_OK)
         # mail
