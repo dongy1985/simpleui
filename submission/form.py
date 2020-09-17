@@ -32,19 +32,25 @@ class AttendanceAdminForm(forms.ModelForm):
 
 
 class ApplyDutyAmountAdminForm(forms.ModelForm):
+    # form側からrequestを取得
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(ApplyDutyAmountAdminForm, self).__init__(*args, **kwargs)
 
     def clean(self):
+        # requestのpathを取得
         vpath = self.request.path
+        # 取得されたrequestのpathによって「通勤手当を追加」画面（vpathにaddが含まれる場合）かどうかを判断
         if "add" in vpath:
+            # ログインユーザー取得
             user = self.request.user
+            # 申請日
             applyDate = self.cleaned_data.get('applyDate')
+            # 申請者
             applyName = Employee.objects.get(user=user).name
-
+            # この申請者と申請日を持ったレコードがDBに存在するかをサーチ
             queryset = ApplyDutyAmount.objects.filter(applyDate=applyDate, user=user).order_by('applyDate')
-
+            # この申請者と申請日を持ったレコードがDBに存在する場合、重複チェックのエラーメッセージを表示
             for obj in queryset:
                 strDate = applyDate.strftime("%Y年%m月%d日")
                 if applyDate == obj.applyDate and applyName == obj.applyName:
