@@ -1,0 +1,14 @@
+INSERT INTO company_worksite (project_name,site_name,site_number,from_date,to_date,manager_id) VALUES ('社内管理システム開発案件','社内','P-033-2020-8','2020-08-01','2999-12-31',13);
+INSERT INTO company_worksite (project_name,site_name,site_number,from_date,to_date,manager_id) VALUES ('新生銀行案件','新生銀行','P-033-2020-8','2020-08-01','2999-12-31',2);
+INSERT INTO company_worksite (project_name,site_name,site_number,from_date,to_date,manager_id) VALUES ('住友信託銀行LCR新規案件','住友信託銀行','P-033-2020-8','2020-08-01','2999-12-31',11);
+INSERT INTO company_worksite (project_name,site_name,site_number,from_date,to_date,manager_id) VALUES ('住友信託銀行LCR保守案件','住友信託銀行','P-033-2020-8','2020-08-01','2999-12-31',20);
+INSERT INTO company_worksite (project_name,site_name,site_number,from_date,to_date,manager_id) VALUES ('総務部','本社','P-033-2020-8','2020-08-01','2999-12-31',17);
+INSERT INTO company_worksite (project_name,site_name,site_number,from_date,to_date,manager_id) VALUES ('日興証券案件','日興証券','P-033-2020-8','2020-08-01','2999-12-31',26);
+INSERT INTO company_worksite (project_name,site_name,site_number,from_date,to_date,manager_id) VALUES ('本部','本社','P-033-2020-8','2020-08-01','2999-12-31',1);
+INSERT INTO company_worksite (project_name,site_name,site_number,from_date,to_date,manager_id) VALUES ('王磊','自宅','P-033-2020-8','2020-01-08','2999-12-31',3);
+INSERT INTO company_worksite (project_name,site_name,site_number,from_date,to_date,manager_id) VALUES ('韓陽','自宅','P-033-2020-8','2020-08-01','2999-12-31',9);
+INSERT INTO company_worksite (project_name,site_name,site_number,from_date,to_date,manager_id) VALUES ('王玉美','自宅','P-033-2020-8','2020-08-01','2999-12-31',14);
+INSERT INTO company_worksite (project_name,site_name,site_number,from_date,to_date,manager_id) VALUES ('落合計介','自宅','P-033-2020-8','2020-08-01','2999-12-31',18);
+INSERT INTO company_worksite (project_name,site_name,site_number,from_date,to_date,manager_id) VALUES ('保田慶教','自宅','P-033-2020-8','2020-08-01','2999-12-31',19);
+INSERT INTO company_worksite (project_name,site_name,site_number,from_date,to_date,manager_id) VALUES ('高波','自宅','P-033-2020-8','2020-08-01','2999-12-31',31);
+INSERT INTO company_worksite (project_name,site_name,site_number,from_date,to_date,manager_id) VALUES ('乃村友浩','自宅','P-033-2020-8','2020-08-01','2999-12-31',32);
