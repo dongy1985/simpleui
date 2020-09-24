@@ -473,7 +473,7 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
     'late_count')
     list_per_page = const.LIST_PER_PAGE
     list_filter = (('attendance_YM', DutyDateFieldFilter),)
-    ordering = ('-attendance_YM',)
+    ordering = ('name', '-attendance_YM',)
     actions = ['export', ]
     def has_add_permission(self, request):
         return False
