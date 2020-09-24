@@ -208,7 +208,7 @@ def sendmailDutyAmount(mailKbn, queryset):
             queryset = queryset.filter(
                 ~(Q(user_id=obj.user_id))
             )
-            return sendmailExpRen(mailKbn=mailKbn, queryset=queryset)
+            return sendmailDutyAmount(mailKbn=mailKbn, queryset=queryset)
 
 
 def send_DutyAmount(mailKbn, employe_name, employe_mail, user_id, workDate):
