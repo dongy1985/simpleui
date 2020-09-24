@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     # 会社管理（社員、資産）
     'company',
     # 障害管理
-    'obstacle',
+    # 'obstacle',
 ]
 
 MIDDLEWARE = [
