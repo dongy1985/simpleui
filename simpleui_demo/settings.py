@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_apscheduler',
+    # 'django_apscheduler',
     # 'demo.apps.DemoConfig',
     # 注册自己的app
     'django.contrib.admindocs',
