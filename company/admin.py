@@ -172,13 +172,13 @@ class WorkSiteAdmin(admin.ModelAdmin):
     # user filter
     def get_queryset(self, request):
         # エス‐ピー
-        spUser = User.objects.filter(groups__name='エス‐ピー')
-        for obj in spUser:
-            if request.user.id == obj.id :
-                qs = super().get_queryset(request)
-                return qs
+        # spUser = User.objects.filter(groups__name='エス‐ピー')
+        # for obj in spUser:
+        #     if request.user.id == obj.id :
+        #         qs = super().get_queryset(request)
+        #         return qs
         # superuser
-        if request.user.is_superuser :
+        if request.user.is_superuser or request.user.has_perm('company.add_worksite'):
             qs = super().get_queryset(request)
             return qs
         # 現場管理者
