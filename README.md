@@ -34,19 +34,31 @@ pip install -r requirements.txt
 
 ## 第三步
 ```shell
-python manage.py runserver 8000 
+python manage.py runserver 192.168.22.103:8000 
 ```
 
 ## 第四步
 打开浏览器，在地址栏输入以下网址
-> http://localhost:8000/admin
+http://www2.jcbridge.co.jp:8000/
 
 ## 第五步
-在用户名和密码的框框输入
-+ 用户名：simpleui
-+ 密码：demo123456
+##  ユーザー　→ Password
+①システム管理者：
+    demo    → user.000
+    simple  → user.000
 
+②社長：
+    test001 → user.001
 
-## PS
-+ 有任何疑问请加入QQ群：786576510
-+ 或者前往社区提问搜索答案：[Simple社区](https://simpleui.88cto.com)
+③総務：
+    test002 → user.002
+
+④現場管理者：
+    test003 → user.003
+    test004 → user.004
+
+⑤一般社員：
+    test005 → user.005 → 「test003」と同じ現場
+    test006 → user.006 → 「test004」と同じ現場
+    test007 → user.007 → 「test004」と同じ現場
+    test008 → user.008 → 「test004」と同じ現場
