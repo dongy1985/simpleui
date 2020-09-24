@@ -92,7 +92,7 @@ class AttendanceAdmin(admin.ModelAdmin):
 
     # user filter
     def get_queryset(self, request):
-        if request.user.is_superuser :
+        if request.user.is_superuser or request.user.has_perm('company.add_worksite'):
             qs = super().get_queryset(request)
             return qs
         elif request.user.has_perm('submission.confirm_button_attendance'):
@@ -473,7 +473,7 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
     'late_count')
     list_per_page = const.LIST_PER_PAGE
     list_filter = (('attendance_YM', DutyDateFieldFilter),)
-    ordering = ('-attendance_YM',)
+    ordering = ('name', '-attendance_YM',)
     actions = ['export', ]
     def has_add_permission(self, request):
         return False
@@ -550,6 +550,46 @@ class DutyStatisticsAdmin(admin.ModelAdmin):
                 return self.querysetFilter(queryset=queryset, expErrList=expErrList)
         return queryset
 
+    # user filter
+    def get_queryset(self, request):
+        if request.user.is_superuser or request.user.has_perm('company.add_worksite'):
+            qs = super().get_queryset(request)
+            return qs
+        elif request.user.has_perm('submission.confirm_button_attendance'):
+            qs = super().get_queryset(request)
+            temp = None
+            employeeId = Employee.objects.get(user_id=request.user.id).id
+            workSiteTemp = WorkSite.objects.filter(manager_id = employeeId)
+            for obj in workSiteTemp:
+                workSiteDetailTemp = WorkSiteDetail.objects.filter(manager_id = obj.id)
+                for objD in workSiteDetailTemp:
+                    emp_No = Employee.objects.get(id=objD.member_id).empNo
+                    qsTemp = qs.filter(empNo = emp_No)
+                    if temp == None :
+                        temp = qsTemp
+                    else:
+                        querysets = temp | qsTemp
+                        temp = querysets
+            return temp
+        else:
+            qs = super().get_queryset(request)
+            temp = None
+            employeeNo = Employee.objects.get(user_id=request.user.id).empNo
+            employeeId = Employee.objects.get(user_id=request.user.id).id
+            if len(WorkSite.objects.filter(manager_id = employeeId)) != 0:
+                workSiteTemp = WorkSite.objects.filter(manager_id = employeeId)
+                for obj in workSiteTemp:
+                    workSiteDetailTemp = WorkSiteDetail.objects.filter(manager_id = obj.id)
+                    for objD in workSiteDetailTemp:
+                        emp_No = Employee.objects.get(id=objD.member_id).empNo
+                        qsTemp = qs.filter(empNo = emp_No)
+                        if temp == None :
+                            temp = qsTemp
+                        else:
+                            querysets = temp | qsTemp
+                            temp = querysets
+                return temp
+            return qs.filter(empNo = employeeNo)
 
 class DutydetailInline(admin.TabularInline):
     model = Dutydetail
